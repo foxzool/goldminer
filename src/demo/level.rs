@@ -5,7 +5,7 @@ use bevy::prelude::*;
 use crate::{
     asset_tracking::LoadResource,
     audio::music,
-    demo::player::{PlayerAssets, player},
+    demo::player::{player, PlayerAssets},
     screens::Screen,
 };
 
@@ -32,7 +32,7 @@ impl FromWorld for LevelAssets {
 /// A system that spawns the main level.
 pub fn spawn_level(
     mut commands: Commands,
-    level_assets: Res<LevelAssets>,
+    asset_server: Res<AssetServer>,
     player_assets: Res<PlayerAssets>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
@@ -42,11 +42,25 @@ pub fn spawn_level(
         Visibility::default(),
         DespawnOnExit(Screen::Gameplay),
         children![
-            player(400.0, &player_assets, &mut texture_atlas_layouts),
-            (
-                Name::new("Gameplay Music"),
-                music(level_assets.music.clone())
-            )
+            top_bg_sprite(&asset_server),
+            level_bg_sprite(&asset_server),
+            player(&player_assets, &mut texture_atlas_layouts),
         ],
     ));
+}
+
+fn top_bg_sprite(asset_server: &AssetServer) -> impl Bundle {
+    (
+        Name::new("Top Background"),
+        Transform::from_xyz(0.0, 100.0, -1.0),
+        Sprite::from_image(asset_server.load("images/bg_top.png")),
+    )
+}
+
+fn level_bg_sprite(asset_server: &AssetServer) -> impl Bundle {
+    (
+        Name::new("Level A Background"),
+        Transform::from_xyz(0.0, -20.0, -1.0),
+        Sprite::from_image(asset_server.load("images/bg_level_A.png")),
+    )
 }

@@ -1,0 +1,168 @@
+{
+  "scan_timestamp": "2025-11-18T15:03:39+08:00",
+  "project_name": "goldminer",
+  "scan_status": "completed",
+  "truncated": false,
+  "coverage": {
+    "total_files": 35,
+    "scanned_files": 35,
+    "coverage_percentage": 100,
+    "ignored_files": 0,
+    "binary_files": 0
+  },
+  "modules": [
+    {
+      "name": "main",
+      "path": "src/main.rs",
+      "type": "entry",
+      "language": "Rust",
+      "description": "应用入口点和插件配置",
+      "has_tests": false,
+      "key_files": ["src/main.rs"]
+    },
+    {
+      "name": "asset_tracking",
+      "path": "src/asset_tracking.rs",
+      "type": "utility",
+      "language": "Rust",
+      "description": "高级资源加载和依赖跟踪系统",
+      "has_tests": false,
+      "key_files": ["src/asset_tracking.rs"]
+    },
+    {
+      "name": "audio",
+      "path": "src/audio.rs",
+      "type": "system",
+      "language": "Rust",
+      "description": "音乐和音效播放管理系统",
+      "has_tests": false,
+      "key_files": ["src/audio.rs"]
+    },
+    {
+      "name": "demo",
+      "path": "src/demo/",
+      "type": "gameplay",
+      "language": "Rust",
+      "description": "游戏演示功能，包含玩家控制、动画、移动系统",
+      "has_tests": false,
+      "key_files": [
+        "src/demo/mod.rs",
+        "src/demo/player.rs",
+        "src/demo/level.rs",
+        "src/demo/movement.rs",
+        "src/demo/animation.rs"
+      ]
+    },
+    {
+      "name": "menus",
+      "path": "src/menus/",
+      "type": "ui",
+      "language": "Rust",
+      "description": "游戏菜单界面和状态管理",
+      "has_tests": false,
+      "key_files": [
+        "src/menus/mod.rs",
+        "src/menus/main.rs",
+        "src/menus/pause.rs",
+        "src/menus/settings.rs",
+        "src/menus/credits.rs"
+      ]
+    },
+    {
+      "name": "screens",
+      "path": "src/screens/",
+      "type": "state",
+      "language": "Rust",
+      "description": "游戏屏幕状态和转换逻辑",
+      "has_tests": false,
+      "key_files": [
+        "src/screens/mod.rs",
+        "src/screens/gameplay.rs",
+        "src/screens/title.rs",
+        "src/screens/loading.rs",
+        "src/screens/splash.rs"
+      ]
+    },
+    {
+      "name": "theme",
+      "path": "src/theme/",
+      "type": "ui",
+      "language": "Rust",
+      "description": "UI主题、组件和交互效果",
+      "has_tests": false,
+      "key_files": [
+        "src/theme/mod.rs",
+        "src/theme/palette.rs",
+        "src/theme/widget.rs",
+        "src/theme/interaction.rs"
+      ]
+    },
+    {
+      "name": "dev_tools",
+      "path": "src/dev_tools.rs",
+      "type": "development",
+      "language": "Rust",
+      "description": "开发工具和调试功能（仅在开发模式）",
+      "has_tests": false,
+      "key_files": ["src/dev_tools.rs"],
+      "conditional": true
+    }
+  ],
+  "assets": {
+    "images": [
+      "assets/images/ducky.png",
+      "assets/images/splash.png"
+    ],
+    "audio": {
+      "music": [
+        "assets/audio/music/Fluffing A Duck.ogg",
+        "assets/audio/music/Monkeys Spinning Monkeys.ogg"
+      ],
+      "sound_effects": [
+        "assets/audio/sound_effects/button_click.ogg",
+        "assets/audio/sound_effects/button_hover.ogg",
+        "assets/audio/sound_effects/step1.ogg",
+        "assets/audio/sound_effects/step2.ogg",
+        "assets/audio/sound_effects/step3.ogg",
+        "assets/audio/sound_effects/step4.ogg"
+      ]
+    }
+  },
+  "configuration": {
+    "cargo_toml": "Cargo.toml",
+    "clippy_toml": "clippy.toml",
+    "build_targets": [
+      "native",
+      "wasm32-unknown-unknown"
+    ]
+  },
+  "gaps": {
+    "missing_tests": "所有模块都缺少单元测试和集成测试",
+    "missing_documentation": "部分复杂函数缺少详细的文档注释",
+    "missing_error_handling": "资源加载错误处理需要增强",
+    "accessibility": "UI可访问性特性需要完善",
+    "performance": "缺少性能基准测试和分析"
+  },
+  "next_recommendations": [
+    "为核心游戏逻辑添加单元测试",
+    "完善错误处理和资源管理",
+    "添加UI可访问性支持",
+    "建立性能基准测试",
+    "完善代码文档和注释",
+    "考虑添加配置文件支持",
+    "实现游戏存档功能"
+  ],
+  "technology_stack": {
+    "language": "Rust",
+    "edition": "2024",
+    "engine": "Bevy 0.17",
+    "architecture": "ECS (Entity Component System)",
+    "platforms": ["Native", "Web (WASM)"]
+  },
+  "build_features": {
+    "dev": ["dynamic_linking", "bevy_dev_tools", "bevy_beavy_ui_debug", "track_location", "file_watcher", "embedded_watcher"],
+    "web": ["dev"],
+    "release": [],
+    "ci": []
+  }
+}

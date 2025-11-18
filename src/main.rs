@@ -35,6 +35,7 @@ impl Plugin for AppPlugin {
                 .set(WindowPlugin {
                     primary_window: Window {
                         title: "Goldminer".to_string(),
+                        resolution: (1280, 960).into(),
                         fit_canvas_to_parent: true,
                         ..default()
                     }
@@ -97,5 +98,13 @@ struct Pause(pub bool);
 struct PausableSystems;
 
 fn spawn_camera(mut commands: Commands) {
-    commands.spawn((Name::new("Camera"), Camera2d));
+    commands.spawn((
+        Name::new("Camera"),
+        Camera2d,
+        Projection::Orthographic(OrthographicProjection {
+            near: -1000.0,
+            scale: 0.25,
+            ..OrthographicProjection::default_2d()
+        }),
+    ));
 }
