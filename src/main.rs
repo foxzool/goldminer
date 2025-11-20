@@ -12,6 +12,7 @@ mod menus;
 mod screens;
 mod theme;
 mod utils;
+mod constants;
 
 use bevy::{asset::AssetMetaCheck, prelude::*};
 
