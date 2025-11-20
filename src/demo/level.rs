@@ -1,7 +1,7 @@
 //! Spawn the main level.
 
 use crate::demo::hook::{hook, HookAssets};
-use crate::utils::love_to_bevy;
+use crate::utils::love_to_bevy_coords;
 use crate::{
     asset_tracking::LoadResource,
     audio::music,
@@ -56,9 +56,9 @@ pub fn spawn_level(
 fn bg_top(asset_server: &AssetServer) -> impl Bundle {
     (
         Name::new("Top Background"),
-        Transform::from(Transform::from_translation(
-            love_to_bevy(0.0, 0.0).extend(-1.0),
-        )),
+        Transform::from_translation(
+            love_to_bevy_coords(0.0, 0.0).extend(-1.0),
+        ),
         Anchor::TOP_LEFT,
         Sprite::from_image(asset_server.load("images/bg_top.png")),
     )
@@ -67,7 +67,7 @@ fn bg_top(asset_server: &AssetServer) -> impl Bundle {
 fn bg_level(asset_server: &AssetServer) -> impl Bundle {
     (
         Name::new("Level A Background"),
-        Transform::from_translation(love_to_bevy(0.0, 40.0).extend(-1.0)),
+        Transform::from_translation(love_to_bevy_coords(0.0, 40.0).extend(-1.0)),
         Anchor::TOP_LEFT,
         Sprite::from_image(asset_server.load("images/bg_level_A.png")),
     )

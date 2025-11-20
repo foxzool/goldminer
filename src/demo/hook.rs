@@ -1,5 +1,5 @@
 use crate::asset_tracking::LoadResource;
-use crate::utils::love_to_bevy;
+use crate::utils::love_to_bevy_coords;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
 
@@ -44,7 +44,7 @@ pub fn hook(
             },
         ),
         Transform::from(Transform::from_translation(
-            love_to_bevy(158.0, 30.0).extend(0.0),
+            love_to_bevy_coords(158.0, 30.0).extend(0.0),
         )),
         Anchor::TOP_CENTER,
     )

@@ -7,15 +7,15 @@ use bevy::{audio::Volume, input::common_conditions::input_just_pressed, prelude:
 use crate::{menus::Menu, screens::Screen, theme::prelude::*};
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(OnEnter(Menu::Settings), spawn_settings_menu);
+    app.add_systems(OnEnter(Menu::HighScore), spawn_settings_menu);
     app.add_systems(
         Update,
-        go_back.run_if(in_state(Menu::Settings).and(input_just_pressed(KeyCode::Escape))),
+        go_back.run_if(in_state(Menu::HighScore).and(input_just_pressed(KeyCode::Escape))),
     );
 
     app.add_systems(
         Update,
-        update_global_volume_label.run_if(in_state(Menu::Settings)),
+        update_global_volume_label.run_if(in_state(Menu::HighScore)),
     );
 }
 
@@ -23,7 +23,7 @@ fn spawn_settings_menu(mut commands: Commands) {
     commands.spawn((
         widget::ui_root("Settings Menu"),
         GlobalZIndex(2),
-        DespawnOnExit(Menu::Settings),
+        DespawnOnExit(Menu::HighScore),
         children![
             widget::header("Settings"),
             settings_grid(),
@@ -111,7 +111,7 @@ fn go_back_on_click(
     next_menu.set(if screen.get() == &Screen::Title {
         Menu::Main
     } else {
-        Menu::Pause
+        Menu::Main
     });
 }
 
@@ -119,6 +119,6 @@ fn go_back(screen: Res<State<Screen>>, mut next_menu: ResMut<NextState<Menu>>) {
     next_menu.set(if screen.get() == &Screen::Title {
         Menu::Main
     } else {
-        Menu::Pause
+        Menu::Main
     });
 }

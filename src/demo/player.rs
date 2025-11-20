@@ -1,6 +1,6 @@
 //! Player-specific behavior.
 
-use crate::utils::love_to_bevy;
+use crate::utils::love_to_bevy_coords;
 use crate::{
     asset_tracking::LoadResource, demo::{
         animation::PlayerAnimation,
@@ -45,7 +45,7 @@ pub fn player(
                 index: 0,
             },
         ),
-        Transform::from_translation(love_to_bevy(165.0, 39.0).extend(0.0)),
+        Transform::from_translation(love_to_bevy_coords(165.0, 39.0).extend(0.0)),
         Anchor::BOTTOM_CENTER,
     )
 }
