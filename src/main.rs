@@ -11,6 +11,7 @@ mod dev_tools;
 mod menus;
 mod screens;
 mod theme;
+mod utils;
 
 use bevy::{asset::AssetMetaCheck, prelude::*};
 
@@ -101,6 +102,7 @@ fn spawn_camera(mut commands: Commands) {
     commands.spawn((
         Name::new("Camera"),
         Camera2d,
+        Transform::from_translation(Vec3::new(160.0, 120.0, 0.0)),
         Projection::Orthographic(OrthographicProjection {
             near: -1000.0,
             scale: 0.25,

@@ -1,10 +1,6 @@
 //! Player-specific behavior.
 
-use bevy::{
-    image::{ImageLoaderSettings, ImageSampler},
-    prelude::*,
-};
-
+use crate::utils::love_to_bevy;
 use crate::{
     asset_tracking::LoadResource, demo::{
         animation::PlayerAnimation,
@@ -13,6 +9,8 @@ use crate::{
     AppSystems,
     PausableSystems,
 };
+use bevy::sprite::Anchor;
+use bevy::{image::ImageSampler, prelude::*};
 
 pub(super) fn plugin(app: &mut App) {
     app.load_resource::<PlayerAssets>();
@@ -47,7 +45,8 @@ pub fn player(
                 index: 0,
             },
         ),
-        Transform::from_xyz(5.0, 120.0 - 39.0 + 16.0, 0.0),
+        Transform::from_translation(love_to_bevy(165.0, 39.0).extend(0.0)),
+        Anchor::BOTTOM_CENTER,
     )
 }
 
@@ -97,13 +96,7 @@ impl FromWorld for PlayerAssets {
     fn from_world(world: &mut World) -> Self {
         let assets = world.resource::<AssetServer>();
         Self {
-            miner: assets.load_with_settings(
-                "images/miner_sheet.png",
-                |settings: &mut ImageLoaderSettings| {
-                    // Use `nearest` image sampling to preserve pixel art style.
-                    settings.sampler = ImageSampler::nearest();
-                },
-            ),
+            miner: assets.load("images/miner_sheet.png"),
             steps: vec![
                 assets.load("audio/sound_effects/step1.ogg"),
                 assets.load("audio/sound_effects/step2.ogg"),
