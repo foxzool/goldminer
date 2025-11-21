@@ -1,13 +1,15 @@
 //! The main menu (seen on the title screen).
 
 use crate::constants::COLOR_YELLOW;
+use crate::menus::MenuSelect;
 use crate::utils::love_to_bevy_coords;
 use crate::{asset_tracking::ResourceHandles, menus::Menu, screens::Screen, theme::widget};
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(OnEnter(Menu::Main), spawn_main_menu);
+    app.add_systems(OnEnter(Menu::Main), spawn_main_menu)
+        .add_systems(Update, (keyboard_input, update_menu_arrow));
 }
 
 fn spawn_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
@@ -47,7 +49,7 @@ fn play_button(asset_server: &AssetServer) -> impl Bundle {
         Name::new("Start Game"),
         Text2d::new("Start Game"),
         style,
-        Transform::from_translation(love_to_bevy_coords(30.0, 150.0).extend(0.0)),
+        Transform::from_translation(love_to_bevy_coords(30.0, 150.0).extend(1.0)),
         Anchor::TOP_LEFT,
         TextColor(COLOR_YELLOW),
     )
@@ -65,7 +67,7 @@ fn score_button(asset_server: &AssetServer) -> impl Bundle {
         Name::new("High Score"),
         Text2d::new("High Score"),
         style,
-        Transform::from_translation(love_to_bevy_coords(30.0, 170.0).extend(0.0)),
+        Transform::from_translation(love_to_bevy_coords(30.0, 170.0).extend(1.0)),
         Anchor::TOP_LEFT,
         TextColor(COLOR_YELLOW),
     )
@@ -83,18 +85,22 @@ fn developer_text(asset_server: &AssetServer) -> impl Bundle {
         Name::new("Developer log"),
         Text2d::new("Made with Bevy. Developed by Fox ZoOL."),
         style,
-        Transform::from_translation(love_to_bevy_coords(75.0, 225.0).extend(0.0)),
+        Transform::from_translation(love_to_bevy_coords(75.0, 225.0).extend(1.0)),
         Anchor::TOP_LEFT,
         TextColor(COLOR_YELLOW),
     )
 }
 
+#[derive(Component)]
+struct MenuArrow;
+
 fn menu_arrow(asset_server: &AssetServer) -> impl Bundle {
     (
         Name::new("Menu Arrow"),
         Sprite::from_image(asset_server.load("images/menu_arrow.png")),
-        Transform::from_translation(love_to_bevy_coords(5.0, 152.0).extend(0.0)),
+        Transform::from_translation(love_to_bevy_coords(5.0, 152.0).extend(1.0)),
         Anchor::TOP_LEFT,
+        MenuArrow,
     )
 }
 
@@ -112,4 +118,54 @@ fn enter_loading_or_gameplay_screen(
 
 fn open_high_score_menu(_: On<Pointer<Click>>, mut next_menu: ResMut<NextState<Menu>>) {
     next_menu.set(Menu::HighScore);
+}
+
+fn keyboard_input(
+    input: Res<ButtonInput<KeyCode>>,
+    current_item: Res<State<MenuSelect>>,
+    mut next_item: ResMut<NextState<MenuSelect>>,
+    mut next_menu: ResMut<NextState<Menu>>,
+    mut next_screen: ResMut<NextState<Screen>>,
+    resource_handles: Res<ResourceHandles>,
+) {
+    if input.just_pressed(KeyCode::ArrowUp) || input.just_pressed(KeyCode::ArrowDown) {
+        if current_item.get() == &MenuSelect::StartGame {
+            next_item.set(MenuSelect::HighScore)
+        } else {
+            next_item.set(MenuSelect::StartGame)
+        }
+    }
+
+    if input.just_pressed(KeyCode::Enter) || input.just_pressed(KeyCode::NumpadEnter) {
+        if current_item.get() == &MenuSelect::StartGame {
+            if resource_handles.is_all_done() {
+                next_screen.set(Screen::Gameplay);
+            } else {
+                next_screen.set(Screen::Loading);
+            }
+        } else {
+            next_menu.set(Menu::HighScore)
+        }
+    }
+}
+
+fn update_menu_arrow(
+    mut q_arrow: Single<&mut Transform, With<MenuArrow>>,
+    mut transitions: MessageReader<StateTransitionEvent<MenuSelect>>,
+) {
+    let Some(transition) = transitions.read().last() else {
+        return;
+    };
+    let StateTransitionEvent { entered, .. } = transition;
+    let Some(entered) = entered else {
+        return;
+    };
+
+    let transform = if entered == &MenuSelect::StartGame {
+        love_to_bevy_coords(5.0, 152.0).extend(1.0)
+    } else {
+        love_to_bevy_coords(5.0, 172.0).extend(1.0)
+    };
+
+    q_arrow.translation = transform;
 }
