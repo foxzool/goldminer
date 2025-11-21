@@ -9,32 +9,31 @@ use bevy::sprite::Anchor;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Menu::Main), spawn_main_menu)
-        .add_systems(Update, (keyboard_input, update_menu_arrow));
+        .add_systems(
+            Update,
+            (keyboard_input, update_menu_arrow).run_if(in_state(Menu::Main)),
+        );
 }
 
-fn spawn_main_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
+fn spawn_main_menu(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    mut next_item: ResMut<NextState<MenuSelect>>,
+) {
     commands.spawn((
         widget::ui_root("Main Menu"),
         GlobalZIndex(2),
         DespawnOnExit(Menu::Main),
         Sprite::from_image(asset_server.load("images/bg_start_menu.png")),
         children![
-            logo_title(&asset_server),
             play_button(&asset_server),
             score_button(&asset_server),
             developer_text(&asset_server),
             menu_arrow(&asset_server)
         ],
     ));
-}
 
-fn logo_title(asset_server: &AssetServer) -> impl Bundle {
-    (
-        Name::new("Logo Title"),
-        Sprite::from_image(asset_server.load("images/text_goldminer.png")),
-        Transform::from_translation(love_to_bevy_coords(160.0, 10.0).extend(1.0)),
-        Anchor::TOP_CENTER,
-    )
+    next_item.set(MenuSelect::StartGame)
 }
 
 fn play_button(asset_server: &AssetServer) -> impl Bundle {
@@ -46,7 +45,6 @@ fn play_button(asset_server: &AssetServer) -> impl Bundle {
     };
 
     (
-        Name::new("Start Game"),
         Text2d::new("Start Game"),
         style,
         Transform::from_translation(love_to_bevy_coords(30.0, 150.0).extend(1.0)),
@@ -64,7 +62,6 @@ fn score_button(asset_server: &AssetServer) -> impl Bundle {
     };
 
     (
-        Name::new("High Score"),
         Text2d::new("High Score"),
         style,
         Transform::from_translation(love_to_bevy_coords(30.0, 170.0).extend(1.0)),
@@ -82,7 +79,6 @@ fn developer_text(asset_server: &AssetServer) -> impl Bundle {
     };
 
     (
-        Name::new("Developer log"),
         Text2d::new("Made with Bevy. Developed by Fox ZoOL."),
         style,
         Transform::from_translation(love_to_bevy_coords(75.0, 225.0).extend(1.0)),
