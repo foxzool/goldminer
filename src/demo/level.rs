@@ -1,5 +1,7 @@
 //! Spawn the main level.
 
+use crate::config::EntitiesAssets;
+use crate::config::{EntitiesConfig, LevelDescriptor, LevelEntity, LevelsConfig, Position};
 use crate::demo::hook::{hook, HookAssets};
 use crate::utils::love_to_bevy_coords;
 use crate::{
@@ -7,6 +9,7 @@ use crate::{
     demo::player::{player, PlayerAssets},
     screens::Screen,
 };
+use bevy::ecs::entity::Entities;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
 
@@ -30,8 +33,7 @@ impl FromWorld for LevelAssets {
     }
 }
 
-/// A system that spawns the main level.
-pub fn spawn_level(
+pub fn spawn_background(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     player_assets: Res<PlayerAssets>,
@@ -39,7 +41,7 @@ pub fn spawn_level(
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
     commands.spawn((
-        Name::new("Level"),
+        Name::new("LevelBackground"),
         Transform::default(),
         Visibility::default(),
         DespawnOnExit(Screen::Gameplay),
@@ -68,4 +70,74 @@ fn bg_level(asset_server: &AssetServer) -> impl Bundle {
         Anchor::TOP_LEFT,
         Sprite::from_image(asset_server.load("images/bg_level_A.png")),
     )
+}
+
+#[derive(Resource)]
+pub struct LevelHandle(Handle<LevelsConfig>);
+
+#[derive(Resource)]
+pub struct EntityHandle(Handle<EntitiesConfig>);
+
+pub fn setup_level_assets(mut commands: Commands, asset_server: Res<AssetServer>) {
+    let level = LevelHandle(asset_server.load("config/levels.yaml"));
+    commands.insert_resource(level);
+
+    let entities = EntityHandle(asset_server.load("config/entities.yaml"));
+    commands.insert_resource(entities);
+}
+
+pub fn spawn_level(
+    mut commands: Commands,
+    level_handle: Res<LevelHandle>,
+    entity_handle: Res<EntityHandle>,
+    levels: Res<Assets<LevelsConfig>>,
+    entities: Res<Assets<EntitiesConfig>>,
+) {
+    if let (Some(level), Some(entities_config)) = (
+        levels.get(level_handle.0.id()),
+        entities.get(entity_handle.0.id()),
+    ) {
+        if let Some(config) = level.levels.get("LDEBUG") {
+            // level_config.
+            commands
+                .spawn((
+                    Name::new("LevelEntities"),
+                    Transform::default(),
+                    Visibility::default(),
+                    DespawnOnExit(Screen::Gameplay),
+                ))
+                .with_children(|parent| {
+                    for entity_config in config.entities.clone() {
+                        parent.spawn((
+                            Name::new(entity_config.entity_id.clone()),
+                            Transform::from_translation(
+                                love_to_bevy_coords(entity_config.pos.x, entity_config.pos.y)
+                                    .extend(1.0),
+                            ),
+                            entities_config
+                                .entities
+                                .get(&entity_config.entity_id)
+                                .unwrap()
+                                .clone(),
+                            entity_config,
+                        ));
+                    }
+                });
+        }
+    }
+}
+
+pub fn spawn_entity_sprite(
+    mut commands: Commands,
+    entity_handle: Res<EntityHandle>,
+    q_entities: Query<(Entity, &LevelEntity), Added<LevelEntity>>,
+    entities_assets: Res<EntitiesAssets>,
+) {
+    for (entity, level_entity) in q_entities.iter() {
+        if let Some(img_handle) = entities_assets.get_sprite(&level_entity.entity_id) {
+            commands
+                .entity(entity)
+                .insert((Anchor::TOP_LEFT, Sprite::from_image(img_handle.clone())));
+        }
+    }
 }
