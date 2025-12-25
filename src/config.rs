@@ -1,6 +1,7 @@
 use crate::asset_tracking::LoadResource;
 use bevy::app::{App, Plugin};
 use bevy::asset::{Asset, AssetServer, Handle};
+use bevy::audio::AudioSource;
 use bevy::image::Image;
 use bevy::platform::collections::HashMap;
 use bevy::prelude::Component;
@@ -8,6 +9,21 @@ use bevy::prelude::ReflectResource;
 use bevy::prelude::{FromWorld, Reflect, Resource, World};
 use bevy_common_assets::yaml::YamlAssetPlugin;
 use serde::{Deserialize, Serialize};
+
+pub struct ConfigPlugin;
+
+impl Plugin for ConfigPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_plugins((
+            YamlAssetPlugin::<LevelsConfig>::new(&["config/levels.yaml"]),
+            YamlAssetPlugin::<EntitiesConfig>::new(&["config/entities.yaml"]),
+        ));
+        app.load_resource::<EntitiesAssets>();
+        app.load_resource::<SoundAssets>();
+        app.load_resource::<MusicAssets>();
+    }
+}
+
 // --- entities.yaml 对应的结构 ---
 
 /// 包装实体配置 HashMap 以实现 Asset
@@ -119,18 +135,6 @@ pub struct LevelsConfig {
     pub levels: HashMap<String, LevelDescriptor>,
 }
 
-pub struct ConfigPlugin;
-
-impl Plugin for ConfigPlugin {
-    fn build(&self, app: &mut App) {
-        app.add_plugins((
-            YamlAssetPlugin::<LevelsConfig>::new(&["config/levels.yaml"]),
-            YamlAssetPlugin::<EntitiesConfig>::new(&["config/entities.yaml"]),
-        ));
-        app.load_resource::<EntitiesAssets>();
-    }
-}
-
 #[derive(Resource, Asset, Clone, Reflect)]
 #[reflect(Resource)]
 pub struct EntitiesAssets {
@@ -201,6 +205,79 @@ impl EntitiesAssets {
             "TNT" => Some(self.tnt.clone()),
             "TNT_Destroyed" => Some(self.tnt_destroyed.clone()),
             _ => None,
+        }
+    }
+}
+
+#[derive(Resource, Asset, Clone, Reflect)]
+#[reflect(Resource)]
+pub struct SoundAssets {
+    #[dependency]
+    money: Handle<AudioSource>,
+    #[dependency]
+    hook_reset: Handle<AudioSource>,
+    #[dependency]
+    grab_start: Handle<AudioSource>,
+    #[dependency]
+    grab_back: Handle<AudioSource>,
+    #[dependency]
+    explosive: Handle<AudioSource>,
+    #[dependency]
+    high: Handle<AudioSource>,
+    #[dependency]
+    normal: Handle<AudioSource>,
+    #[dependency]
+    low: Handle<AudioSource>,
+}
+
+impl FromWorld for SoundAssets {
+    fn from_world(world: &mut World) -> Self {
+        let assets = world.resource::<AssetServer>();
+        Self {
+            money: assets.load("audios/money.wav"),
+            hook_reset: assets.load("audios/hook_reset.wav"),
+            grab_start: assets.load("audios/grab_start.mp3"),
+            grab_back: assets.load("audios/grab_back.wav"),
+            explosive: assets.load("audios/explosive.wav"),
+            high: assets.load("audios/high_value.wav"),
+            normal: assets.load("audios/normal_value.wav"),
+            low: assets.load("audios/low_value.wav"),
+        }
+    }
+}
+
+impl SoundAssets {
+    pub fn get_sound(&self, id: &str) -> Option<Handle<AudioSource>> {
+        match id {
+            "Money" => Some(self.money.clone()),
+            "HookReset" => Some(self.hook_reset.clone()),
+            "GrabStart" => Some(self.grab_start.clone()),
+            "GrabBack" => Some(self.grab_back.clone()),
+            "Explosive" => Some(self.explosive.clone()),
+            "High" => Some(self.high.clone()),
+            "Normal" => Some(self.normal.clone()),
+            "Low" => Some(self.low.clone()),
+
+            _ => None,
+        }
+    }
+}
+
+#[derive(Resource, Asset, Clone, Reflect)]
+#[reflect(Resource)]
+pub struct MusicAssets {
+    #[dependency]
+    pub goal: Handle<AudioSource>,
+    #[dependency]
+    pub made_goal: Handle<AudioSource>,
+}
+
+impl FromWorld for MusicAssets {
+    fn from_world(world: &mut World) -> Self {
+        let assets = world.resource::<AssetServer>();
+        Self {
+            goal: assets.load("audios/goal.mp3"),
+            made_goal: assets.load("audios/made_goal.mp3"),
         }
     }
 }
