@@ -1,0 +1,2664 @@
+{
+    "LDEBUG": (
+        level_type: LevelA,
+        entities: [
+            (
+                entity_type: MiniGold,
+                position: (x: 80.0, y: 80.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 105.0, y: 150.0),
+            ),
+            (
+                entity_type: NormalGoldPlus,
+                position: (x: 120.0, y: 100.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 20.0, y: 130.0),
+            ),
+            (
+                entity_type: MiniRock,
+                position: (x: 75.0, y: 130.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 130.0, y: 200.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 105.0, y: 210.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 243.0, y: 182.0),
+            ),
+            (
+                entity_type: Mole,
+                position: (x: 200.0, y: 150.0),
+                direction: Some(Left),
+            ),
+            (
+                entity_type: MoleWithDiamond,
+                position: (x: 300.0, y: 60.0),
+                direction: Some(Left),
+            ),
+            (
+                entity_type: Skull,
+                position: (x: 200.0, y: 80.0),
+            ),
+            (
+                entity_type: Bone,
+                position: (x: 100.0, y: 80.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 150.0, y: 120.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 150.0, y: 160.0),
+            ),
+        ],
+    ),
+
+    "L1_1": (
+        level_type: LevelB,
+        entities: [
+            (
+                entity_type: MiniRock,
+                position: (x: 54.0, y: 72.0),
+            ),
+            (
+                entity_type: MiniRock,
+                position: (x: 239.0, y: 73.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 198.0, y: 149.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 139.0, y: 201.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 239.0, y: 92.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 213.0, y: 103.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 70.0, y: 106.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 96.0, y: 140.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 180.0, y: 107.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 294.0, y: 191.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 45.0, y: 219.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 42.0, y: 140.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 165.0, y: 172.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 28.0, y: 75.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 227.0, y: 106.0),
+            ),
+        ],
+    ),
+
+    "L1_2": (
+        level_type: LevelD,
+        entities: [
+            (
+                entity_type: MiniRock,
+                position: (x: 259.0, y: 68.0),
+            ),
+            (
+                entity_type: MiniRock,
+                position: (x: 32.0, y: 93.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 219.0, y: 142.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 94.0, y: 202.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 60.0, y: 70.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 256.0, y: 85.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 99.0, y: 104.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 242.0, y: 106.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 243.0, y: 123.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 180.0, y: 107.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 129.0, y: 165.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 67.0, y: 184.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 21.0, y: 121.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 292.0, y: 139.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 202.0, y: 202.0),
+            ),
+        ],
+    ),
+
+    "L1_3": (
+        level_type: LevelA,
+        entities: [
+            (
+                entity_type: MiniRock,
+                position: (x: 142.0, y: 109.0),
+            ),
+            (
+                entity_type: MiniRock,
+                position: (x: 230.0, y: 128.0),
+            ),
+            (
+                entity_type: MiniRock,
+                position: (x: 195.0, y: 178.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 263.0, y: 104.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 188.0, y: 139.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 50.0, y: 158.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 54.0, y: 68.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 74.0, y: 70.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 54.0, y: 88.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 214.0, y: 116.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 288.0, y: 118.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 35.0, y: 142.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 70.0, y: 180.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 153.0, y: 200.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 38.0, y: 98.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 243.0, y: 182.0),
+            ),
+        ],
+    ),
+
+    "L2_1": (
+        level_type: LevelD,
+        entities: [
+            (
+                entity_type: MiniRock,
+                position: (x: 267.0, y: 86.0),
+            ),
+            (
+                entity_type: MiniRock,
+                position: (x: 230.0, y: 128.0),
+            ),
+            (
+                entity_type: MiniRock,
+                position: (x: 127.0, y: 165.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 37.0, y: 104.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 84.0, y: 143.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 170.0, y: 160.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 243.0, y: 206.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 249.0, y: 72.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 151.0, y: 107.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 275.0, y: 124.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 192.0, y: 126.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 107.0, y: 136.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 61.0, y: 166.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 213.0, y: 179.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 17.0, y: 98.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 278.0, y: 197.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 1.0, y: 168.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 197.0, y: 193.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 97.0, y: 190.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 229.0, y: 154.0),
+            ),
+        ],
+    ),
+
+    "L2_2": (
+        level_type: LevelB,
+        entities: [
+            (
+                entity_type: MiniRock,
+                position: (x: 96.0, y: 106.0),
+            ),
+            (
+                entity_type: MiniRock,
+                position: (x: 60.0, y: 170.0),
+            ),
+            (
+                entity_type: MiniRock,
+                position: (x: 52.0, y: 221.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 22.0, y: 68.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 2.0, y: 115.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 83.0, y: 144.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 8.0, y: 156.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 249.0, y: 72.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 202.0, y: 79.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 213.0, y: 113.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 275.0, y: 125.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 182.0, y: 140.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 212.0, y: 180.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 245.0, y: 211.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 224.0, y: 146.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 277.0, y: 149.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 190.0, y: 169.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 8.0, y: 191.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 268.0, y: 197.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 26.0, y: 91.0),
+            ),
+        ],
+    ),
+
+    "L2_3": (
+        level_type: LevelB,
+        entities: [
+            (
+                entity_type: MiniRock,
+                position: (x: 223.0, y: 84.0),
+            ),
+            (
+                entity_type: MiniRock,
+                position: (x: 127.0, y: 166.0),
+            ),
+            (
+                entity_type: MiniRock,
+                position: (x: 60.0, y: 170.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 37.0, y: 105.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 83.0, y: 144.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 8.0, y: 156.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 174.0, y: 158.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 249.0, y: 72.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 202.0, y: 79.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 34.0, y: 94.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 213.0, y: 113.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 275.0, y: 125.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 107.0, y: 136.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 212.0, y: 180.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 11.0, y: 93.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 224.0, y: 146.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 278.0, y: 197.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 16.0, y: 190.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 81.0, y: 206.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 136.0, y: 184.0),
+            ),
+        ],
+    ),
+
+    "L3_1": (
+        level_type: LevelA,
+        entities: [
+            (
+                entity_type: MiniRock,
+                position: (x: 143.0, y: 108.0),
+            ),
+            (
+                entity_type: MiniRock,
+                position: (x: 231.0, y: 129.0),
+            ),
+            (
+                entity_type: MiniRock,
+                position: (x: 195.0, y: 178.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 265.0, y: 104.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 189.0, y: 140.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 48.0, y: 156.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 266.0, y: 167.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 54.0, y: 69.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 74.0, y: 70.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 54.0, y: 88.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 216.0, y: 116.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 288.0, y: 117.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 34.0, y: 142.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 69.0, y: 179.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 154.0, y: 201.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 38.0, y: 98.0),
+            ),
+        ],
+    ),
+
+    "L3_2": (
+        level_type: LevelA,
+        entities: [
+            (
+                entity_type: MiniRock,
+                position: (x: 155.0, y: 108.0),
+            ),
+            (
+                entity_type: MiniRock,
+                position: (x: 231.0, y: 129.0),
+            ),
+            (
+                entity_type: MiniRock,
+                position: (x: 231.0, y: 171.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 258.0, y: 128.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 214.0, y: 145.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 48.0, y: 156.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 261.0, y: 157.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 54.0, y: 69.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 74.0, y: 70.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 54.0, y: 88.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 216.0, y: 116.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 288.0, y: 117.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 34.0, y: 126.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 207.0, y: 204.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 77.0, y: 217.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 27.0, y: 72.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 244.0, y: 154.0),
+            ),
+        ],
+    ),
+
+    "L3_3": (
+        level_type: LevelD,
+        entities: [
+            (
+                entity_type: MiniRock,
+                position: (x: 138.0, y: 108.0),
+            ),
+            (
+                entity_type: MiniRock,
+                position: (x: 165.0, y: 131.0),
+            ),
+            (
+                entity_type: MiniRock,
+                position: (x: 227.0, y: 175.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 264.0, y: 127.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 205.0, y: 145.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 264.0, y: 157.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 56.0, y: 160.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 54.0, y: 69.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 74.0, y: 70.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 54.0, y: 88.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 216.0, y: 116.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 288.0, y: 117.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 34.0, y: 126.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 237.0, y: 138.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: -10.0, y: 166.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 183.0, y: 141.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 250.0, y: 177.0),
+            ),
+        ],
+    ),
+
+    "L4_1": (
+        level_type: LevelE,
+        entities: [
+            (
+                entity_type: MiniRock,
+                position: (x: 189.0, y: 146.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 73.0, y: 88.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 259.0, y: 99.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 56.0, y: 197.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 63.0, y: 80.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 209.0, y: 95.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 217.0, y: 104.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 222.0, y: 118.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 181.0, y: 117.0),
+            ),
+            (
+                entity_type: NormalGoldPlus,
+                position: (x: 84.0, y: 176.0),
+            ),
+            (
+                entity_type: NormalGoldPlus,
+                position: (x: 174.0, y: 183.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 240.0, y: 110.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 80.0, y: 134.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 214.0, y: 144.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 138.0, y: 182.0),
+            ),
+            (
+                entity_type: Mole,
+                position: (x: -12.0, y: 117.0),
+                direction: Some(Right),
+            ),
+            (
+                entity_type: Mole,
+                position: (x: 108.0, y: 168.0),
+                direction: Some(Right),
+            ),
+            (
+                entity_type: Mole,
+                position: (x: 328.0, y: 158.0),
+                direction: Some(Left),
+            ),
+        ],
+    ),
+
+    "L4_2": (
+        level_type: LevelD,
+        entities: [
+            (
+                entity_type: MiniRock,
+                position: (x: 155.0, y: 108.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 73.0, y: 88.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 259.0, y: 99.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 88.0, y: 206.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 52.0, y: 75.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 96.0, y: 78.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 114.0, y: 107.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 215.0, y: 116.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 293.0, y: 99.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 192.0, y: 123.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 31.0, y: 135.0),
+            ),
+            (
+                entity_type: NormalGoldPlus,
+                position: (x: 175.0, y: 172.0),
+            ),
+            (
+                entity_type: NormalGoldPlus,
+                position: (x: 54.0, y: 185.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 233.0, y: 91.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 119.0, y: 133.0),
+            ),
+            (
+                entity_type: Mole,
+                position: (x: 41.0, y: 122.0),
+                direction: Some(Right),
+            ),
+            (
+                entity_type: Mole,
+                position: (x: 156.0, y: 164.0),
+                direction: Some(Right),
+            ),
+            (
+                entity_type: Mole,
+                position: (x: 218.0, y: 85.0),
+                direction: Some(Left),
+            ),
+        ],
+    ),
+
+    "L4_3": (
+        level_type: LevelD,
+        entities: [
+            (
+                entity_type: MiniRock,
+                position: (x: 153.0, y: 165.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 268.0, y: 156.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 34.0, y: 160.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 88.0, y: 206.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 15.0, y: 104.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 215.0, y: 144.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 106.0, y: 163.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 91.0, y: 169.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 181.0, y: 117.0),
+            ),
+            (
+                entity_type: NormalGoldPlus,
+                position: (x: 175.0, y: 172.0),
+            ),
+            (
+                entity_type: NormalGoldPlus,
+                position: (x: 53.0, y: 185.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 241.0, y: 153.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 129.0, y: 176.0),
+            ),
+            (
+                entity_type: Mole,
+                position: (x: 89.0, y: 77.0),
+                direction: Some(Right),
+            ),
+            (
+                entity_type: Mole,
+                position: (x: 251.0, y: 92.0),
+                direction: Some(Left),
+            ),
+            (
+                entity_type: Mole,
+                position: (x: 65.0, y: 111.0),
+                direction: Some(Right),
+            ),
+        ],
+    ),
+
+    "L5_1": (
+        level_type: LevelD,
+        entities: [
+            (
+                entity_type: MiniRock,
+                position: (x: 290.0, y: 196.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 169.0, y: 108.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 235.0, y: 111.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 261.0, y: 225.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 54.0, y: 72.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 79.0, y: 79.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 197.0, y: 148.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 64.0, y: 180.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 257.0, y: 98.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 112.0, y: 131.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 31.0, y: 136.0),
+            ),
+            (
+                entity_type: NormalGoldPlus,
+                position: (x: 92.0, y: 201.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: -17.0, y: 183.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 306.0, y: 160.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 218.0, y: 192.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 284.0, y: 182.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 36.0, y: 194.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 253.0, y: 207.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 278.0, y: 210.0),
+            ),
+            (
+                entity_type: Mole,
+                position: (x: 44.0, y: 129.0),
+                direction: Some(Right),
+            ),
+            (
+                entity_type: Mole,
+                position: (x: 289.0, y: 169.0),
+                direction: Some(Left),
+            ),
+        ],
+    ),
+
+    "L5_2": (
+        level_type: LevelD,
+        entities: [
+            (
+                entity_type: MiniRock,
+                position: (x: 172.0, y: 145.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 55.0, y: 87.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 235.0, y: 111.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 91.0, y: 152.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 54.0, y: 72.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 79.0, y: 79.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 197.0, y: 148.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 64.0, y: 180.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 257.0, y: 98.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 112.0, y: 131.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 31.0, y: 136.0),
+            ),
+            (
+                entity_type: NormalGoldPlus,
+                position: (x: 92.0, y: 201.0),
+            ),
+            (
+                entity_type: NormalGoldPlus,
+                position: (x: 174.0, y: 185.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: -17.0, y: 183.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 306.0, y: 160.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 218.0, y: 192.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 284.0, y: 182.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 36.0, y: 194.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 253.0, y: 207.0),
+            ),
+            (
+                entity_type: Mole,
+                position: (x: 80.0, y: 120.0),
+                direction: Some(Right),
+            ),
+            (
+                entity_type: Mole,
+                position: (x: 259.0, y: 169.0),
+                direction: Some(Left),
+            ),
+        ],
+    ),
+
+    "L5_3": (
+        level_type: LevelB,
+        entities: [
+            (
+                entity_type: MiniRock,
+                position: (x: 172.0, y: 145.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 55.0, y: 87.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 235.0, y: 111.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 86.0, y: 151.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 42.0, y: 71.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 197.0, y: 148.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 133.0, y: 162.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 64.0, y: 180.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 257.0, y: 98.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 112.0, y: 131.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 31.0, y: 136.0),
+            ),
+            (
+                entity_type: NormalGoldPlus,
+                position: (x: 174.0, y: 185.0),
+            ),
+            (
+                entity_type: NormalGoldPlus,
+                position: (x: 113.0, y: 215.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: -17.0, y: 183.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 233.0, y: 216.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 214.0, y: 100.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 293.0, y: 146.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 9.0, y: 162.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 144.0, y: 177.0),
+            ),
+            (
+                entity_type: Mole,
+                position: (x: 80.0, y: 120.0),
+                direction: Some(Right),
+            ),
+            (
+                entity_type: Mole,
+                position: (x: 250.0, y: 166.0),
+                direction: Some(Left),
+            ),
+        ],
+    ),
+
+    "L6_1": (
+        level_type: LevelE,
+        entities: [
+            (
+                entity_type: MiniRock,
+                position: (x: 294.0, y: 176.0),
+            ),
+            (
+                entity_type: MiniRock,
+                position: (x: 63.0, y: 188.0),
+            ),
+            (
+                entity_type: MiniRock,
+                position: (x: 248.0, y: 198.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 6.0, y: 164.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 121.0, y: 189.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 183.0, y: 190.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 242.0, y: 72.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 36.0, y: 80.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 203.0, y: 97.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 52.0, y: 133.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 270.0, y: 134.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 237.0, y: 161.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 94.0, y: 166.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 119.0, y: 95.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 4.0, y: 121.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 264.0, y: 183.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 145.0, y: 168.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 158.0, y: 139.0),
+            ),
+            (
+                entity_type: MoleWithDiamond,
+                position: (x: 49.0, y: 118.0),
+                direction: Some(Right),
+            ),
+            (
+                entity_type: MoleWithDiamond,
+                position: (x: 231.0, y: 227.0),
+                direction: Some(Left),
+            ),
+        ],
+    ),
+
+    "L6_2": (
+        level_type: LevelE,
+        entities: [
+            (
+                entity_type: MiniRock,
+                position: (x: 249.0, y: 71.0),
+            ),
+            (
+                entity_type: MiniRock,
+                position: (x: 200.0, y: 92.0),
+            ),
+            (
+                entity_type: MiniRock,
+                position: (x: 58.0, y: 155.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 51.0, y: 81.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 119.0, y: 143.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 176.0, y: 213.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 52.0, y: 132.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 240.0, y: 147.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 250.0, y: 155.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 266.0, y: 160.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 237.0, y: 162.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 95.0, y: 166.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 109.0, y: 205.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 217.0, y: 145.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 39.0, y: 209.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 208.0, y: 219.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 301.0, y: 189.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 269.0, y: 111.0),
+            ),
+            (
+                entity_type: MoleWithDiamond,
+                position: (x: 30.0, y: 112.0),
+                direction: Some(Right),
+            ),
+            (
+                entity_type: MoleWithDiamond,
+                position: (x: 255.0, y: 121.0),
+                direction: Some(Left),
+            ),
+            (
+                entity_type: MoleWithDiamond,
+                position: (x: 91.0, y: 179.0),
+                direction: Some(Right),
+            ),
+            (
+                entity_type: MoleWithDiamond,
+                position: (x: 234.0, y: 194.0),
+                direction: Some(Left),
+            ),
+        ],
+    ),
+
+    "L6_3": (
+        level_type: LevelC,
+        entities: [
+            (
+                entity_type: MiniRock,
+                position: (x: 231.0, y: 91.0),
+            ),
+            (
+                entity_type: MiniRock,
+                position: (x: 115.0, y: 95.0),
+            ),
+            (
+                entity_type: MiniRock,
+                position: (x: 45.0, y: 176.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 19.0, y: 90.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 166.0, y: 151.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 294.0, y: 153.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 195.0, y: 166.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 255.0, y: 167.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 68.0, y: 170.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 244.0, y: 175.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 282.0, y: 185.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 109.0, y: 205.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 250.0, y: 208.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 5.0, y: 185.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 39.0, y: 209.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 208.0, y: 219.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 123.0, y: 204.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 253.0, y: 182.0),
+            ),
+            (
+                entity_type: MoleWithDiamond,
+                position: (x: 27.0, y: 120.0),
+                direction: Some(Right),
+            ),
+            (
+                entity_type: MoleWithDiamond,
+                position: (x: 306.0, y: 120.0),
+                direction: Some(Left),
+            ),
+            (
+                entity_type: MoleWithDiamond,
+                position: (x: 126.0, y: 140.0),
+                direction: Some(Right),
+            ),
+            (
+                entity_type: MoleWithDiamond,
+                position: (x: 237.0, y: 189.0),
+                direction: Some(Left),
+            ),
+        ],
+    ),
+
+    "L7_1": (
+        level_type: LevelC,
+        entities: [
+            (
+                entity_type: Skull,
+                position: (x: 224.0, y: 114.0),
+            ),
+            (
+                entity_type: Skull,
+                position: (x: 91.0, y: 131.0),
+            ),
+            (
+                entity_type: Bone,
+                position: (x: 230.0, y: 109.0),
+            ),
+            (
+                entity_type: Bone,
+                position: (x: 33.0, y: 147.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 249.0, y: 91.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 69.0, y: 155.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 166.0, y: 100.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 59.0, y: 101.0),
+            ),
+            (
+                entity_type: NormalGoldPlus,
+                position: (x: 290.0, y: 93.0),
+            ),
+            (
+                entity_type: NormalGoldPlus,
+                position: (x: 93.0, y: 173.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 238.0, y: 182.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: -7.0, y: 197.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 100.0, y: 216.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 233.0, y: 140.0),
+            ),
+            (
+                entity_type: Mole,
+                position: (x: 194.0, y: 74.0),
+                direction: Some(Right),
+            ),
+            (
+                entity_type: Mole,
+                position: (x: 306.0, y: 86.0),
+                direction: Some(Left),
+            ),
+            (
+                entity_type: Mole,
+                position: (x: 284.0, y: 133.0),
+                direction: Some(Left),
+            ),
+            (
+                entity_type: Mole,
+                position: (x: 16.0, y: 144.0),
+                direction: Some(Right),
+            ),
+            (
+                entity_type: Mole,
+                position: (x: 153.0, y: 157.0),
+                direction: Some(Left),
+            ),
+            (
+                entity_type: Mole,
+                position: (x: 54.0, y: 195.0),
+                direction: Some(Right),
+            ),
+        ],
+    ),
+
+    "L7_2": (
+        level_type: LevelA,
+        entities: [
+            (
+                entity_type: Skull,
+                position: (x: 239.0, y: 104.0),
+            ),
+            (
+                entity_type: Skull,
+                position: (x: 32.0, y: 184.0),
+            ),
+            (
+                entity_type: Bone,
+                position: (x: 30.0, y: 101.0),
+            ),
+            (
+                entity_type: Bone,
+                position: (x: 118.0, y: 136.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 84.0, y: 121.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 202.0, y: 121.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 3.0, y: 138.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 167.0, y: 158.0),
+            ),
+            (
+                entity_type: NormalGoldPlus,
+                position: (x: 274.0, y: 102.0),
+            ),
+            (
+                entity_type: NormalGoldPlus,
+                position: (x: 91.0, y: 168.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 176.0, y: 167.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: -7.0, y: 197.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 128.0, y: 212.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 61.0, y: 111.0),
+            ),
+            (
+                entity_type: Mole,
+                position: (x: 305.0, y: 83.0),
+                direction: Some(Left),
+            ),
+            (
+                entity_type: Mole,
+                position: (x: 14.0, y: 87.0),
+                direction: Some(Right),
+            ),
+            (
+                entity_type: Mole,
+                position: (x: 210.0, y: 97.0),
+                direction: Some(Left),
+            ),
+            (
+                entity_type: Mole,
+                position: (x: 42.0, y: 163.0),
+                direction: Some(Right),
+            ),
+            (
+                entity_type: Mole,
+                position: (x: 271.0, y: 160.0),
+                direction: Some(Left),
+            ),
+            (
+                entity_type: Mole,
+                position: (x: 77.0, y: 204.0),
+                direction: Some(Right),
+            ),
+        ],
+    ),
+
+    "L7_3": (
+        level_type: LevelA,
+        entities: [
+            (
+                entity_type: Skull,
+                position: (x: 224.0, y: 114.0),
+            ),
+            (
+                entity_type: Skull,
+                position: (x: 69.0, y: 136.0),
+            ),
+            (
+                entity_type: Bone,
+                position: (x: 230.0, y: 109.0),
+            ),
+            (
+                entity_type: Bone,
+                position: (x: 246.0, y: 161.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 125.0, y: 171.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 194.0, y: 171.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 167.0, y: 101.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 39.0, y: 108.0),
+            ),
+            (
+                entity_type: NormalGoldPlus,
+                position: (x: 16.0, y: 73.0),
+            ),
+            (
+                entity_type: NormalGoldPlus,
+                position: (x: 289.0, y: 91.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 75.0, y: 184.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 222.0, y: 188.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 149.0, y: 203.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 247.0, y: 110.0),
+            ),
+            (
+                entity_type: Mole,
+                position: (x: 104.0, y: 86.0),
+                direction: Some(Left),
+            ),
+            (
+                entity_type: Mole,
+                position: (x: 74.0, y: 125.0),
+                direction: Some(Right),
+            ),
+            (
+                entity_type: Mole,
+                position: (x: 274.0, y: 136.0),
+                direction: Some(Left),
+            ),
+            (
+                entity_type: Mole,
+                position: (x: 17.0, y: 164.0),
+                direction: Some(Right),
+            ),
+        ],
+    ),
+
+    "L8_1": (
+        level_type: LevelD,
+        entities: [
+            (
+                entity_type: TNT,
+                position: (x: 253.0, y: 92.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 25.0, y: 116.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 80.0, y: 146.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 203.0, y: 153.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 269.0, y: 203.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 293.0, y: 177.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 20.0, y: 208.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 285.0, y: 72.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 59.0, y: 85.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 117.0, y: 101.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 185.0, y: 123.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 232.0, y: 143.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 38.0, y: 168.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 113.0, y: 176.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 188.0, y: 202.0),
+            ),
+            (
+                entity_type: MoleWithDiamond,
+                position: (x: 15.0, y: 122.0),
+                direction: Some(Right),
+            ),
+            (
+                entity_type: MoleWithDiamond,
+                position: (x: 61.0, y: 155.0),
+                direction: Some(Right),
+            ),
+        ],
+    ),
+
+    "L8_2": (
+        level_type: LevelD,
+        entities: [
+            (
+                entity_type: TNT,
+                position: (x: 150.0, y: 87.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 107.0, y: 129.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 191.0, y: 128.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 70.0, y: 174.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 226.0, y: 179.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 296.0, y: 169.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 3.0, y: 174.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 285.0, y: 72.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 59.0, y: 85.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 117.0, y: 101.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 185.0, y: 123.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 232.0, y: 143.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 38.0, y: 168.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 113.0, y: 176.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 188.0, y: 202.0),
+            ),
+            (
+                entity_type: MoleWithDiamond,
+                position: (x: 15.0, y: 122.0),
+                direction: Some(Right),
+            ),
+            (
+                entity_type: MoleWithDiamond,
+                position: (x: 61.0, y: 155.0),
+                direction: Some(Right),
+            ),
+        ],
+    ),
+
+    "L8_3": (
+        level_type: LevelB,
+        entities: [
+            (
+                entity_type: MiniRock,
+                position: (x: 13.0, y: 75.0),
+            ),
+            (
+                entity_type: MiniRock,
+                position: (x: 170.0, y: 89.0),
+            ),
+            (
+                entity_type: MiniRock,
+                position: (x: 72.0, y: 113.0),
+            ),
+            (
+                entity_type: MiniRock,
+                position: (x: 241.0, y: 115.0),
+            ),
+            (
+                entity_type: MiniRock,
+                position: (x: 10.0, y: 140.0),
+            ),
+            (
+                entity_type: MiniRock,
+                position: (x: 267.0, y: 145.0),
+            ),
+            (
+                entity_type: MiniRock,
+                position: (x: 132.0, y: 157.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 285.0, y: 68.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 57.0, y: 84.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 232.0, y: 85.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 116.0, y: 120.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 71.0, y: 130.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 304.0, y: 133.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 222.0, y: 134.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 50.0, y: 147.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 181.0, y: 163.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 24.0, y: 109.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 275.0, y: 109.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 0.0, y: 170.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 217.0, y: 171.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 136.0, y: 182.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 286.0, y: 206.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 60.0, y: 208.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 79.0, y: 105.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 305.0, y: 175.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 42.0, y: 208.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 28.0, y: 215.0),
+            ),
+        ],
+    ),
+
+    "L9_1": (
+        level_type: LevelA,
+        entities: [
+            (
+                entity_type: Skull,
+                position: (x: 159.0, y: 178.0),
+            ),
+            (
+                entity_type: Bone,
+                position: (x: 277.0, y: 194.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 309.0, y: 64.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: -4.0, y: 84.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 310.0, y: 143.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 12.0, y: 172.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 261.0, y: 208.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 175.0, y: 217.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 85.0, y: 218.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 143.0, y: 88.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 48.0, y: 175.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 213.0, y: 182.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 3.0, y: 115.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 292.0, y: 157.0),
+            ),
+            (
+                entity_type: MoleWithDiamond,
+                position: (x: 276.0, y: 104.0),
+                direction: Some(Left),
+            ),
+            (
+                entity_type: MoleWithDiamond,
+                position: (x: 44.0, y: 135.0),
+                direction: Some(Right),
+            ),
+            (
+                entity_type: MoleWithDiamond,
+                position: (x: 216.0, y: 148.0),
+                direction: Some(Left),
+            ),
+            (
+                entity_type: MoleWithDiamond,
+                position: (x: 86.0, y: 167.0),
+                direction: Some(Right),
+            ),
+        ],
+    ),
+
+    "L9_2": (
+        level_type: LevelB,
+        entities: [
+            (
+                entity_type: Skull,
+                position: (x: 164.0, y: 189.0),
+            ),
+            (
+                entity_type: Bone,
+                position: (x: 277.0, y: 194.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 230.0, y: 78.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 62.0, y: 81.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 112.0, y: 147.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 146.0, y: 147.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 181.0, y: 147.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 6.0, y: 205.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 291.0, y: 206.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 58.0, y: 66.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 48.0, y: 175.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 213.0, y: 182.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 2.0, y: 113.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 292.0, y: 157.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 147.0, y: 220.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 219.0, y: 98.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 133.0, y: 135.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 169.0, y: 135.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 34.0, y: 151.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 293.0, y: 188.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 124.0, y: 228.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 178.0, y: 228.0),
+            ),
+            (
+                entity_type: MoleWithDiamond,
+                position: (x: 270.0, y: 115.0),
+                direction: Some(Left),
+            ),
+            (
+                entity_type: MoleWithDiamond,
+                position: (x: 36.0, y: 120.0),
+                direction: Some(Right),
+            ),
+            (
+                entity_type: MoleWithDiamond,
+                position: (x: 223.0, y: 152.0),
+                direction: Some(Left),
+            ),
+            (
+                entity_type: MoleWithDiamond,
+                position: (x: 86.0, y: 161.0),
+                direction: Some(Right),
+            ),
+        ],
+    ),
+
+    "L9_3": (
+        level_type: LevelD,
+        entities: [
+            (
+                entity_type: TNT,
+                position: (x: 146.0, y: 135.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 64.0, y: 103.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 147.0, y: 215.0),
+            ),
+            (
+                entity_type: Mole,
+                position: (x: 119.0, y: 78.0),
+                direction: Some(Right),
+            ),
+            (
+                entity_type: Mole,
+                position: (x: 213.0, y: 119.0),
+                direction: Some(Left),
+            ),
+            (
+                entity_type: Mole,
+                position: (x: 116.0, y: 142.0),
+                direction: Some(Left),
+            ),
+            (
+                entity_type: Mole,
+                position: (x: 62.0, y: 166.0),
+                direction: Some(Right),
+            ),
+            (
+                entity_type: MoleWithDiamond,
+                position: (x: 35.0, y: 118.0),
+                direction: Some(Right),
+            ),
+            (
+                entity_type: MoleWithDiamond,
+                position: (x: 199.0, y: 152.0),
+                direction: Some(Right),
+            ),
+            (
+                entity_type: MoleWithDiamond,
+                position: (x: 219.0, y: 182.0),
+                direction: Some(Left),
+            ),
+            (
+                entity_type: MoleWithDiamond,
+                position: (x: 290.0, y: 203.0),
+                direction: Some(Left),
+            ),
+            (
+                entity_type: MoleWithDiamond,
+                position: (x: 29.0, y: 207.0),
+                direction: Some(Right),
+            ),
+        ],
+    ),
+
+    "L10_1": (
+        level_type: LevelE,
+        entities: [
+            (
+                entity_type: NormalRock,
+                position: (x: 218.0, y: 82.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 62.0, y: 89.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 144.0, y: 113.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 61.0, y: 174.0),
+            ),
+            (
+                entity_type: NormalRock,
+                position: (x: 178.0, y: 181.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 248.0, y: 98.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 23.0, y: 107.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 64.0, y: 131.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 218.0, y: 132.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 184.0, y: 135.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 69.0, y: 164.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 47.0, y: 154.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 124.0, y: 167.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 289.0, y: 177.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 89.0, y: 197.0),
+            ),
+            (
+                entity_type: NormalGold,
+                position: (x: 202.0, y: 198.0),
+            ),
+            (
+                entity_type: NormalGoldPlus,
+                position: (x: 258.0, y: 108.0),
+            ),
+            (
+                entity_type: NormalGoldPlus,
+                position: (x: 6.0, y: 134.0),
+            ),
+            (
+                entity_type: NormalGoldPlus,
+                position: (x: 162.0, y: 152.0),
+            ),
+            (
+                entity_type: NormalGoldPlus,
+                position: (x: 231.0, y: 209.0),
+            ),
+            (
+                entity_type: NormalGoldPlus,
+                position: (x: 66.0, y: 217.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 295.0, y: 145.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 219.0, y: 152.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 18.0, y: 176.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 123.0, y: 197.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 285.0, y: 210.0),
+            ),
+        ],
+    ),
+
+    "L10_2": (
+        level_type: LevelC,
+        entities: [
+            (
+                entity_type: Skull,
+                position: (x: 211.0, y: 157.0),
+            ),
+            (
+                entity_type: Bone,
+                position: (x: 261.0, y: 185.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 17.0, y: 83.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 90.0, y: 83.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 209.0, y: 89.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 260.0, y: 134.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 119.0, y: 148.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 11.0, y: 180.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 182.0, y: 201.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 142.0, y: 88.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 48.0, y: 175.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 213.0, y: 182.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 122.0, y: 188.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 252.0, y: 212.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 105.0, y: 119.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 283.0, y: 120.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 246.0, y: 155.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 28.0, y: 163.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 168.0, y: 206.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 64.0, y: 220.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 36.0, y: 225.0),
+            ),
+            (
+                entity_type: MoleWithDiamond,
+                position: (x: 275.0, y: 102.0),
+                direction: Some(Left),
+            ),
+            (
+                entity_type: MoleWithDiamond,
+                position: (x: 44.0, y: 136.0),
+                direction: Some(Right),
+            ),
+            (
+                entity_type: MoleWithDiamond,
+                position: (x: 215.0, y: 147.0),
+                direction: Some(Left),
+            ),
+            (
+                entity_type: MoleWithDiamond,
+                position: (x: 85.0, y: 164.0),
+                direction: Some(Right),
+            ),
+        ],
+    ),
+
+    "L10_3": (
+        level_type: LevelD,
+        entities: [
+            (
+                entity_type: Skull,
+                position: (x: 159.0, y: 178.0),
+            ),
+            (
+                entity_type: Bone,
+                position: (x: 276.0, y: 193.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 95.0, y: 98.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 309.0, y: 160.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 23.0, y: 164.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 196.0, y: 175.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 145.0, y: 196.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 262.0, y: 209.0),
+            ),
+            (
+                entity_type: TNT,
+                position: (x: 85.0, y: 218.0),
+            ),
+            (
+                entity_type: MiniGold,
+                position: (x: 142.0, y: 88.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 48.0, y: 175.0),
+            ),
+            (
+                entity_type: BigGold,
+                position: (x: 222.0, y: 222.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 5.0, y: 95.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 122.0, y: 188.0),
+            ),
+            (
+                entity_type: QuestionBag,
+                position: (x: 280.0, y: 162.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 283.0, y: 120.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 305.0, y: 122.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 127.0, y: 127.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 247.0, y: 155.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 50.0, y: 157.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 299.0, y: 204.0),
+            ),
+            (
+                entity_type: Diamond,
+                position: (x: 88.0, y: 206.0),
+            ),
+            (
+                entity_type: MoleWithDiamond,
+                position: (x: 275.0, y: 102.0),
+                direction: Some(Left),
+            ),
+            (
+                entity_type: MoleWithDiamond,
+                position: (x: 44.0, y: 136.0),
+                direction: Some(Right),
+            ),
+            (
+                entity_type: MoleWithDiamond,
+                position: (x: 215.0, y: 147.0),
+                direction: Some(Left),
+            ),
+            (
+                entity_type: MoleWithDiamond,
+                position: (x: 85.0, y: 164.0),
+                direction: Some(Right),
+            ),
+        ],
+    ),
+}
+```
