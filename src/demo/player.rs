@@ -4,13 +4,13 @@ use crate::utils::love_to_bevy_coords;
 use crate::{
     asset_tracking::LoadResource, demo::{
         animation::PlayerAnimation,
-        movement::{MovementController, ScreenWrap},
+        movement::MovementController,
     },
     AppSystems,
     PausableSystems,
 };
 use bevy::sprite::Anchor;
-use bevy::{image::ImageSampler, prelude::*};
+use bevy::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
     app.load_resource::<PlayerAssets>();
@@ -33,7 +33,7 @@ pub fn player(
     // You can learn more in this example: https://github.com/bevyengine/bevy/blob/latest/examples/2d/texture_atlas.rs
     let layout = TextureAtlasLayout::from_grid(UVec2::new(32, 40), 8, 1, None, None);
     let texture_atlas_layout = texture_atlas_layouts.add(layout);
-    let player_animation = PlayerAnimation::new();
+    let _player_animation = PlayerAnimation::new();
 
     (
         Name::new("Player"),

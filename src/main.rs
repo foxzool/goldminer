@@ -5,6 +5,8 @@
 
 mod asset_tracking;
 mod audio;
+mod config;
+mod constants;
 mod demo;
 #[cfg(feature = "dev")]
 mod dev_tools;
@@ -12,8 +14,8 @@ mod menus;
 mod screens;
 mod theme;
 mod utils;
-mod constants;
 
+use crate::config::ConfigPlugin;
 use bevy::{asset::AssetMetaCheck, prelude::*};
 
 fn main() -> AppExit {
@@ -56,6 +58,7 @@ impl Plugin for AppPlugin {
             menus::plugin,
             screens::plugin,
             theme::plugin,
+            ConfigPlugin,
         ));
 
         // Order new `AppSystems` variants by adding them here:
