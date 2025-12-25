@@ -1,6 +1,6 @@
 //! Spawn the main level.
 
-use crate::config::EntitiesAssets;
+use crate::config::SpritesAssets;
 use crate::config::{EntitiesConfig, LevelDescriptor, LevelEntity, LevelsConfig, Position};
 use crate::demo::hook::{hook, HookAssets};
 use crate::utils::love_to_bevy_coords;
@@ -131,7 +131,7 @@ pub fn spawn_entity_sprite(
     mut commands: Commands,
     entity_handle: Res<EntityHandle>,
     q_entities: Query<(Entity, &LevelEntity), Added<LevelEntity>>,
-    entities_assets: Res<EntitiesAssets>,
+    entities_assets: Res<SpritesAssets>,
 ) {
     for (entity, level_entity) in q_entities.iter() {
         if let Some(img_handle) = entities_assets.get_sprite(&level_entity.entity_id) {

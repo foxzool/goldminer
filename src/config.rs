@@ -18,7 +18,7 @@ impl Plugin for ConfigPlugin {
             YamlAssetPlugin::<LevelsConfig>::new(&["config/levels.yaml"]),
             YamlAssetPlugin::<EntitiesConfig>::new(&["config/entities.yaml"]),
         ));
-        app.load_resource::<EntitiesAssets>();
+        app.load_resource::<SpritesAssets>();
         app.load_resource::<SoundAssets>();
         app.load_resource::<MusicAssets>();
     }
@@ -137,7 +137,7 @@ pub struct LevelsConfig {
 
 #[derive(Resource, Asset, Clone, Reflect)]
 #[reflect(Resource)]
-pub struct EntitiesAssets {
+pub struct SpritesAssets {
     #[dependency]
     mini_gold: Handle<Image>,
     #[dependency]
@@ -164,9 +164,36 @@ pub struct EntitiesAssets {
     tnt: Handle<Image>,
     #[dependency]
     tnt_destroyed: Handle<Image>,
+
+    #[dependency]
+    menu_arrow: Handle<Image>,
+    #[dependency]
+    panel: Handle<Image>,
+    #[dependency]
+    dialogue_bubble: Handle<Image>,
+    #[dependency]
+    title: Handle<Image>,
+    #[dependency]
+    selector: Handle<Image>,
+    #[dependency]
+    dynamite_ui: Handle<Image>,
+    #[dependency]
+    strength: Handle<Image>,
+    #[dependency]
+    table: Handle<Image>,
+    #[dependency]
+    dynamite: Handle<Image>,
+    #[dependency]
+    strength_drink: Handle<Image>,
+    #[dependency]
+    lucky_colver: Handle<Image>,
+    #[dependency]
+    rock_collector_book: Handle<Image>,
+    #[dependency]
+    gem_polish: Handle<Image>,
 }
 
-impl FromWorld for EntitiesAssets {
+impl FromWorld for SpritesAssets {
     fn from_world(world: &mut World) -> Self {
         let assets = world.resource::<AssetServer>();
 
@@ -184,11 +211,24 @@ impl FromWorld for EntitiesAssets {
             bone: assets.load("images/bone.png"),
             tnt: assets.load("images/tnt.png"),
             tnt_destroyed: assets.load("images/tnt_destroyed.png"),
+            menu_arrow: assets.load("images/menu_arrow.png"),
+            panel: assets.load("images/panel.png"),
+            dialogue_bubble: assets.load("images/ui_dialogue_bubble.png"),
+            title: assets.load("images/text_goldminer.png"),
+            selector: assets.load("images/ui_selector.png"),
+            dynamite_ui: assets.load("images/ui_dynamite.png"),
+            strength: assets.load("images/text_strength.png"),
+            table: assets.load("images/shop_table.png"),
+            dynamite: assets.load("images/dynamite.png"),
+            strength_drink: assets.load("images/strength_drink.png"),
+            lucky_colver: assets.load("images/lucky_clover.png"),
+            rock_collector_book: assets.load("images/rock_collectors_book.png"),
+            gem_polish: assets.load("images/gem_polish.png"),
         }
     }
 }
 
-impl EntitiesAssets {
+impl SpritesAssets {
     pub fn get_sprite(&self, id: &str) -> Option<Handle<Image>> {
         match id {
             "MiniGold" => Some(self.mini_gold.clone()),
@@ -204,6 +244,22 @@ impl EntitiesAssets {
             "Bone" => Some(self.bone.clone()),
             "TNT" => Some(self.tnt.clone()),
             "TNT_Destroyed" => Some(self.tnt_destroyed.clone()),
+
+            "MenuArrow" => Some(self.menu_arrow.clone()),
+            "Panel" => Some(self.panel.clone()),
+            "DialogueBubble" => Some(self.dialogue_bubble.clone()),
+            "Title" => Some(self.title.clone()),
+            "Selector" => Some(self.selector.clone()),
+            "DynamiteUI" => Some(self.dynamite_ui.clone()),
+            "Strength!" => Some(self.strength.clone()),
+
+            "Table" => Some(self.table.clone()),
+            "Dynamite" => Some(self.dynamite.clone()),
+            "StrengthDrink" => Some(self.strength_drink.clone()),
+            "LuckyClover" => Some(self.lucky_colver.clone()),
+            "RockCollectorsBook" => Some(self.rock_collector_book.clone()),
+            "GemPolish" => Some(self.gem_polish.clone()),
+
             _ => None,
         }
     }
