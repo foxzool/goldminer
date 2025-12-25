@@ -267,9 +267,9 @@ impl SoundAssets {
 #[reflect(Resource)]
 pub struct MusicAssets {
     #[dependency]
-    pub goal: Handle<AudioSource>,
+    goal: Handle<AudioSource>,
     #[dependency]
-    pub made_goal: Handle<AudioSource>,
+    made_goal: Handle<AudioSource>,
 }
 
 impl FromWorld for MusicAssets {
@@ -278,6 +278,65 @@ impl FromWorld for MusicAssets {
         Self {
             goal: assets.load("audios/goal.mp3"),
             made_goal: assets.load("audios/made_goal.mp3"),
+        }
+    }
+}
+
+impl MusicAssets {
+    pub fn get_music(&self, id: &str) -> Option<Handle<AudioSource>> {
+        match id {
+            "Goal" => Some(self.goal.clone()),
+            "MadeGoal" => Some(self.made_goal.clone()),
+            _ => None,
+        }
+    }
+}
+
+#[derive(Resource, Asset, Clone, Reflect)]
+#[reflect(Resource)]
+pub struct BackgroundsAssets {
+    menu: Handle<Image>,
+    level_common_top: Handle<Image>,
+    level_a: Handle<Image>,
+    level_b: Handle<Image>,
+    level_c: Handle<Image>,
+    level_d: Handle<Image>,
+    level_e: Handle<Image>,
+    goal: Handle<Image>,
+    shop: Handle<Image>,
+}
+
+impl FromWorld for BackgroundsAssets {
+    fn from_world(world: &mut World) -> Self {
+        let assets = world.resource::<AssetServer>();
+        Self {
+            menu: assets.load("images/bg_start_menu.png"),
+            level_common_top: assets.load("images/bg_top.png"),
+            level_a: assets.load("images/bg_level_A.png"),
+            level_b: assets.load("images/bg_level_B.png"),
+            level_c: assets.load("images/bg_level_C.png"),
+            level_d: assets.load("images/bg_level_D.png"),
+            level_e: assets.load("images/bg_level_E.png"),
+            goal: assets.load("images/bg_goal.png"),
+            shop: assets.load("images/bg_shop.png"),
+        }
+    }
+}
+
+impl BackgroundsAssets {
+    pub fn get_background(&self, id: &str) -> Option<Handle<Image>> {
+        match id {
+            "Menu" => Some(self.menu.clone()),
+            "LevelCommonTop" => Some(self.level_common_top.clone()),
+            "LevelA" => Some(self.level_a.clone()),
+            "LevelB" => Some(self.level_b.clone()),
+            "LevelC" => Some(self.level_c.clone()),
+            "LevelD" => Some(self.level_d.clone()),
+            "LevelE" => Some(self.level_e.clone()),
+            "Goal" => Some(self.goal.clone()),
+            "Shop" => Some(self.shop.clone()),
+
+            _ => None,
         }
     }
 }
