@@ -23,7 +23,6 @@ pub(super) fn plugin(app: &mut App) {
             (
                 update_animation_movement,
                 update_animation_atlas,
-                trigger_step_sound_effect,
             )
                 .chain()
                 .in_set(AppSystems::Update),
@@ -70,24 +69,6 @@ fn update_animation_atlas(mut query: Query<(&PlayerAnimation, &mut Sprite)>) {
     }
 }
 
-/// If the player is moving, play a step sound effect synchronized with the
-/// animation.
-fn trigger_step_sound_effect(
-    mut commands: Commands,
-    player_assets: If<Res<PlayerAssets>>,
-    mut step_query: Query<&PlayerAnimation>,
-) {
-    for animation in &mut step_query {
-        if animation.state == PlayerAnimationState::Walking
-            && animation.changed()
-            && (animation.frame == 2 || animation.frame == 5)
-        {
-            let rng = &mut rand::rng();
-            let random_step = player_assets.steps.choose(rng).unwrap().clone();
-            commands.spawn(sound_effect(random_step));
-        }
-    }
-}
 
 /// Component that tracks player's animation state.
 /// It is tightly bound to the texture atlas we use.

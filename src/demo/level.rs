@@ -4,10 +4,7 @@ use crate::config::{EntitiesConfig, LevelEntity, LevelsConfig};
 use crate::config::{EntityDescriptor, EntityType, ImageAssets};
 use crate::constants::{COLOR_DEEP_ORANGE, COLOR_GREEN, COLOR_ORANGE};
 use crate::utils::love_to_bevy_coords;
-use crate::{
-    demo::player::{player, PlayerAssets},
-    screens::Screen,
-};
+use crate::{demo::player::PlayerAssets, screens::Screen};
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
 
@@ -127,8 +124,7 @@ fn setup_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
 pub fn spawn_background(
     mut commands: Commands,
     image_assets: Res<ImageAssets>,
-    player_assets: Res<PlayerAssets>,
-    mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+
 ) {
     commands.spawn((
         Name::new("LevelBackground"),
@@ -138,7 +134,6 @@ pub fn spawn_background(
         children![
             bg_top(&image_assets),
             bg_level(&image_assets),
-            player(&player_assets, &mut texture_atlas_layouts),
         ],
     ));
 }

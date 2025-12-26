@@ -1,43 +1,36 @@
 //! Player-specific behavior.
 
+use crate::screens::Screen;
 use crate::utils::love_to_bevy_coords;
 use crate::{
-    asset_tracking::LoadResource, demo::{
-        animation::PlayerAnimation,
-        movement::MovementController,
-    },
+    asset_tracking::LoadResource, demo::{animation::PlayerAnimation, movement::MovementController},
     AppSystems,
     PausableSystems,
 };
-use bevy::sprite::Anchor;
 use bevy::prelude::*;
+use bevy::sprite::Anchor;
 
 pub(super) fn plugin(app: &mut App) {
     app.load_resource::<PlayerAssets>();
+    app.init_resource::<PlayerResource>();
 
-    // Record directional input as movement controls.
-    app.add_systems(
-        Update,
-        record_player_directional_input
-            .in_set(AppSystems::RecordInput)
-            .in_set(PausableSystems),
-    );
+    app.add_systems(OnEnter(Screen::Gameplay), spawn_player);
 }
 
 /// The player character.
-pub fn player(
-    player_assets: &PlayerAssets,
-    texture_atlas_layouts: &mut Assets<TextureAtlasLayout>,
-) -> impl Bundle {
-    // A texture atlas is a way to split a single image into a grid of related images.
-    // You can learn more in this example: https://github.com/bevyengine/bevy/blob/latest/examples/2d/texture_atlas.rs
+fn spawn_player(
+    mut commands: Commands,
+    player_assets: Res<PlayerAssets>,
+    mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+) {
+    commands.init_resource::<PlayerResource>();
     let layout = TextureAtlasLayout::from_grid(UVec2::new(32, 40), 8, 1, None, None);
     let texture_atlas_layout = texture_atlas_layouts.add(layout);
     let _player_animation = PlayerAnimation::new();
 
-    (
+    commands.spawn((
         Name::new("Player"),
-        Player,
+        PlayerMarker,
         Sprite::from_atlas_image(
             player_assets.miner.clone(),
             TextureAtlas {
@@ -47,39 +40,59 @@ pub fn player(
         ),
         Transform::from_translation(love_to_bevy_coords(165.0, 39.0).extend(0.0)),
         Anchor::BOTTOM_CENTER,
-    )
+    ));
 }
 
-#[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Default, Reflect)]
-#[reflect(Component)]
-struct Player;
+#[derive(Component)]
+struct PlayerMarker;
 
-fn record_player_directional_input(
-    input: Res<ButtonInput<KeyCode>>,
-    mut controller_query: Query<&mut MovementController, With<Player>>,
-) {
-    // Collect directional input.
-    let mut intent = Vec2::ZERO;
-    if input.pressed(KeyCode::KeyW) || input.pressed(KeyCode::ArrowUp) {
-        intent.y += 1.0;
-    }
-    if input.pressed(KeyCode::KeyS) || input.pressed(KeyCode::ArrowDown) {
-        intent.y -= 1.0;
-    }
-    if input.pressed(KeyCode::KeyA) || input.pressed(KeyCode::ArrowLeft) {
-        intent.x -= 1.0;
-    }
-    if input.pressed(KeyCode::KeyD) || input.pressed(KeyCode::ArrowRight) {
-        intent.x += 1.0;
-    }
+#[derive(Resource, Debug, Clone, Reflect)]
+#[reflect(Resource)]
+struct PlayerResource {
+    /// 当前关卡数
+    level: i32,
+    /// 对应的关卡配置 ID (如 'L1_1')
+    real_level: String,
+    /// 玩家当前实际拥有的原始金钱
+    money: i32,
+    /// 当前关卡需要达到的目标金额
+    goal: i32,
+    /// 每一关增加的目标金额幅度
+    goal_add_on: i32,
 
-    // Normalize intent so that diagonal movement is the same speed as horizontal / vertical.
-    // This should be omitted if the input comes from an analog stick instead.
-    let intent = intent.normalize_or_zero();
+    /// 玩家的基础力量倍率
+    strength: i32,
+    /// 拥有的炸药数量
+    dynamite_count: i32,
+    /// 是否持有力量药水
+    has_strength_drink: bool,
+    /// 是否持有幸运草
+    has_lucky_clover: bool,
+    /// 是否持有宝石抛光剂
+    has_gem_polish: bool,
 
-    // Apply movement intent to controllers.
-    for mut controller in &mut controller_query {
-        controller.intent = intent;
+    /// 标识玩家是否正在扔炸药
+    is_using_dynamite: bool,
+    /// 扔炸药动作的倒计时
+    using_dynamite_timer: f32,
+}
+
+impl Default for PlayerResource {
+    fn default() -> Self {
+        Self {
+            level: 1,
+            real_level: "LDEBUG".to_string(),
+            money: 375,
+            goal: 275,
+            goal_add_on: 0,
+            strength: 1,
+            dynamite_count: 0,
+            has_strength_drink: false,
+            has_lucky_clover: false,
+            has_gem_polish: false,
+            is_using_dynamite: false,
+            using_dynamite_timer: 0.39,
+        }
     }
 }
 
@@ -88,8 +101,6 @@ fn record_player_directional_input(
 pub struct PlayerAssets {
     #[dependency]
     miner: Handle<Image>,
-    #[dependency]
-    pub steps: Vec<Handle<AudioSource>>,
 }
 
 impl FromWorld for PlayerAssets {
@@ -97,12 +108,6 @@ impl FromWorld for PlayerAssets {
         let assets = world.resource::<AssetServer>();
         Self {
             miner: assets.load("images/miner_sheet.png"),
-            steps: vec![
-                assets.load("audio/sound_effects/step1.ogg"),
-                assets.load("audio/sound_effects/step2.ogg"),
-                assets.load("audio/sound_effects/step3.ogg"),
-                assets.load("audio/sound_effects/step4.ogg"),
-            ],
         }
     }
 }
