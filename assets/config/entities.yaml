@@ -1,104 +1,98 @@
+# Entity Configurations
 MiniGold:
-  type: Basic
-  mass: 2
-  bonus: 50
-  bonusType: Normal
+    type: Basic
+    mass: 2
+    bonus: 50
+    bonusType: Normal
 
 NormalGold:
-  type: Basic
-  mass: 3.5
-  bonus: 100
-  bonusType: Normal
+    type: Basic
+    mass: 3.5
+    bonus: 100
+    bonusType: Normal
 
 NormalGoldPlus:
-  type: Basic
-  mass: 5
-  bonus: 250
-  bonusType: Normal
+    type: Basic
+    mass: 5
+    bonus: 250
+    bonusType: Normal
 
 BigGold:
-  type: Basic
-  mass: 7
-  bonus: 500
-  bonusType: High
+    type: Basic
+    mass: 7
+    bonus: 500
+    bonusType: High
 
 MiniRock:
-  type: Basic
-  mass: 5.5
-  bonus: 11
-  bonusType: Low
+    type: Basic
+    mass: 5.5
+    bonus: 11
+    bonusType: Low
 
 NormalRock:
-  type: Basic
-  mass: 7
-  bonus: 20
-  bonusType: Low
+    type: Basic
+    mass: 7
+    bonus: 20
+    bonusType: Low
 
 BigRock:
-  type: Basic
-  mass: 10
-  bonus: 100
-  bonusType: Low
+    type: Basic
+    mass: 10
+    bonus: 100
+    bonusType: Low
 
 Diamond:
-  type: Basic
-  mass: 1.5
-  bonus: 600
-  bonusType: High
+    type: Basic
+    mass: 1.5
+    bonus: 600
+    bonusType: High
 
 QuestionBag:
-  type: RandomEffect
-  randomMassMin: 1
-  randomMassMax: 9
-  bonusBase: 50
-  randomBonusRatioMin: 1
-  randomBonusRatioMax: 16
-  extraEffectChances: 0.2
+    type: RandomEffect
+    randomMassMin: 1
+    randomMassMax: 9
+    bonusBase: 50
+    randomBonusRatioMin: 1
+    randomBonusRatioMax: 16
+    extraEffectChances: 0.2
+    extraEffect: "Logic: 20% chance to add dynamite, else increase player strength (cap at 6)."
 
 Mole:
-  type: MoveAround
-  mass: 1.5
-  bonus: 2
-  speed: 1
-  width: MOLE_WIDTH
-  height: MOLE_HEIGHT
-  moveRange: 135
-  bonusType: Low
-  sheet: nil
-  quads: nil
-  idleAnimation: nil
-  moveAnimation: nil
+    type: MoveAround
+    mass: 1.5
+    bonus: 2
+    speed: 1
+    width: MOLE_WIDTH
+    height: MOLE_HEIGHT
+    moveRange: 135
+    bonusType: Low
 
 MoleWithDiamond:
-  type: MoveAround
-  mass: 1.5
-  bonus: 602
-  speed: 1
-  width: MOLE_WIDTH
-  height: MOLE_HEIGHT
-  moveRange: 135
-  bonusType: High
-  sheet: nil
-  quads: nil
-  idleAnimation: nil
-  moveAnimation: nil
+    type: MoveAround
+    mass: 1.5
+    bonus: 602
+    speed: 1
+    width: MOLE_WIDTH
+    height: MOLE_HEIGHT
+    moveRange: 135
+    bonusType: High
 
 Skull:
-  type: Basic
-  mass: 2
-  bonus: 20
-  bonusType: Low
+    type: Basic
+    mass: 2
+    bonus: 20
+    bonusType: Low
 
 Bone:
-  type: Basic
-  mass: 3
-  bonus: 7
-  bonusType: Low
+    type: Basic
+    mass: 3
+    bonus: 7
+    bonusType: Low
 
 TNT:
-  type: Explosive
-  destroyedType: TNT_Destroyed
-  isDestroyedTiny: true
-  mass: 1
-  bonus: 2
-  bonusType: Low
+    type: Explosive
+    destroyedType: TNT_Destroyed
+    isDestroyedTiny: true
+    mass: 1
+    bonus: 2
+    bonusType: Low
