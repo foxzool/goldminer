@@ -1,6 +1,7 @@
 use crate::asset_tracking::LoadResource;
-use crate::audio::sound_effect;
-use crate::config::{AudioAssets, EntityDescriptor};
+use crate::audio::{AudioAssets, sound_effect};
+use crate::config::EntityDescriptor;
+use crate::demo::animation::{PlayerAnimation, PlayerAnimationState};
 use crate::demo::player::PlayerResource;
 use crate::screens::Screen;
 use crate::utils::love_to_bevy_coords;
@@ -139,6 +140,7 @@ fn update_hook(
         (With<crate::config::LevelEntity>, Without<Hook>),
     >,
     q_descriptors: Query<&EntityDescriptor>,
+    mut q_player_anim: Query<&mut PlayerAnimation>,
 ) {
     let rope_color = Color::srgb(66.0 / 255.0, 66.0 / 255.0, 66.0 / 255.0);
     let base_pos = love_to_bevy_coords(158.0, 30.0);
@@ -163,6 +165,11 @@ fn update_hook(
         }
 
         if hook.is_grabing {
+            // 切换玩家动画到 Grab 状态
+            for mut player_anim in &mut q_player_anim {
+                player_anim.update_state(PlayerAnimationState::Grab);
+            }
+
             // 抓取逻辑：长度递增
             hook.length += time.delta_secs() * HOOK_GRAB_SPEED;
 
@@ -219,6 +226,13 @@ fn update_hook(
                 }
             }
         } else if hook.is_backing {
+            // 切换玩家动画到 GrabBack 状态（如非炸药状态）
+            if !player.is_using_dynamite {
+                for mut player_anim in &mut q_player_anim {
+                    player_anim.update_state(PlayerAnimationState::GrabBack);
+                }
+            }
+
             // 回缩逻辑
             let mut speed = HOOK_GRAB_SPEED;
             if let Some(entity) = hook.grabed_entity {
@@ -243,6 +257,10 @@ fn update_hook(
                     // 无物体，重置动画
                     if let Some(atlas) = &mut sprite.texture_atlas {
                         atlas.index = HOOK_ANIM_IDLE;
+                    }
+                    // 切换玩家动画回 Idle 状态
+                    for mut player_anim in &mut q_player_anim {
+                        player_anim.update_state(PlayerAnimationState::Idle);
                     }
                     // 播放重置音效
                     if let Some(audio) = audio_assets.get_audio("HookReset") {
@@ -286,6 +304,7 @@ fn update_bonus_state(
     mut query: Query<(&mut Hook, &mut Sprite)>,
     q_descriptors: Query<&EntityDescriptor>,
     mut entity_commands: Commands,
+    mut q_player_anim: Query<&mut PlayerAnimation>,
 ) {
     for (mut hook, mut sprite) in &mut query {
         if !hook.is_showing_bonus {
@@ -323,6 +342,11 @@ fn update_bonus_state(
             // 重置动画帧
             if let Some(atlas) = &mut sprite.texture_atlas {
                 atlas.index = HOOK_ANIM_IDLE;
+            }
+
+            // 切换玩家动画回 Idle 状态
+            for mut player_anim in &mut q_player_anim {
+                player_anim.update_state(PlayerAnimationState::Idle);
             }
 
             // 播放重置音效
