@@ -2,10 +2,10 @@
 
 use crate::config::{EntitiesConfig, LevelEntity, LevelsConfig};
 use crate::config::{EntityDescriptor, EntityType, ImageAssets};
-use crate::demo::hook::{HookAssets, hook};
+use crate::constants::{COLOR_DEEP_ORANGE, COLOR_GREEN, COLOR_ORANGE};
 use crate::utils::love_to_bevy_coords;
 use crate::{
-    demo::player::{PlayerAssets, player},
+    demo::player::{player, PlayerAssets},
     screens::Screen,
 };
 use bevy::prelude::*;
@@ -13,7 +13,10 @@ use bevy::sprite::Anchor;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(Startup, setup_level_assets);
-    app.add_systems(OnEnter(Screen::Gameplay), (spawn_background, spawn_level));
+    app.add_systems(
+        OnEnter(Screen::Gameplay),
+        (setup_ui, spawn_background, spawn_level),
+    );
 
     app.add_systems(
         Update,
@@ -21,11 +24,110 @@ pub(super) fn plugin(app: &mut App) {
     );
 }
 
+fn setup_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
+    let game_font = asset_server.load("fonts/visitor1.ttf");
+    let game_style = TextFont {
+        font: game_font.clone(),
+        font_size: 20.0,
+        ..default()
+    };
+    commands.spawn((
+        DespawnOnExit(Screen::Gameplay),
+        Text::default(),
+        Node {
+            position_type: PositionType::Absolute,
+            top: px(10),
+            left: px(10),
+            ..default()
+        },
+        children![
+            (
+                TextSpan::new("Money"),
+                game_style.clone(),
+                TextColor(COLOR_DEEP_ORANGE)
+            ),
+            (
+                TextSpan::new(" $0"),
+                game_style.clone(),
+                TextColor(COLOR_GREEN)
+            ),
+        ],
+    ));
+
+    commands.spawn((
+        DespawnOnExit(Screen::Gameplay),
+        Text::default(),
+        Node {
+            position_type: PositionType::Absolute,
+            top: px(28),
+            left: px(10),
+            ..default()
+        },
+        children![
+            (
+                TextSpan::new(" Goal"),
+                game_style.clone(),
+                TextColor(COLOR_DEEP_ORANGE)
+            ),
+            (
+                TextSpan::new(" $1000"),
+                game_style.clone(),
+                TextColor(COLOR_GREEN)
+            ),
+        ],
+    ));
+
+    commands.spawn((
+        DespawnOnExit(Screen::Gameplay),
+        Text::default(),
+        Node {
+            position_type: PositionType::Absolute,
+            top: px(30),
+            left: px(520),
+            ..default()
+        },
+        children![
+            (
+                TextSpan::new("Time: "),
+                game_style.clone(),
+                TextColor(COLOR_DEEP_ORANGE)
+            ),
+            (
+                TextSpan::new("0"),
+                game_style.clone(),
+                TextColor(COLOR_ORANGE)
+            ),
+        ],
+    ));
+
+    commands.spawn((
+        DespawnOnExit(Screen::Gameplay),
+        Text::default(),
+        Node {
+            position_type: PositionType::Absolute,
+            top: px(50),
+            left: px(500),
+            ..default()
+        },
+        children![
+            (
+                TextSpan::new("Level: "),
+                game_style.clone(),
+                TextColor(COLOR_DEEP_ORANGE)
+            ),
+            (
+                TextSpan::new("A"),
+                game_style.clone(),
+                TextColor(COLOR_ORANGE)
+            ),
+        ],
+    ));
+}
+
 pub fn spawn_background(
     mut commands: Commands,
     image_assets: Res<ImageAssets>,
     player_assets: Res<PlayerAssets>,
-    hook_assets: Res<HookAssets>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
     commands.spawn((
@@ -37,7 +139,6 @@ pub fn spawn_background(
             bg_top(&image_assets),
             bg_level(&image_assets),
             player(&player_assets, &mut texture_atlas_layouts),
-            hook(&hook_assets, &mut texture_atlas_layouts),
         ],
     ));
 }

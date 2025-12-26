@@ -74,6 +74,7 @@ impl Plugin for AppPlugin {
 
         // Set up the `Pause` state.
         app.init_state::<Pause>();
+        app.insert_resource(UiScale(2.0));
         app.configure_sets(Update, PausableSystems.run_if(in_state(Pause(false))));
 
         // Spawn the main camera.
