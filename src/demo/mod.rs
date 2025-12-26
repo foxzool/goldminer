@@ -5,16 +5,10 @@
 
 use bevy::prelude::*;
 
-mod animation;
+pub mod hook;
 pub mod level;
 pub mod player;
-pub mod hook;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_plugins((
-        animation::plugin,
-        level::plugin,
-        player::plugin,
-        hook::plugin,
-    ));
+    app.add_plugins((level::plugin, player::plugin, hook::plugin));
 }

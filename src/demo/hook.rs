@@ -1,8 +1,7 @@
 use crate::asset_tracking::LoadResource;
 use crate::audio::{AudioAssets, sound_effect};
 use crate::config::EntityDescriptor;
-use crate::demo::animation::{PlayerAnimation, PlayerAnimationState};
-use crate::demo::player::PlayerResource;
+use crate::demo::player::{PlayerAnimation, PlayerAnimationState, PlayerResource};
 use crate::screens::Screen;
 use crate::utils::love_to_bevy_coords;
 use crate::{AppSystems, PausableSystems};
