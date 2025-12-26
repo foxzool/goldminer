@@ -1,11 +1,11 @@
 //! Spawn the main level.
 
-use crate::config::{BackgroundsAssets, EntityDescriptor, EntityType, SpritesAssets};
 use crate::config::{EntitiesConfig, LevelEntity, LevelsConfig};
-use crate::demo::hook::{hook, HookAssets};
+use crate::config::{EntityDescriptor, EntityType, ImageAssets};
+use crate::demo::hook::{HookAssets, hook};
 use crate::utils::love_to_bevy_coords;
 use crate::{
-    demo::player::{player, PlayerAssets},
+    demo::player::{PlayerAssets, player},
     screens::Screen,
 };
 use bevy::prelude::*;
@@ -23,7 +23,7 @@ pub(super) fn plugin(app: &mut App) {
 
 pub fn spawn_background(
     mut commands: Commands,
-    background_assets: Res<BackgroundsAssets>,
+    image_assets: Res<ImageAssets>,
     player_assets: Res<PlayerAssets>,
     hook_assets: Res<HookAssets>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
@@ -34,29 +34,29 @@ pub fn spawn_background(
         Visibility::default(),
         DespawnOnExit(Screen::Gameplay),
         children![
-            bg_top(&background_assets),
-            bg_level(&background_assets),
+            bg_top(&image_assets),
+            bg_level(&image_assets),
             player(&player_assets, &mut texture_atlas_layouts),
             hook(&hook_assets, &mut texture_atlas_layouts),
         ],
     ));
 }
 
-fn bg_top(asset_server: &Res<BackgroundsAssets>) -> impl Bundle {
+fn bg_top(image_assets: &Res<ImageAssets>) -> impl Bundle {
     (
         Name::new("Top Background"),
         Transform::from_translation(love_to_bevy_coords(0.0, 0.0).extend(-1.0)),
         Anchor::TOP_LEFT,
-        Sprite::from_image(asset_server.get_background("LevelCommonTop").unwrap()),
+        Sprite::from_image(image_assets.get_image("LevelCommonTop").unwrap()),
     )
 }
 
-fn bg_level(asset_server: &Res<BackgroundsAssets>) -> impl Bundle {
+fn bg_level(image_assets: &Res<ImageAssets>) -> impl Bundle {
     (
         Name::new("Level A Background"),
         Transform::from_translation(love_to_bevy_coords(0.0, 40.0).extend(-1.0)),
         Anchor::TOP_LEFT,
-        Sprite::from_image(asset_server.get_background("LevelA").unwrap()),
+        Sprite::from_image(image_assets.get_image("LevelA").unwrap()),
     )
 }
 
@@ -117,12 +117,12 @@ pub fn spawn_level(
 
 pub fn spawn_entity_sprite(
     mut commands: Commands,
-    entity_handle: Res<EntityHandle>,
+    _entity_handle: Res<EntityHandle>,
     q_entities: Query<(Entity, &LevelEntity, &EntityDescriptor), Added<LevelEntity>>,
-    entities_assets: Res<SpritesAssets>,
+    entities_assets: Res<ImageAssets>,
 ) {
     for (entity, level_entity, entity_desc) in q_entities.iter() {
-        if let Some(img_handle) = entities_assets.get_sprite(&level_entity.entity_id) {
+        if let Some(img_handle) = entities_assets.get_image(&level_entity.entity_id) {
             let anchor = if entity_desc.entity_type == EntityType::Basic {
                 Anchor::TOP_LEFT
             } else {

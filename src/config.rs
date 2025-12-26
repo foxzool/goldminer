@@ -4,7 +4,7 @@ use bevy::asset::{Asset, AssetServer, Handle};
 use bevy::audio::AudioSource;
 use bevy::image::Image;
 use bevy::platform::collections::HashMap;
-use bevy::prelude::{Component, Font};
+use bevy::prelude::Component;
 use bevy::prelude::ReflectResource;
 use bevy::prelude::{FromWorld, Reflect, Resource, World};
 use bevy_common_assets::yaml::YamlAssetPlugin;
@@ -18,10 +18,8 @@ impl Plugin for ConfigPlugin {
             YamlAssetPlugin::<LevelsConfig>::new(&["config/levels.yaml"]),
             YamlAssetPlugin::<EntitiesConfig>::new(&["config/entities.yaml"]),
         ));
-        app.load_resource::<BackgroundsAssets>();
-        app.load_resource::<SpritesAssets>();
-        app.load_resource::<SoundAssets>();
-        app.load_resource::<MusicAssets>();
+        app.load_resource::<ImageAssets>();
+        app.load_resource::<AudioAssets>();
     }
 }
 
@@ -138,7 +136,8 @@ pub struct LevelsConfig {
 
 #[derive(Resource, Asset, Clone, Reflect)]
 #[reflect(Resource)]
-pub struct SpritesAssets {
+pub struct ImageAssets {
+    // --- Sprites ---
     #[dependency]
     mini_gold: Handle<Image>,
     #[dependency]
@@ -192,9 +191,29 @@ pub struct SpritesAssets {
     rock_collector_book: Handle<Image>,
     #[dependency]
     gem_polish: Handle<Image>,
+
+    // --- Backgrounds ---
+    #[dependency]
+    menu_bg: Handle<Image>,
+    #[dependency]
+    level_common_top: Handle<Image>,
+    #[dependency]
+    level_a: Handle<Image>,
+    #[dependency]
+    level_b: Handle<Image>,
+    #[dependency]
+    level_c: Handle<Image>,
+    #[dependency]
+    level_d: Handle<Image>,
+    #[dependency]
+    level_e: Handle<Image>,
+    #[dependency]
+    goal_bg: Handle<Image>,
+    #[dependency]
+    shop_bg: Handle<Image>,
 }
 
-impl FromWorld for SpritesAssets {
+impl FromWorld for ImageAssets {
     fn from_world(world: &mut World) -> Self {
         let assets = world.resource::<AssetServer>();
 
@@ -225,12 +244,22 @@ impl FromWorld for SpritesAssets {
             lucky_colver: assets.load("images/lucky_clover.png"),
             rock_collector_book: assets.load("images/rock_collectors_book.png"),
             gem_polish: assets.load("images/gem_polish.png"),
+
+            menu_bg: assets.load("images/bg_start_menu.png"),
+            level_common_top: assets.load("images/bg_top.png"),
+            level_a: assets.load("images/bg_level_A.png"),
+            level_b: assets.load("images/bg_level_B.png"),
+            level_c: assets.load("images/bg_level_C.png"),
+            level_d: assets.load("images/bg_level_D.png"),
+            level_e: assets.load("images/bg_level_E.png"),
+            goal_bg: assets.load("images/bg_goal.png"),
+            shop_bg: assets.load("images/bg_shop.png"),
         }
     }
 }
 
-impl SpritesAssets {
-    pub fn get_sprite(&self, id: &str) -> Option<Handle<Image>> {
+impl ImageAssets {
+    pub fn get_image(&self, id: &str) -> Option<Handle<Image>> {
         match id {
             "MiniGold" => Some(self.mini_gold.clone()),
             "NormalGold" => Some(self.normal_gold.clone()),
@@ -238,8 +267,8 @@ impl SpritesAssets {
             "BigGold" => Some(self.big_gold.clone()),
             "MiniRock" => Some(self.mini_rock.clone()),
             "NormalRock" => Some(self.normal_rock.clone()),
-            "BigRock" => Some(self.mini_gold.clone()),
-            "QuestionBag" => Some(self.mini_gold.clone()),
+            "BigRock" => Some(self.big_rock.clone()),
+            "QuestionBag" => Some(self.question_bag.clone()),
             "Diamond" => Some(self.diamond.clone()),
             "Skull" => Some(self.skull.clone()),
             "Bone" => Some(self.bone.clone()),
@@ -261,6 +290,17 @@ impl SpritesAssets {
             "RockCollectorsBook" => Some(self.rock_collector_book.clone()),
             "GemPolish" => Some(self.gem_polish.clone()),
 
+            // Backgrounds
+            "Menu" => Some(self.menu_bg.clone()),
+            "LevelCommonTop" => Some(self.level_common_top.clone()),
+            "LevelA" => Some(self.level_a.clone()),
+            "LevelB" => Some(self.level_b.clone()),
+            "LevelC" => Some(self.level_c.clone()),
+            "LevelD" => Some(self.level_d.clone()),
+            "LevelE" => Some(self.level_e.clone()),
+            "Goal" => Some(self.goal_bg.clone()),
+            "Shop" => Some(self.shop_bg.clone()),
+
             _ => None,
         }
     }
@@ -268,7 +308,8 @@ impl SpritesAssets {
 
 #[derive(Resource, Asset, Clone, Reflect)]
 #[reflect(Resource)]
-pub struct SoundAssets {
+pub struct AudioAssets {
+    // --- Sounds ---
     #[dependency]
     money: Handle<AudioSource>,
     #[dependency]
@@ -285,9 +326,15 @@ pub struct SoundAssets {
     normal: Handle<AudioSource>,
     #[dependency]
     low: Handle<AudioSource>,
+
+    // --- Music ---
+    #[dependency]
+    goal_music: Handle<AudioSource>,
+    #[dependency]
+    made_goal_music: Handle<AudioSource>,
 }
 
-impl FromWorld for SoundAssets {
+impl FromWorld for AudioAssets {
     fn from_world(world: &mut World) -> Self {
         let assets = world.resource::<AssetServer>();
         Self {
@@ -299,12 +346,15 @@ impl FromWorld for SoundAssets {
             high: assets.load("audios/high_value.wav"),
             normal: assets.load("audios/normal_value.wav"),
             low: assets.load("audios/low_value.wav"),
+
+            goal_music: assets.load("audios/goal.mp3"),
+            made_goal_music: assets.load("audios/made_goal.mp3"),
         }
     }
 }
 
-impl SoundAssets {
-    pub fn get_sound(&self, id: &str) -> Option<Handle<AudioSource>> {
+impl AudioAssets {
+    pub fn get_audio(&self, id: &str) -> Option<Handle<AudioSource>> {
         match id {
             "Money" => Some(self.money.clone()),
             "HookReset" => Some(self.hook_reset.clone()),
@@ -315,83 +365,8 @@ impl SoundAssets {
             "Normal" => Some(self.normal.clone()),
             "Low" => Some(self.low.clone()),
 
-            _ => None,
-        }
-    }
-}
-
-#[derive(Resource, Asset, Clone, Reflect)]
-#[reflect(Resource)]
-pub struct MusicAssets {
-    #[dependency]
-    goal: Handle<AudioSource>,
-    #[dependency]
-    made_goal: Handle<AudioSource>,
-}
-
-impl FromWorld for MusicAssets {
-    fn from_world(world: &mut World) -> Self {
-        let assets = world.resource::<AssetServer>();
-        Self {
-            goal: assets.load("audios/goal.mp3"),
-            made_goal: assets.load("audios/made_goal.mp3"),
-        }
-    }
-}
-
-impl MusicAssets {
-    pub fn get_music(&self, id: &str) -> Option<Handle<AudioSource>> {
-        match id {
-            "Goal" => Some(self.goal.clone()),
-            "MadeGoal" => Some(self.made_goal.clone()),
-            _ => None,
-        }
-    }
-}
-
-#[derive(Resource, Asset, Clone, Reflect)]
-#[reflect(Resource)]
-pub struct BackgroundsAssets {
-    menu: Handle<Image>,
-    level_common_top: Handle<Image>,
-    level_a: Handle<Image>,
-    level_b: Handle<Image>,
-    level_c: Handle<Image>,
-    level_d: Handle<Image>,
-    level_e: Handle<Image>,
-    goal: Handle<Image>,
-    shop: Handle<Image>,
-}
-
-impl FromWorld for BackgroundsAssets {
-    fn from_world(world: &mut World) -> Self {
-        let assets = world.resource::<AssetServer>();
-        Self {
-            menu: assets.load("images/bg_start_menu.png"),
-            level_common_top: assets.load("images/bg_top.png"),
-            level_a: assets.load("images/bg_level_A.png"),
-            level_b: assets.load("images/bg_level_B.png"),
-            level_c: assets.load("images/bg_level_C.png"),
-            level_d: assets.load("images/bg_level_D.png"),
-            level_e: assets.load("images/bg_level_E.png"),
-            goal: assets.load("images/bg_goal.png"),
-            shop: assets.load("images/bg_shop.png"),
-        }
-    }
-}
-
-impl BackgroundsAssets {
-    pub fn get_background(&self, id: &str) -> Option<Handle<Image>> {
-        match id {
-            "Menu" => Some(self.menu.clone()),
-            "LevelCommonTop" => Some(self.level_common_top.clone()),
-            "LevelA" => Some(self.level_a.clone()),
-            "LevelB" => Some(self.level_b.clone()),
-            "LevelC" => Some(self.level_c.clone()),
-            "LevelD" => Some(self.level_d.clone()),
-            "LevelE" => Some(self.level_e.clone()),
-            "Goal" => Some(self.goal.clone()),
-            "Shop" => Some(self.shop.clone()),
+            "Goal" => Some(self.goal_music.clone()),
+            "MadeGoal" => Some(self.made_goal_music.clone()),
 
             _ => None,
         }
