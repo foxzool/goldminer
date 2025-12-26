@@ -1,41 +1,29 @@
 //! Spawn the main level.
 
-use crate::config::SpritesAssets;
-use crate::config::{EntitiesConfig, LevelDescriptor, LevelEntity, LevelsConfig, Position};
+use crate::config::{BackgroundsAssets, EntityDescriptor, EntityType, SpritesAssets};
+use crate::config::{EntitiesConfig, LevelEntity, LevelsConfig};
 use crate::demo::hook::{hook, HookAssets};
 use crate::utils::love_to_bevy_coords;
 use crate::{
-    asset_tracking::LoadResource,
     demo::player::{player, PlayerAssets},
     screens::Screen,
 };
-use bevy::ecs::entity::Entities;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
 
 pub(super) fn plugin(app: &mut App) {
-    app.load_resource::<LevelAssets>();
-}
+    app.add_systems(Startup, setup_level_assets);
+    app.add_systems(OnEnter(Screen::Gameplay), (spawn_background, spawn_level));
 
-#[derive(Resource, Asset, Clone, Reflect)]
-#[reflect(Resource)]
-pub struct LevelAssets {
-    #[dependency]
-    music: Handle<AudioSource>,
-}
-
-impl FromWorld for LevelAssets {
-    fn from_world(world: &mut World) -> Self {
-        let assets = world.resource::<AssetServer>();
-        Self {
-            music: assets.load("audio/music/Fluffing A Duck.ogg"),
-        }
-    }
+    app.add_systems(
+        Update,
+        (spawn_entity_sprite,).run_if(in_state(Screen::Gameplay)),
+    );
 }
 
 pub fn spawn_background(
     mut commands: Commands,
-    asset_server: Res<AssetServer>,
+    background_assets: Res<BackgroundsAssets>,
     player_assets: Res<PlayerAssets>,
     hook_assets: Res<HookAssets>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
@@ -46,29 +34,29 @@ pub fn spawn_background(
         Visibility::default(),
         DespawnOnExit(Screen::Gameplay),
         children![
-            bg_top(&asset_server),
-            bg_level(&asset_server),
+            bg_top(&background_assets),
+            bg_level(&background_assets),
             player(&player_assets, &mut texture_atlas_layouts),
             hook(&hook_assets, &mut texture_atlas_layouts),
         ],
     ));
 }
 
-fn bg_top(asset_server: &AssetServer) -> impl Bundle {
+fn bg_top(asset_server: &Res<BackgroundsAssets>) -> impl Bundle {
     (
         Name::new("Top Background"),
         Transform::from_translation(love_to_bevy_coords(0.0, 0.0).extend(-1.0)),
         Anchor::TOP_LEFT,
-        Sprite::from_image(asset_server.load("images/bg_top.png")),
+        Sprite::from_image(asset_server.get_background("LevelCommonTop").unwrap()),
     )
 }
 
-fn bg_level(asset_server: &AssetServer) -> impl Bundle {
+fn bg_level(asset_server: &Res<BackgroundsAssets>) -> impl Bundle {
     (
         Name::new("Level A Background"),
         Transform::from_translation(love_to_bevy_coords(0.0, 40.0).extend(-1.0)),
         Anchor::TOP_LEFT,
-        Sprite::from_image(asset_server.load("images/bg_level_A.png")),
+        Sprite::from_image(asset_server.get_background("LevelA").unwrap()),
     )
 }
 
@@ -107,19 +95,19 @@ pub fn spawn_level(
                     DespawnOnExit(Screen::Gameplay),
                 ))
                 .with_children(|parent| {
-                    for entity_config in config.entities.clone() {
+                    for level_entity in config.entities.clone() {
                         parent.spawn((
-                            Name::new(entity_config.entity_id.clone()),
+                            Name::new(level_entity.entity_id.clone()),
                             Transform::from_translation(
-                                love_to_bevy_coords(entity_config.pos.x, entity_config.pos.y)
+                                love_to_bevy_coords(level_entity.pos.x, level_entity.pos.y)
                                     .extend(1.0),
                             ),
                             entities_config
                                 .entities
-                                .get(&entity_config.entity_id)
+                                .get(&level_entity.entity_id)
                                 .unwrap()
                                 .clone(),
-                            entity_config,
+                            level_entity,
                         ));
                     }
                 });
@@ -130,14 +118,19 @@ pub fn spawn_level(
 pub fn spawn_entity_sprite(
     mut commands: Commands,
     entity_handle: Res<EntityHandle>,
-    q_entities: Query<(Entity, &LevelEntity), Added<LevelEntity>>,
+    q_entities: Query<(Entity, &LevelEntity, &EntityDescriptor), Added<LevelEntity>>,
     entities_assets: Res<SpritesAssets>,
 ) {
-    for (entity, level_entity) in q_entities.iter() {
+    for (entity, level_entity, entity_desc) in q_entities.iter() {
         if let Some(img_handle) = entities_assets.get_sprite(&level_entity.entity_id) {
+            let anchor = if entity_desc.entity_type == EntityType::Basic {
+                Anchor::TOP_LEFT
+            } else {
+                Anchor::CENTER
+            };
             commands
                 .entity(entity)
-                .insert((Anchor::TOP_LEFT, Sprite::from_image(img_handle.clone())));
+                .insert((anchor, Sprite::from_image(img_handle.clone())));
         }
     }
 }

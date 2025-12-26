@@ -7,10 +7,6 @@ use crate::{demo::level::spawn_background, menus::Menu, screens::Screen, Pause};
 use crate::demo::level::{setup_level_assets, spawn_level};
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_systems(Startup, setup_level_assets);
-    app.add_systems(OnEnter(Screen::Gameplay), (spawn_background, spawn_level));
-
-    app.add_systems(Update, (spawn_entity_sprite, ).run_if(in_state(Screen::Gameplay)));
 
     // Toggle pause on key press.
     app.add_systems(

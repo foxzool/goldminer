@@ -4,7 +4,7 @@ use bevy::asset::{Asset, AssetServer, Handle};
 use bevy::audio::AudioSource;
 use bevy::image::Image;
 use bevy::platform::collections::HashMap;
-use bevy::prelude::Component;
+use bevy::prelude::{Component, Font};
 use bevy::prelude::ReflectResource;
 use bevy::prelude::{FromWorld, Reflect, Resource, World};
 use bevy_common_assets::yaml::YamlAssetPlugin;
@@ -18,6 +18,7 @@ impl Plugin for ConfigPlugin {
             YamlAssetPlugin::<LevelsConfig>::new(&["config/levels.yaml"]),
             YamlAssetPlugin::<EntitiesConfig>::new(&["config/entities.yaml"]),
         ));
+        app.load_resource::<BackgroundsAssets>();
         app.load_resource::<SpritesAssets>();
         app.load_resource::<SoundAssets>();
         app.load_resource::<MusicAssets>();
