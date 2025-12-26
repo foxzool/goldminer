@@ -118,7 +118,17 @@ fn update_hook(
 
     for (mut hook, mut transform) in &mut query {
         if hook.is_grabing || hook.is_backing {
-            gizmos.line_2d(base_pos, transform.translation.truncate(), rope_color);
+            let angle_rad = hook.angle.to_radians();
+            let dir = Vec2::new(angle_rad.sin(), -angle_rad.cos());
+            let perp = Vec2::new(-dir.y, dir.x);
+
+            // 延长线段终点，以更好地与 hook 图片衔接
+            let end_pos = transform.translation.truncate() + dir * 4.0;
+
+            // 绘制三条线以增加厚度
+            gizmos.line_2d(base_pos, end_pos, rope_color);
+            gizmos.line_2d(base_pos + perp * 0.5, end_pos + perp * 0.5, rope_color);
+            gizmos.line_2d(base_pos - perp * 0.5, end_pos - perp * 0.5, rope_color);
         }
 
         if hook.is_grabing {
