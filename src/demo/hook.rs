@@ -10,7 +10,8 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Screen::Gameplay), spawn_hook);
     app.add_systems(
         Update,
-        update_hook
+        (handle_hook_input, update_hook)
+            .chain()
             .in_set(AppSystems::Update)
             .in_set(PausableSystems)
             .run_if(in_state(Screen::Gameplay)),
@@ -78,6 +79,8 @@ fn spawn_hook(
     let layout = TextureAtlasLayout::from_grid(UVec2::new(13, 15), 3, 1, None, None);
     let texture_atlas_layout = texture_atlas_layouts.add(layout);
 
+    let base_pos = love_to_bevy_coords(158.0, 30.0);
+
     commands.spawn((
         Name::new("hook"),
         Hook::default(),
@@ -88,16 +91,77 @@ fn spawn_hook(
                 index: 0,
             },
         ),
-        Transform::from(Transform::from_translation(
-            love_to_bevy_coords(158.0, 30.0).extend(0.0),
-        )),
+        Transform::from_translation(base_pos.extend(0.0)),
         Anchor::TOP_CENTER,
     ));
 }
 
-fn update_hook(time: Res<Time>, mut query: Query<(&mut Hook, &mut Transform)>) {
+fn handle_hook_input(input: Res<ButtonInput<KeyCode>>, mut q_hook: Query<&mut Hook>) {
+    if let Some(mut hook) = q_hook.iter_mut().next() {
+        if input.just_pressed(KeyCode::Space) && !hook.is_grabing && !hook.is_backing {
+            hook.is_grabing = true;
+        }
+    }
+}
+
+fn update_hook(
+    time: Res<Time>,
+    mut gizmos: Gizmos,
+    mut query: Query<(&mut Hook, &mut Transform)>,
+    q_entities: Query<
+        (Entity, &GlobalTransform),
+        (With<crate::config::LevelEntity>, Without<Hook>),
+    >,
+) {
+    let rope_color = Color::srgb(66.0 / 255.0, 66.0 / 255.0, 66.0 / 255.0);
+    let base_pos = love_to_bevy_coords(158.0, 30.0);
+
     for (mut hook, mut transform) in &mut query {
-        if !hook.is_grabing && !hook.is_backing {
+        if hook.is_grabing || hook.is_backing {
+            gizmos.line_2d(base_pos, transform.translation.truncate(), rope_color);
+        }
+
+        if hook.is_grabing {
+            // 抓取逻辑：长度递增
+            hook.length += (time.delta_secs() * HOOK_GRAB_SPEED) as i32;
+
+            // 更新位置（基于长度和角度）
+            let base_pos = love_to_bevy_coords(158.0, 30.0);
+            let angle_rad = hook.angle.to_radians();
+            let dir = Vec2::new(angle_rad.sin(), -angle_rad.cos());
+            let tip_pos = base_pos + dir * hook.length as f32;
+            transform.translation = tip_pos.extend(0.0);
+
+            // 碰撞检测，半径为12
+            let mut collided = false;
+            for (entity, entity_transform) in q_entities.iter() {
+                let entity_pos = entity_transform.translation().truncate();
+                if tip_pos.distance(entity_pos) < 12.0 {
+                    hook.grabed_entity = Some(entity);
+                    collided = true;
+                    break;
+                }
+            }
+
+            if collided || hook.length as f32 >= HOOK_MAX_LENGTH {
+                hook.is_grabing = false;
+                hook.is_backing = true;
+            }
+        } else if hook.is_backing {
+            // 回缩逻辑 (用户未细说，这里先简单实现以便测试)
+            hook.length -= (time.delta_secs() * HOOK_GRAB_SPEED) as i32;
+            if hook.length <= 0 {
+                hook.length = 0;
+                hook.is_backing = false;
+                hook.grabed_entity = None;
+            }
+            let base_pos = love_to_bevy_coords(158.0, 30.0);
+            let angle_rad = hook.angle.to_radians();
+            let dir = Vec2::new(angle_rad.sin(), -angle_rad.cos());
+            let tip_pos = base_pos + dir * hook.length as f32;
+            transform.translation = tip_pos.extend(0.0);
+        } else {
+            // 旋转逻辑
             if hook.rotate_right {
                 hook.angle += HOOK_ROTATE_SPEED * time.delta_secs();
                 if hook.angle >= HOOK_MAX_ANGLE {
@@ -113,6 +177,10 @@ fn update_hook(time: Res<Time>, mut query: Query<(&mut Hook, &mut Transform)>) {
             }
             // 将角度转换为弧度并应用到旋转
             transform.rotation = Quat::from_rotation_z(hook.angle.to_radians());
+
+            // 确保回到原点
+            let base_pos = love_to_bevy_coords(158.0, 30.0);
+            transform.translation = base_pos.extend(0.0);
         }
     }
 }
