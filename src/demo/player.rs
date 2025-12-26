@@ -2,11 +2,7 @@
 
 use crate::screens::Screen;
 use crate::utils::love_to_bevy_coords;
-use crate::{
-    asset_tracking::LoadResource, demo::{animation::PlayerAnimation, movement::MovementController},
-    AppSystems,
-    PausableSystems,
-};
+use crate::{asset_tracking::LoadResource, demo::animation::PlayerAnimation};
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
 
@@ -48,33 +44,33 @@ struct PlayerMarker;
 
 #[derive(Resource, Debug, Clone, Reflect)]
 #[reflect(Resource)]
-struct PlayerResource {
+pub struct PlayerResource {
     /// 当前关卡数
-    level: i32,
+    pub level: i32,
     /// 对应的关卡配置 ID (如 'L1_1')
-    real_level: String,
+    pub real_level: String,
     /// 玩家当前实际拥有的原始金钱
-    money: i32,
+    pub money: i32,
     /// 当前关卡需要达到的目标金额
-    goal: i32,
+    pub goal: i32,
     /// 每一关增加的目标金额幅度
-    goal_add_on: i32,
+    pub goal_add_on: i32,
 
     /// 玩家的基础力量倍率
-    strength: i32,
+    pub strength: i32,
     /// 拥有的炸药数量
-    dynamite_count: i32,
+    pub dynamite_count: i32,
     /// 是否持有力量药水
-    has_strength_drink: bool,
+    pub has_strength_drink: bool,
     /// 是否持有幸运草
-    has_lucky_clover: bool,
+    pub has_lucky_clover: bool,
     /// 是否持有宝石抛光剂
-    has_gem_polish: bool,
+    pub has_gem_polish: bool,
 
     /// 标识玩家是否正在扔炸药
-    is_using_dynamite: bool,
+    pub is_using_dynamite: bool,
     /// 扔炸药动作的倒计时
-    using_dynamite_timer: f32,
+    pub using_dynamite_timer: f32,
 }
 
 impl Default for PlayerResource {
