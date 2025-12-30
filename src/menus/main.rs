@@ -100,22 +100,6 @@ fn menu_arrow(asset_server: &AssetServer) -> impl Bundle {
     )
 }
 
-fn enter_loading_or_gameplay_screen(
-    _: On<Pointer<Click>>,
-    resource_handles: Res<ResourceHandles>,
-    mut next_screen: ResMut<NextState<Screen>>,
-) {
-    if resource_handles.is_all_done() {
-        next_screen.set(Screen::Gameplay);
-    } else {
-        next_screen.set(Screen::Loading);
-    }
-}
-
-fn open_high_score_menu(_: On<Pointer<Click>>, mut next_menu: ResMut<NextState<Menu>>) {
-    next_menu.set(Menu::HighScore);
-}
-
 fn keyboard_input(
     input: Res<ButtonInput<KeyCode>>,
     current_item: Res<State<MenuSelect>>,
@@ -135,7 +119,7 @@ fn keyboard_input(
     if input.just_pressed(KeyCode::Enter) || input.just_pressed(KeyCode::NumpadEnter) {
         if current_item.get() == &MenuSelect::StartGame {
             if resource_handles.is_all_done() {
-                next_screen.set(Screen::Gameplay);
+                next_screen.set(Screen::NextGoal);
             } else {
                 next_screen.set(Screen::Loading);
             }

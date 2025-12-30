@@ -13,15 +13,3 @@ pub mod player;
 pub(super) fn plugin(app: &mut App) {
     app.add_plugins((level::plugin, player::plugin, hook::plugin, entity::plugin));
 }
-
-
-#[derive(States, Copy, Clone, Eq, PartialEq, Hash, Debug, Default)]
-pub enum GameState {
-    #[default]
-    ShowNextGoal,
-    Game,
-    /// 达成目标/时间结束且达标
-    ShoeMadeGoal,
-    GameOver,
-    Shop
-}
