@@ -17,11 +17,24 @@ pub(super) fn plugin(app: &mut App) {
 
     app.add_systems(
         Update,
-        (spawn_entity_sprite,).run_if(in_state(Screen::Gameplay)),
+        (spawn_entity_sprite, update_ui).run_if(in_state(Screen::Gameplay)),
     );
 }
 
-fn setup_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
+#[derive(Component)]
+struct MoneyText;
+#[derive(Component)]
+struct GoalText;
+#[derive(Component)]
+struct TimerText;
+#[derive(Component)]
+struct LevelDisplay;
+
+fn setup_ui(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    stats: Res<crate::screens::stats::LevelStats>,
+) {
     let game_font = asset_server.load("fonts/visitor1.ttf");
     let game_style = TextFont {
         font: game_font.clone(),
@@ -44,9 +57,10 @@ fn setup_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
                 TextColor(COLOR_DEEP_ORANGE)
             ),
             (
-                TextSpan::new(" $0"),
+                TextSpan::new(format!(" ${}", stats.money)),
                 game_style.clone(),
-                TextColor(COLOR_GREEN)
+                TextColor(COLOR_GREEN),
+                MoneyText,
             ),
         ],
     ));
@@ -67,9 +81,10 @@ fn setup_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
                 TextColor(COLOR_DEEP_ORANGE)
             ),
             (
-                TextSpan::new(" $1000"),
+                TextSpan::new(format!(" ${}", stats.goal)),
                 game_style.clone(),
-                TextColor(COLOR_GREEN)
+                TextColor(COLOR_GREEN),
+                GoalText,
             ),
         ],
     ));
@@ -90,9 +105,10 @@ fn setup_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
                 TextColor(COLOR_DEEP_ORANGE)
             ),
             (
-                TextSpan::new("0"),
+                TextSpan::new(format!("{:.0}", stats.timer)),
                 game_style.clone(),
-                TextColor(COLOR_ORANGE)
+                TextColor(COLOR_ORANGE),
+                TimerText,
             ),
         ],
     ));
@@ -113,12 +129,39 @@ fn setup_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
                 TextColor(COLOR_DEEP_ORANGE)
             ),
             (
-                TextSpan::new("A"),
+                TextSpan::new(format!("{}", stats.level)),
                 game_style.clone(),
-                TextColor(COLOR_ORANGE)
+                TextColor(COLOR_ORANGE),
+                LevelDisplay,
             ),
         ],
     ));
+}
+
+fn update_ui(
+    stats: Res<crate::screens::stats::LevelStats>,
+    mut q_money: Query<&mut TextSpan, (With<MoneyText>, Without<GoalText>, Without<TimerText>)>,
+    mut q_goal: Query<&mut TextSpan, (With<GoalText>, Without<MoneyText>, Without<TimerText>)>,
+    mut q_timer: Query<&mut TextSpan, (With<TimerText>, Without<MoneyText>, Without<GoalText>)>,
+) {
+    for mut span in &mut q_money {
+        let new_text = format!(" ${}", stats.money);
+        if span.0 != new_text {
+            span.0 = new_text;
+        }
+    }
+    for mut span in &mut q_goal {
+        let new_text = format!(" ${}", stats.goal);
+        if span.0 != new_text {
+            span.0 = new_text;
+        }
+    }
+    for mut span in &mut q_timer {
+        let new_text = format!("{:.0}", stats.timer);
+        if span.0 != new_text {
+            span.0 = new_text;
+        }
+    }
 }
 
 pub fn spawn_background(mut commands: Commands, image_assets: Res<ImageAssets>) {

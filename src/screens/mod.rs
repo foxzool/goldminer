@@ -1,20 +1,34 @@
 //! The game's main screen states and transitions between them.
 
+mod game_over;
 mod gameplay;
 mod loading;
+mod made_goal;
+mod new_high_score;
+mod next_goal;
+pub mod persistent;
+mod shop;
 mod splash;
+pub mod stats;
 mod title;
 
 use bevy::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
     app.init_state::<Screen>();
+    app.init_resource::<stats::LevelStats>();
+    app.init_resource::<persistent::PersistentData>();
 
     app.add_plugins((
         gameplay::plugin,
         loading::plugin,
         splash::plugin,
         title::plugin,
+        next_goal::plugin,
+        made_goal::plugin,
+        shop::plugin,
+        game_over::plugin,
+        new_high_score::plugin,
     ));
 }
 
@@ -25,5 +39,10 @@ pub enum Screen {
     Splash,
     Title,
     Loading,
+    NextGoal,
     Gameplay,
+    MadeGoal,
+    Shop,
+    GameOver,
+    NewHighScore,
 }
