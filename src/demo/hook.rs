@@ -299,7 +299,7 @@ fn update_bonus_state(
     time: Res<Time>,
     mut commands: Commands,
     audio_assets: Res<AudioAssets>,
-    mut player: ResMut<PlayerResource>,
+    mut stats: ResMut<crate::screens::stats::LevelStats>,
     mut query: Query<(&mut Hook, &mut Sprite)>,
     q_descriptors: Query<&EntityDescriptor>,
     mut entity_commands: Commands,
@@ -318,7 +318,7 @@ fn update_bonus_state(
             if let Some(entity) = hook.grabed_entity {
                 if let Ok(descriptor) = q_descriptors.get(entity) {
                     let bonus = descriptor.bonus.unwrap_or(0);
-                    player.money += bonus;
+                    stats.money += bonus as u32;
 
                     // 根据 bonus_type 播放对应音效
                     let sound_id = descriptor.bonus_type.as_deref().unwrap_or("Normal");
