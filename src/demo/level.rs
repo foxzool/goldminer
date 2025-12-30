@@ -3,8 +3,8 @@
 use crate::config::{EntitiesConfig, LevelEntity, LevelsConfig};
 use crate::config::{EntityDescriptor, EntityType, ImageAssets};
 use crate::constants::{COLOR_DEEP_ORANGE, COLOR_GREEN, COLOR_ORANGE};
+use crate::screens::Screen;
 use crate::utils::love_to_bevy_coords;
-use crate::{demo::player::PlayerAssets, screens::Screen};
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
 
@@ -121,20 +121,13 @@ fn setup_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
     ));
 }
 
-pub fn spawn_background(
-    mut commands: Commands,
-    image_assets: Res<ImageAssets>,
-
-) {
+pub fn spawn_background(mut commands: Commands, image_assets: Res<ImageAssets>) {
     commands.spawn((
         Name::new("LevelBackground"),
         Transform::default(),
         Visibility::default(),
         DespawnOnExit(Screen::Gameplay),
-        children![
-            bg_top(&image_assets),
-            bg_level(&image_assets),
-        ],
+        children![bg_top(&image_assets), bg_level(&image_assets),],
     ));
 }
 
@@ -216,6 +209,7 @@ pub fn spawn_entity_sprite(
     _entity_handle: Res<EntityHandle>,
     q_entities: Query<(Entity, &LevelEntity, &EntityDescriptor), Added<LevelEntity>>,
     entities_assets: Res<ImageAssets>,
+    mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
     for (entity, level_entity, entity_desc) in q_entities.iter() {
         if let Some(img_handle) = entities_assets.get_image(&level_entity.entity_id) {
@@ -224,9 +218,36 @@ pub fn spawn_entity_sprite(
             } else {
                 Anchor::CENTER
             };
-            commands
-                .entity(entity)
-                .insert((anchor, Sprite::from_image(img_handle.clone())));
+
+            if entity_desc.entity_type == EntityType::MoveAround {
+                // Mole (MoveAround) logic
+                // 纹理图集尺寸：mole_sheet.png 是 126x13，包含 7 个 sprite
+                // 每个 sprite 尺寸：18x13 (126/7=18)
+                // Lua config: idle frames={1}, move frames={1,2,3,4,5,6,7}, interval=0.15
+                let layout = TextureAtlasLayout::from_grid(UVec2::new(18, 13), 7, 1, None, None);
+                let texture_atlas_layout = texture_atlas_layouts.add(layout);
+
+                commands.entity(entity).insert((
+                    anchor,
+                    Sprite::from_atlas_image(
+                        img_handle.clone(),
+                        TextureAtlas {
+                            layout: texture_atlas_layout,
+                            index: 0,
+                        },
+                    ),
+                    crate::demo::entity::EntityAnimation::new(
+                        0.15,
+                        vec![0],
+                        vec![0, 1, 2, 3, 4, 5, 6],
+                    ),
+                ));
+            } else {
+                // Basic logic
+                commands
+                    .entity(entity)
+                    .insert((anchor, Sprite::from_image(img_handle.clone())));
+            }
         }
     }
 }

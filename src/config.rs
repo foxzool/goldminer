@@ -1,7 +1,6 @@
 use crate::asset_tracking::LoadResource;
 use bevy::app::{App, Plugin};
 use bevy::asset::{Asset, AssetServer, Handle};
-use bevy::audio::AudioSource;
 use bevy::image::Image;
 use bevy::platform::collections::HashMap;
 use bevy::prelude::Component;
@@ -19,7 +18,6 @@ impl Plugin for ConfigPlugin {
             YamlAssetPlugin::<EntitiesConfig>::new(&["config/entities.yaml"]),
         ));
         app.load_resource::<ImageAssets>();
-
     }
 }
 
@@ -191,6 +189,10 @@ pub struct ImageAssets {
     rock_collector_book: Handle<Image>,
     #[dependency]
     gem_polish: Handle<Image>,
+    #[dependency]
+    mole_sheet: Handle<Image>,
+    #[dependency]
+    mole_with_diamond_sheet: Handle<Image>,
 
     // --- Backgrounds ---
     #[dependency]
@@ -244,6 +246,8 @@ impl FromWorld for ImageAssets {
             lucky_colver: assets.load("images/lucky_clover.png"),
             rock_collector_book: assets.load("images/rock_collectors_book.png"),
             gem_polish: assets.load("images/gem_polish.png"),
+            mole_sheet: assets.load("images/mole_sheet.png"),
+            mole_with_diamond_sheet: assets.load("images/mole_with_diamond_sheet.png"),
 
             menu_bg: assets.load("images/bg_start_menu.png"),
             level_common_top: assets.load("images/bg_top.png"),
@@ -289,6 +293,8 @@ impl ImageAssets {
             "LuckyClover" => Some(self.lucky_colver.clone()),
             "RockCollectorsBook" => Some(self.rock_collector_book.clone()),
             "GemPolish" => Some(self.gem_polish.clone()),
+            "Mole" => Some(self.mole_sheet.clone()),
+            "MoleWithDiamond" => Some(self.mole_with_diamond_sheet.clone()),
 
             // Backgrounds
             "Menu" => Some(self.menu_bg.clone()),
