@@ -196,6 +196,8 @@ pub struct ImageAssets {
     mole_sheet: Handle<Image>,
     #[dependency]
     mole_with_diamond_sheet: Handle<Image>,
+    #[dependency]
+    bigger_explosive_fx: Handle<Image>,
 
     // --- Backgrounds ---
     #[dependency]
@@ -251,6 +253,7 @@ impl FromWorld for ImageAssets {
             gem_polish: assets.load("images/gem_polish.png"),
             mole_sheet: assets.load("images/mole_sheet.png"),
             mole_with_diamond_sheet: assets.load("images/mole_with_diamond_sheet.png"),
+            bigger_explosive_fx: assets.load("images/bigger_explosive_fx_sheet.png"),
 
             menu_bg: assets.load("images/bg_start_menu.png"),
             level_common_top: assets.load("images/bg_top.png"),
@@ -298,6 +301,7 @@ impl ImageAssets {
             "GemPolish" => Some(self.gem_polish.clone()),
             "Mole" => Some(self.mole_sheet.clone()),
             "MoleWithDiamond" => Some(self.mole_with_diamond_sheet.clone()),
+            "BiggerExplosiveFX" => Some(self.bigger_explosive_fx.clone()),
 
             // Backgrounds
             "Menu" => Some(self.menu_bg.clone()),
