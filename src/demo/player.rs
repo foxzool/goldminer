@@ -56,6 +56,7 @@ fn spawn_player(
         ),
         Transform::from_translation(love_to_bevy_coords(165.0, 39.0).extend(0.0)),
         Anchor::BOTTOM_CENTER,
+        DespawnOnExit(Screen::Gameplay),
     ));
 }
 

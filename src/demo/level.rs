@@ -256,10 +256,13 @@ pub fn spawn_entity_sprite(
 ) {
     for (entity, level_entity, entity_desc) in q_entities.iter() {
         if let Some(img_handle) = entities_assets.get_image(&level_entity.entity_id) {
-            let anchor = if entity_desc.entity_type == EntityType::Basic {
-                Anchor::TOP_LEFT
-            } else {
+            let anchor = if entity_desc.entity_type == EntityType::MoveAround {
                 Anchor::CENTER
+            } else {
+                // 抓取物体：锚点设为 (W/2, H/3)
+                // Bevy 坐标系中，中心为 (0,0)，顶部为 0.5，底部为 -0.5
+                // H/3 from top = 0.5 - 1.0/3.0 = 1/6
+                Anchor::from(Vec2::new(0.0, 1.0 / 6.0))
             };
 
             if entity_desc.entity_type == EntityType::MoveAround {
