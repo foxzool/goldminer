@@ -1,4 +1,5 @@
 use crate::config::{EntityDescriptor, EntityType, LevelEntity};
+use crate::demo::hook::Hook;
 use crate::screens::Screen;
 use bevy::prelude::*;
 
@@ -142,14 +143,30 @@ fn init_patrol_system(
 fn patrol_movement_system(
     time: Res<Time>,
     mut q_patrol: Query<(
+        Entity,
         &mut Transform,
         &mut PatrolState,
         &EntityDescriptor,
         &mut Sprite,
         Option<&mut EntityAnimation>,
     )>,
+    q_hooks: Query<&Hook>,
 ) {
-    for (mut transform, mut state, descriptor, mut sprite, mut animation) in q_patrol.iter_mut() {
+    for (entity, mut transform, mut state, descriptor, mut sprite, mut animation) in
+        q_patrol.iter_mut()
+    {
+        // 如果实体被钩子抓取，跳过巡逻更新
+        let mut is_grabbed = false;
+        for hook in q_hooks.iter() {
+            if hook.grabed_entity == Some(entity) {
+                is_grabbed = true;
+                break;
+            }
+        }
+        if is_grabbed {
+            continue;
+        }
+
         if state.is_moving {
             // 确保动画状态为移动
             if let Some(anim) = &mut animation {
