@@ -25,7 +25,7 @@ pub(super) fn plugin(app: &mut App) {
 const HOOK_MIN_ANGLE: f32 = -75.0; // 最小角度 (-75度)
 const HOOK_MAX_ANGLE: f32 = 75.0; // 最大角度 (75度)
 const HOOK_ROTATE_SPEED: f32 = 65.0; // 旋转速度 (度/秒)
-const HOOK_MAX_LENGTH: f32 = 460.0; // 最大伸出长度
+const HOOK_MAX_LENGTH: f32 = 230.0; // 最大伸出长度 (对齐 Lua)
 const HOOK_GRAB_SPEED: f32 = 100.0; // 抓取速度 (像素/秒)
 const HOOK_COLLISION_RADIUS: f32 = 6.0; // 钩子碰撞半径 (匹配 Lua)
 const HOOK_COLLISION_OFFSET: f32 = 13.0; // 碰撞圆心偏移 (匹配 Lua)
@@ -101,8 +101,10 @@ fn spawn_hook(
                 index: HOOK_ANIM_IDLE,
             },
         ),
+        ZIndex(10),
         Transform::from_translation(base_pos.extend(0.0)),
         Anchor::TOP_CENTER,
+        DespawnOnExit(Screen::Gameplay),
     ));
 }
 
@@ -186,9 +188,17 @@ fn update_hook(
             let mut collided = false;
             for (entity, entity_transform) in q_entities.iter() {
                 let entity_pos = entity_transform.translation().truncate();
-                // 使用 HOOK_COLLISION_RADIUS (6.0) 进行检测
-                // 假设实体也有类似半径，这里简化为 HOOK_COLLISION_RADIUS * 2
-                if collision_pos.distance(entity_pos) < HOOK_COLLISION_RADIUS * 2.0 {
+
+                // 获取实体的碰撞半径，默认为 HOOK_COLLISION_RADIUS
+                let mut entity_radius = HOOK_COLLISION_RADIUS;
+                if let Ok(descriptor) = q_descriptors.get(entity) {
+                    if let Some(radius) = descriptor.collision_radius {
+                        entity_radius = radius;
+                    }
+                }
+
+                // 碰撞判定：当两圆心距离小于半径之和时发生碰撞 (对齐 Lua)
+                if collision_pos.distance(entity_pos) < (HOOK_COLLISION_RADIUS + entity_radius) {
                     hook.grabed_entity = Some(entity);
                     collided = true;
 
@@ -304,8 +314,24 @@ fn update_bonus_state(
     q_descriptors: Query<&EntityDescriptor>,
     mut entity_commands: Commands,
     mut q_player_anim: Query<&mut PlayerAnimation>,
+    mut q_transforms: Query<&mut Transform, Without<Hook>>,
+    mut player: ResMut<PlayerResource>,
 ) {
+    let base_pos = love_to_bevy_coords(158.0, 30.0);
+
     for (mut hook, mut sprite) in &mut query {
+        // 如果正在抓取物体，同步物体位置和旋转 (对齐 Lua)
+        if let Some(entity) = hook.grabed_entity {
+            if let Ok(mut transform) = q_transforms.get_mut(entity) {
+                let angle_rad = hook.angle.to_radians();
+                let dir = Vec2::new(angle_rad.sin(), -angle_rad.cos());
+                let collision_pos = base_pos + dir * (hook.length + HOOK_COLLISION_OFFSET);
+
+                transform.translation = collision_pos.extend(1.0);
+                transform.rotation = Quat::from_rotation_z(angle_rad);
+            }
+        }
+
         if !hook.is_showing_bonus {
             continue;
         }
@@ -314,19 +340,40 @@ fn update_bonus_state(
 
         // 奖励计时器结束
         if hook.bonus_timer <= 0.0 {
-            // 结算金钱
+            // 结算奖励
             if let Some(entity) = hook.grabed_entity {
                 if let Ok(descriptor) = q_descriptors.get(entity) {
                     let bonus = descriptor.bonus.unwrap_or(0);
-                    stats.money += bonus as u32;
-
-                    // 根据 bonus_type 播放对应音效
                     let sound_id = descriptor.bonus_type.as_deref().unwrap_or("Normal");
-                    if let Some(audio) = audio_assets.get_audio(sound_id) {
-                        commands.spawn(sound_effect(audio));
-                    }
 
-                    // TODO: 处理 extra_effect_chances 特殊效果
+                    // 处理 extra_effect_chances 特殊效果 (对齐 Lua)
+                    if let Some(chances) = descriptor.extra_effect_chances {
+                        let rand_val = rand::random::<f32>();
+                        if rand_val < chances {
+                            // 20% 概率增加炸药，80% 概率增加玩家力量 (根据 YAML 注释)
+                            if rand::random::<f32>() < 0.2 {
+                                player.dynamite_count += 1;
+                            } else {
+                                // 力量增加，最大值为 6
+                                player.strength = (player.strength + 1).min(6);
+                            }
+                            if let Some(audio) = audio_assets.get_audio("High") {
+                                commands.spawn(sound_effect(audio));
+                            }
+                        } else {
+                            // 正常奖励
+                            stats.money += bonus as u32;
+                            if let Some(audio) = audio_assets.get_audio(sound_id) {
+                                commands.spawn(sound_effect(audio));
+                            }
+                        }
+                    } else {
+                        // 无特殊效果概率，正常奖励
+                        stats.money += bonus as u32;
+                        if let Some(audio) = audio_assets.get_audio(sound_id) {
+                            commands.spawn(sound_effect(audio));
+                        }
+                    }
 
                     // 销毁被抓取的实体
                     entity_commands.entity(entity).despawn();
