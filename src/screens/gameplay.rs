@@ -1,5 +1,4 @@
 use crate::{
-    Pause,
     menus::Menu,
     screens::{Screen, stats::LevelStats},
 };
@@ -10,24 +9,15 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         Update,
         (
-            (pause, spawn_pause_overlay).run_if(
-                in_state(Screen::Gameplay)
-                    .and(in_state(Menu::None))
-                    .and(input_just_pressed(KeyCode::KeyP).or(input_just_pressed(KeyCode::Escape))),
-            ),
             close_menu.run_if(
                 in_state(Screen::Gameplay)
                     .and(not(in_state(Menu::None)))
                     .and(input_just_pressed(KeyCode::KeyP)),
             ),
-            update_gameplay_timer.run_if(in_state(Screen::Gameplay).and(in_state(Pause(false)))),
+            update_gameplay_timer.run_if(in_state(Screen::Gameplay)),
         ),
     );
-    app.add_systems(OnExit(Screen::Gameplay), (close_menu, unpause));
-    app.add_systems(
-        OnEnter(Menu::None),
-        unpause.run_if(in_state(Screen::Gameplay)),
-    );
+    app.add_systems(OnExit(Screen::Gameplay), close_menu);
 }
 
 fn update_gameplay_timer(
@@ -44,28 +34,6 @@ fn update_gameplay_timer(
             next_screen.set(Screen::GameOver);
         }
     }
-}
-
-fn unpause(mut next_pause: ResMut<NextState<Pause>>) {
-    next_pause.set(Pause(false));
-}
-
-fn pause(mut next_pause: ResMut<NextState<Pause>>) {
-    next_pause.set(Pause(true));
-}
-
-fn spawn_pause_overlay(mut commands: Commands) {
-    commands.spawn((
-        Name::new("Pause Overlay"),
-        Node {
-            width: percent(100),
-            height: percent(100),
-            ..default()
-        },
-        GlobalZIndex(1),
-        BackgroundColor(Color::srgba(0.0, 0.0, 0.0, 0.8)),
-        DespawnOnExit(Pause(true)),
-    ));
 }
 
 fn close_menu(mut next_menu: ResMut<NextState<Menu>>) {

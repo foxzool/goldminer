@@ -6,10 +6,17 @@
 use bevy::prelude::*;
 
 pub mod entity;
+pub mod explosive;
 pub mod hook;
 pub mod level;
 pub mod player;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_plugins((level::plugin, player::plugin, hook::plugin, entity::plugin));
+    app.add_plugins((
+        level::plugin,
+        player::plugin,
+        hook::plugin,
+        entity::plugin,
+        explosive::plugin,
+    ));
 }

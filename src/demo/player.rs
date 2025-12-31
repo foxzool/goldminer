@@ -5,10 +5,10 @@ use std::time::Duration;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
 
+use crate::AppSystems;
 use crate::asset_tracking::LoadResource;
 use crate::screens::Screen;
 use crate::utils::love_to_bevy_coords;
-use crate::{AppSystems, PausableSystems};
 
 pub(super) fn plugin(app: &mut App) {
     app.load_resource::<PlayerAssets>();
@@ -22,8 +22,7 @@ pub(super) fn plugin(app: &mut App) {
         (
             update_animation_timer.in_set(AppSystems::TickTimers),
             update_animation_atlas.in_set(AppSystems::Update),
-        )
-            .in_set(PausableSystems),
+        ),
     );
 }
 
