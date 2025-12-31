@@ -1,10 +1,12 @@
+use crate::AppSystems;
 use crate::asset_tracking::LoadResource;
 use crate::audio::{AudioAssets, sound_effect};
-use crate::config::EntityDescriptor;
+use crate::config::{EntityDescriptor, EntityType, ImageAssets};
+use crate::constants::COLOR_GREEN;
+use crate::demo::explosive::ExplosiveState;
 use crate::demo::player::{PlayerAnimation, PlayerAnimationState, PlayerResource};
 use crate::screens::Screen;
 use crate::utils::love_to_bevy_coords;
-use crate::{AppSystems, PausableSystems};
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
 
@@ -16,7 +18,6 @@ pub(super) fn plugin(app: &mut App) {
         (handle_hook_input, update_hook, update_bonus_state)
             .chain()
             .in_set(AppSystems::Update)
-            .in_set(PausableSystems)
             .run_if(in_state(Screen::Gameplay)),
     );
 }
@@ -44,11 +45,19 @@ pub struct Hook {
     pub rotate_right: bool,
     pub is_grabing: bool,
     pub is_backing: bool,
-    pub is_showing_bonus: bool, // 新增：是否正在显示奖励
+    pub is_showing_bonus: bool, // 是否正在显示奖励
     pub grabed_entity: Option<Entity>,
 
-    pub bonus_timer: f32, // 改为 f32 以支持浮点计时
+    pub bonus_timer: f32,
+    pub current_bonus: i32,  // 当前奖励金额
+    pub show_strength: bool, // 是否显示力量增强图标
 }
+
+#[derive(Component)]
+struct BonusText;
+
+#[derive(Component)]
+struct StrengthIcon;
 
 impl Default for Hook {
     fn default() -> Self {
@@ -61,6 +70,8 @@ impl Default for Hook {
             is_showing_bonus: false,
             grabed_entity: None,
             bonus_timer: 0.0,
+            current_bonus: 0,
+            show_strength: false,
         }
     }
 }
@@ -141,6 +152,7 @@ fn update_hook(
         (With<crate::config::LevelEntity>, Without<Hook>),
     >,
     q_descriptors: Query<&EntityDescriptor>,
+    mut q_explosives: Query<&mut ExplosiveState>,
     mut q_player_anim: Query<&mut PlayerAnimation>,
 ) {
     let rope_color = Color::srgb(66.0 / 255.0, 66.0 / 255.0, 66.0 / 255.0);
@@ -180,6 +192,7 @@ fn update_hook(
             // 钩子末端位置 (用于渲染)
             let tip_pos = base_pos + dir * hook.length;
             transform.translation = tip_pos.extend(0.0);
+            transform.rotation = Quat::from_rotation_z(angle_rad);
 
             // 碰撞检测圆心位置 (末端 + 偏移)
             let collision_pos = base_pos + dir * (hook.length + HOOK_COLLISION_OFFSET);
@@ -204,14 +217,31 @@ fn update_hook(
 
                     // 根据实体大小切换动画帧
                     if let Ok(descriptor) = q_descriptors.get(entity) {
-                        // 简化判断：mass < 2.0 视为小物体
-                        let is_tiny = descriptor.mass.unwrap_or(1.0) < 2.0;
-                        if let Some(atlas) = &mut sprite.texture_atlas {
-                            atlas.index = if is_tiny {
-                                HOOK_ANIM_GRAB_MINI
-                            } else {
-                                HOOK_ANIM_GRAB_NORMAL
-                            };
+                        // TNT 爆炸处理：碰撞时触发爆炸，使用 is_destroyed_tiny 判定动画
+                        if descriptor.entity_type == EntityType::Explosive {
+                            // 触发爆炸
+                            if let Ok(mut explosive_state) = q_explosives.get_mut(entity) {
+                                explosive_state.is_exploding = true;
+                            }
+                            // 使用 is_destroyed_tiny 配置判断动画帧
+                            let is_tiny = descriptor.is_destroyed_tiny.unwrap_or(true);
+                            if let Some(atlas) = &mut sprite.texture_atlas {
+                                atlas.index = if is_tiny {
+                                    HOOK_ANIM_GRAB_MINI
+                                } else {
+                                    HOOK_ANIM_GRAB_NORMAL
+                                };
+                            }
+                        } else {
+                            // 普通实体：简化判断 mass < 2.0 视为小物体
+                            let is_tiny = descriptor.mass.unwrap_or(1.0) < 2.0;
+                            if let Some(atlas) = &mut sprite.texture_atlas {
+                                atlas.index = if is_tiny {
+                                    HOOK_ANIM_GRAB_MINI
+                                } else {
+                                    HOOK_ANIM_GRAB_NORMAL
+                                };
+                            }
                         }
                     }
                     break;
@@ -282,6 +312,7 @@ fn update_hook(
             let dir = Vec2::new(angle_rad.sin(), -angle_rad.cos());
             let tip_pos = base_pos + dir * hook.length;
             transform.translation = tip_pos.extend(0.0);
+            transform.rotation = Quat::from_rotation_z(angle_rad);
         } else {
             // 待机旋转逻辑
             if hook.rotate_right {
@@ -308,14 +339,17 @@ fn update_hook(
 fn update_bonus_state(
     time: Res<Time>,
     mut commands: Commands,
+    asset_server: Res<AssetServer>,
     audio_assets: Res<AudioAssets>,
+    image_assets: Res<ImageAssets>,
     mut stats: ResMut<crate::screens::stats::LevelStats>,
     mut query: Query<(&mut Hook, &mut Sprite)>,
     q_descriptors: Query<&EntityDescriptor>,
-    mut entity_commands: Commands,
     mut q_player_anim: Query<&mut PlayerAnimation>,
     mut q_transforms: Query<&mut Transform, Without<Hook>>,
     mut player: ResMut<PlayerResource>,
+    q_bonus_text: Query<Entity, With<BonusText>>,
+    q_strength_icon: Query<Entity, With<StrengthIcon>>,
 ) {
     let base_pos = love_to_bevy_coords(158.0, 30.0);
 
@@ -336,11 +370,8 @@ fn update_bonus_state(
             continue;
         }
 
-        hook.bonus_timer -= time.delta_secs();
-
-        // 奖励计时器结束
-        if hook.bonus_timer <= 0.0 {
-            // 结算奖励
+        // 首帧进入奖励状态: 结算并显示 UI
+        if hook.bonus_timer == BONUS_DISPLAY_DURATION {
             if let Some(entity) = hook.grabed_entity {
                 if let Ok(descriptor) = q_descriptors.get(entity) {
                     let bonus = descriptor.bonus.unwrap_or(0);
@@ -350,18 +381,30 @@ fn update_bonus_state(
                     if let Some(chances) = descriptor.extra_effect_chances {
                         let rand_val = rand::random::<f32>();
                         if rand_val < chances {
-                            // 20% 概率增加炸药，80% 概率增加玩家力量 (根据 YAML 注释)
+                            // 20% 概率增加炸药，80% 概率增加玩家力量
                             if rand::random::<f32>() < 0.2 {
                                 player.dynamite_count += 1;
                             } else {
                                 // 力量增加，最大值为 6
                                 player.strength = (player.strength + 1).min(6);
+                                hook.show_strength = true;
+                                // Spawn Strength! 图标 - 位置 (80, 10) → Bevy 换算
+                                if let Some(strength_img) = image_assets.get_image("Strength!") {
+                                    commands.spawn((
+                                        StrengthIcon,
+                                        Sprite::from_image(strength_img),
+                                        Transform::from_translation(
+                                            love_to_bevy_coords(80.0, 10.0).extend(10.0),
+                                        ),
+                                    ));
+                                }
                             }
                             if let Some(audio) = audio_assets.get_audio("High") {
                                 commands.spawn(sound_effect(audio));
                             }
                         } else {
                             // 正常奖励
+                            hook.current_bonus = bonus;
                             stats.money += bonus as u32;
                             if let Some(audio) = audio_assets.get_audio(sound_id) {
                                 commands.spawn(sound_effect(audio));
@@ -369,21 +412,58 @@ fn update_bonus_state(
                         }
                     } else {
                         // 无特殊效果概率，正常奖励
+                        hook.current_bonus = bonus;
                         stats.money += bonus as u32;
                         if let Some(audio) = audio_assets.get_audio(sound_id) {
                             commands.spawn(sound_effect(audio));
                         }
                     }
 
+                    // 如果有奖励金额，spawn 显示文本
+                    if hook.current_bonus > 0 {
+                        let font = asset_server.load("fonts/Kurland.ttf");
+                        commands.spawn((
+                            BonusText,
+                            Text::new(format!("${}", hook.current_bonus)),
+                            TextFont {
+                                font,
+                                font_size: 32.0,
+                                ..default()
+                            },
+                            TextColor(COLOR_GREEN),
+                            Node {
+                                position_type: PositionType::Absolute,
+                                top: px(36.0),
+                                left: px(180.0),
+                                ..default()
+                            },
+                        ));
+                    }
+
                     // 销毁被抓取的实体
-                    entity_commands.entity(entity).despawn();
+                    commands.entity(entity).despawn();
                 }
+            }
+        }
+
+        hook.bonus_timer -= time.delta_secs();
+
+        // 奖励计时器结束
+        if hook.bonus_timer <= 0.0 {
+            // 清理显示元素
+            for entity in &q_bonus_text {
+                commands.entity(entity).despawn();
+            }
+            for entity in &q_strength_icon {
+                commands.entity(entity).despawn();
             }
 
             // 重置钩子状态
             hook.grabed_entity = None;
             hook.is_showing_bonus = false;
             hook.bonus_timer = 0.0;
+            hook.current_bonus = 0;
+            hook.show_strength = false;
 
             // 重置动画帧
             if let Some(atlas) = &mut sprite.texture_atlas {
