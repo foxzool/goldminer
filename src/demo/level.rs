@@ -3,6 +3,7 @@
 use crate::config::{EntitiesConfig, LevelEntity, LevelsConfig};
 use crate::config::{EntityDescriptor, EntityType, ImageAssets};
 use crate::constants::{COLOR_DEEP_ORANGE, COLOR_GREEN, COLOR_ORANGE};
+use crate::demo::player::PlayerResource;
 use crate::screens::Screen;
 use crate::utils::love_to_bevy_coords;
 use bevy::prelude::*;
@@ -29,11 +30,17 @@ struct GoalText;
 struct TimerText;
 #[derive(Component)]
 struct LevelDisplay;
+#[derive(Component)]
+struct DynamiteIcon(usize);
+#[derive(Component)]
+struct ReachGoalTip;
 
 fn setup_ui(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     stats: Res<crate::screens::stats::LevelStats>,
+    image_assets: Res<ImageAssets>,
+    player: Res<PlayerResource>,
 ) {
     let game_font = asset_server.load("fonts/visitor1.ttf");
     let game_style = TextFont {
@@ -136,13 +143,68 @@ fn setup_ui(
             ),
         ],
     ));
+
+    // 达成目标提示 "Press Select to Skip"
+    commands.spawn((
+        DespawnOnExit(Screen::Gameplay),
+        ReachGoalTip,
+        Text::new("Press Select to Skip"),
+        game_style.clone(),
+        TextColor(COLOR_ORANGE),
+        Visibility::Hidden,
+        Node {
+            position_type: PositionType::Absolute,
+            top: px(10),
+            left: px(400),
+            ..default()
+        },
+    ));
+
+    // 炸药图标容器 - Lua 位置配置:
+    // 第一行 (1-6): y=22, x=195,200,205,210,215,220
+    // 第二行 (7-12): y=12, x=195,200,205,210,215,220
+    // Bevy 坐标 = Lua坐标 * 2
+    let dynamite_positions: [(f32, f32); 12] = [
+        (390.0, 44.0),
+        (400.0, 44.0),
+        (410.0, 44.0),
+        (420.0, 44.0),
+        (430.0, 44.0),
+        (440.0, 44.0),
+        (390.0, 24.0),
+        (400.0, 24.0),
+        (410.0, 24.0),
+        (420.0, 24.0),
+        (430.0, 24.0),
+        (440.0, 24.0),
+    ];
+
+    if let Some(dynamite_img) = image_assets.get_image("DynamiteUI") {
+        for (i, (x, y)) in dynamite_positions.iter().enumerate() {
+            let visibility = if i < player.dynamite_count as usize {
+                Visibility::Visible
+            } else {
+                Visibility::Hidden
+            };
+            commands.spawn((
+                DespawnOnExit(Screen::Gameplay),
+                DynamiteIcon(i),
+                Sprite::from_image(dynamite_img.clone()),
+                Transform::from_translation(love_to_bevy_coords(*x / 2.0, *y / 2.0).extend(5.0)),
+                visibility,
+            ));
+        }
+    }
 }
 
 fn update_ui(
     stats: Res<crate::screens::stats::LevelStats>,
+    player: Res<PlayerResource>,
     mut q_money: Query<&mut TextSpan, (With<MoneyText>, Without<GoalText>, Without<TimerText>)>,
     mut q_goal: Query<&mut TextSpan, (With<GoalText>, Without<MoneyText>, Without<TimerText>)>,
     mut q_timer: Query<&mut TextSpan, (With<TimerText>, Without<MoneyText>, Without<GoalText>)>,
+    mut q_reach_goal: Query<&mut Visibility, With<ReachGoalTip>>,
+    mut q_dynamite: Query<(&DynamiteIcon, &mut Visibility), Without<ReachGoalTip>>,
 ) {
     for mut span in &mut q_money {
         let new_text = format!(" ${}", stats.money);
@@ -162,15 +224,57 @@ fn update_ui(
             span.0 = new_text;
         }
     }
+
+    // 更新达成目标提示
+    for mut visibility in &mut q_reach_goal {
+        *visibility = if stats.reach_goal() {
+            Visibility::Visible
+        } else {
+            Visibility::Hidden
+        };
+    }
+
+    // 更新炸药图标显示
+    for (icon, mut visibility) in &mut q_dynamite {
+        *visibility = if icon.0 < player.dynamite_count as usize {
+            Visibility::Visible
+        } else {
+            Visibility::Hidden
+        };
+    }
 }
 
-pub fn spawn_background(mut commands: Commands, image_assets: Res<ImageAssets>) {
+pub fn spawn_background(
+    mut commands: Commands,
+    image_assets: Res<ImageAssets>,
+    stats: Res<crate::screens::stats::LevelStats>,
+) {
+    // 根据 real_level_str 解析关卡编号，映射到背景类型
+    // real_level_str 格式: "L1_1", "L2_2", "L3_1" 等
+    // 关卡 1-2 使用 LevelA, 3-4 使用 LevelB, 5-6 使用 LevelC, 7-8 使用 LevelD, 9+ 使用 LevelE
+    let level_num: u32 = stats
+        .real_level_str
+        .chars()
+        .skip(1) // 跳过 'L'
+        .take_while(|c| c.is_ascii_digit())
+        .collect::<String>()
+        .parse()
+        .unwrap_or(1);
+
+    let bg_type = match level_num {
+        1..=2 => "LevelA",
+        3..=4 => "LevelB",
+        5..=6 => "LevelC",
+        7..=8 => "LevelD",
+        _ => "LevelE",
+    };
+
     commands.spawn((
         Name::new("LevelBackground"),
         Transform::default(),
         Visibility::default(),
         DespawnOnExit(Screen::Gameplay),
-        children![bg_top(&image_assets), bg_level(&image_assets),],
+        children![bg_top(&image_assets), bg_level(&image_assets, bg_type),],
     ));
 }
 
@@ -183,12 +287,12 @@ fn bg_top(image_assets: &Res<ImageAssets>) -> impl Bundle {
     )
 }
 
-fn bg_level(image_assets: &Res<ImageAssets>) -> impl Bundle {
+fn bg_level(image_assets: &Res<ImageAssets>, bg_type: &str) -> impl Bundle {
     (
-        Name::new("Level A Background"),
+        Name::new(format!("{} Background", bg_type)),
         Transform::from_translation(love_to_bevy_coords(0.0, 40.0).extend(-1.0)),
         Anchor::TOP_LEFT,
-        Sprite::from_image(image_assets.get_image("LevelA").unwrap()),
+        Sprite::from_image(image_assets.get_image(bg_type).unwrap()),
     )
 }
 
@@ -287,6 +391,13 @@ pub fn spawn_entity_sprite(
                         vec![0],
                         vec![0, 1, 2, 3, 4, 5, 6],
                     ),
+                ));
+            } else if entity_desc.entity_type == EntityType::Explosive {
+                // TNT (Explosive) logic: 添加 ExplosiveState 组件
+                commands.entity(entity).insert((
+                    anchor,
+                    Sprite::from_image(img_handle.clone()),
+                    crate::demo::explosive::ExplosiveState::default(),
                 ));
             } else {
                 // Basic logic
