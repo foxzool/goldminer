@@ -69,6 +69,9 @@ pub struct EntityDescriptor {
     pub destroyed_type: Option<String>,
     /// 爆炸实体：被抓取的判定是否使用小型钩子动画
     pub is_destroyed_tiny: Option<bool>,
+
+    /// 实体的碰撞半径 (可选)
+    pub collision_radius: Option<f32>,
 }
 
 /// 实体行为分类
