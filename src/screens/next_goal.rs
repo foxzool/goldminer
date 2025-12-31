@@ -37,6 +37,7 @@ fn spawn_next_goal_ui(
     commands.spawn((
         Name::new("Goal Music"),
         music(audio_assets.get_audio("Goal").unwrap()),
+        DespawnOnExit(Screen::NextGoal),
     ));
 
     // 背景
@@ -97,7 +98,10 @@ fn spawn_next_goal_ui(
     ));
 
     // 转换计时器 (3秒)
-    commands.spawn(NextGoalTimer(Timer::from_seconds(3.0, TimerMode::Once)));
+    commands.spawn((
+        NextGoalTimer(Timer::from_seconds(3.0, TimerMode::Once)),
+        DespawnOnExit(Screen::NextGoal),
+    ));
 }
 
 fn check_transition(

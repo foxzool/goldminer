@@ -31,6 +31,7 @@ fn spawn_made_goal_ui(
     commands.spawn((
         Name::new("Made Goal Music"),
         music(audio_assets.get_audio("MadeGoal").unwrap()),
+        DespawnOnExit(Screen::MadeGoal),
     ));
 
     // 背景
@@ -74,7 +75,10 @@ fn spawn_made_goal_ui(
     ));
 
     // 转换计时器 (2秒)
-    commands.spawn(MadeGoalTimer(Timer::from_seconds(2.0, TimerMode::Once)));
+    commands.spawn((
+        MadeGoalTimer(Timer::from_seconds(2.0, TimerMode::Once)),
+        DespawnOnExit(Screen::MadeGoal),
+    ));
 }
 
 fn check_transition(
