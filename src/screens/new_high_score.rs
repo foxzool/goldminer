@@ -93,10 +93,21 @@ fn spawn_new_high_score_ui(
 
 fn check_keyboard_input(
     input: Res<ButtonInput<KeyCode>>,
+    gamepads: Query<&Gamepad>,
     mut next_screen: ResMut<NextState<Screen>>,
 ) {
+    let mut pressed = input.get_just_pressed().next().is_some();
+    if !pressed {
+        for gamepad in &gamepads {
+            if gamepad.get_just_pressed().next().is_some() {
+                pressed = true;
+                break;
+            }
+        }
+    }
+
     // 任意键返回主菜单
-    if input.get_just_pressed().next().is_some() {
+    if pressed {
         next_screen.set(Screen::Title);
     }
 }

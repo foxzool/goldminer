@@ -87,12 +87,23 @@ fn spawn_game_over_ui(
 
 fn check_keyboard_input(
     input: Res<ButtonInput<KeyCode>>,
+    gamepads: Query<&Gamepad>,
     is_new_high_score: Res<IsNewHighScore>,
     stats: Res<LevelStats>,
     mut persistent: ResMut<PersistentData>,
     mut next_screen: ResMut<NextState<Screen>>,
 ) {
-    if input.get_just_pressed().next().is_some() {
+    let mut pressed = input.get_just_pressed().next().is_some();
+    if !pressed {
+        for gamepad in &gamepads {
+            if gamepad.get_just_pressed().next().is_some() {
+                pressed = true;
+                break;
+            }
+        }
+    }
+
+    if pressed {
         if is_new_high_score.0 {
             // 刷新最高分，保存并跳转到新纪录界面
             persistent.high_score = stats.money;

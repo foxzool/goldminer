@@ -121,21 +121,111 @@ fn spawn_hook(
 
 fn handle_hook_input(
     input: Res<ButtonInput<KeyCode>>,
+    gamepads: Query<&Gamepad>,
     mut commands: Commands,
     audio_assets: Res<AudioAssets>,
-    mut q_hook: Query<&mut Hook>,
+    mut q_hook: Query<(&mut Hook, &Transform, &mut Sprite)>,
+    mut player: ResMut<PlayerResource>,
+    stats: Res<crate::screens::stats::LevelStats>,
+    mut next_screen: ResMut<NextState<Screen>>,
+    mut q_player_anim: Query<&mut PlayerAnimation>,
+    image_assets: Res<ImageAssets>,
+    mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
-    if let Some(mut hook) = q_hook.iter_mut().next() {
-        if input.just_pressed(KeyCode::Space)
-            && !hook.is_grabing
-            && !hook.is_backing
-            && !hook.is_showing_bonus
+    let mut fire = input.just_pressed(KeyCode::ArrowDown)
+        || input.just_pressed(KeyCode::KeyJ)
+        || input.just_pressed(KeyCode::KeyK);
+    let mut use_dynamite = input.just_pressed(KeyCode::ArrowUp)
+        || input.just_pressed(KeyCode::KeyU)
+        || input.just_pressed(KeyCode::KeyI);
+    let mut skip = input.just_pressed(KeyCode::Space);
+
+    for gamepad in &gamepads {
+        if gamepad.just_pressed(GamepadButton::DPadDown)
+            || gamepad.just_pressed(GamepadButton::South)
+            || gamepad.just_pressed(GamepadButton::East)
         {
+            fire = true;
+        }
+        if gamepad.just_pressed(GamepadButton::DPadUp)
+            || gamepad.just_pressed(GamepadButton::West)
+            || gamepad.just_pressed(GamepadButton::North)
+        {
+            use_dynamite = true;
+        }
+        if gamepad.just_pressed(GamepadButton::Select) {
+            skip = true;
+        }
+    }
+
+    if let Some((mut hook, transform, mut sprite)) = q_hook.iter_mut().next() {
+        // 1. 发射钩子
+        if fire && !hook.is_grabing && !hook.is_backing && !hook.is_showing_bonus {
             hook.is_grabing = true;
-            // 播放抓取开始音效
             if let Some(audio) = audio_assets.get_audio("GrabStart") {
                 commands.spawn(sound_effect(audio));
             }
+        }
+
+        // 2. 使用炸药
+        if use_dynamite
+            && hook.is_backing
+            && hook.grabed_entity.is_some()
+            && player.dynamite_count > 0
+            && !player.is_using_dynamite
+        {
+            player.dynamite_count -= 1;
+            player.is_using_dynamite = true;
+            player.using_dynamite_timer = 0.39;
+
+            // 切换玩家动画
+            for mut anim in &mut q_player_anim {
+                anim.update_state(PlayerAnimationState::UseDynamite);
+            }
+
+            // 播放炸药生效音效 (Lua 版使用 Dynamite 音效)
+            if let Some(audio) = audio_assets.get_audio("Explosive") {
+                commands.spawn(sound_effect(audio));
+            }
+
+            // 在钩子位置产生爆炸特效
+            let center = transform.translation.truncate();
+            if let Some(fx_image) = image_assets.get_image("BiggerExplosiveFX") {
+                let layout = TextureAtlasLayout::from_grid(UVec2::new(35, 35), 4, 2, None, None);
+                let atlas_layout = texture_atlas_layouts.add(layout);
+
+                commands.spawn((
+                    Name::new("DynamiteExplosionFX"),
+                    crate::demo::explosive::ExplosionFX::new(center),
+                    Sprite::from_atlas_image(
+                        fx_image,
+                        TextureAtlas {
+                            layout: atlas_layout,
+                            index: 0,
+                        },
+                    ),
+                    Transform::from_translation(center.extend(10.0)),
+                    Anchor::CENTER,
+                    DespawnOnExit(Screen::Gameplay),
+                ));
+            }
+
+            // 销毁被抓取的物品
+            if let Some(entity) = hook.grabed_entity {
+                commands.entity(entity).despawn();
+                hook.grabed_entity = None;
+            }
+
+            // 钩子变回空载状态
+            if let Some(atlas) = &mut sprite.texture_atlas {
+                atlas.index = HOOK_ANIM_IDLE;
+            }
+            // 钩子回缩速度变回正常 (因为物品没了)
+        }
+
+        // 3. 跳过关卡
+        if skip && stats.reach_goal() {
+            next_screen.set(Screen::MadeGoal);
         }
     }
 }
@@ -276,7 +366,11 @@ fn update_hook(
             let mut speed = HOOK_GRAB_SPEED;
             if let Some(entity) = hook.grabed_entity {
                 if let Ok(descriptor) = q_descriptors.get(entity) {
-                    let mass = descriptor.mass.unwrap_or(1.0);
+                    let mut mass = descriptor.mass.unwrap_or(1.0);
+                    // 力量饮料效果：质量 ÷ 1.5
+                    if player.has_strength_drink {
+                        mass /= 1.5;
+                    }
                     let strength = player.strength as f32;
                     speed = HOOK_GRAB_SPEED * strength / mass;
                 }
@@ -345,6 +439,7 @@ fn update_bonus_state(
     mut stats: ResMut<crate::screens::stats::LevelStats>,
     mut query: Query<(&mut Hook, &mut Sprite)>,
     q_descriptors: Query<&EntityDescriptor>,
+    q_level_entities: Query<&crate::config::LevelEntity>,
     mut q_player_anim: Query<&mut PlayerAnimation>,
     mut q_transforms: Query<&mut Transform, Without<Hook>>,
     mut player: ResMut<PlayerResource>,
@@ -374,11 +469,42 @@ fn update_bonus_state(
         if hook.bonus_timer == BONUS_DISPLAY_DURATION {
             if let Some(entity) = hook.grabed_entity {
                 if let Ok(descriptor) = q_descriptors.get(entity) {
-                    let bonus = descriptor.bonus.unwrap_or(0);
+                    let mut bonus = descriptor.bonus.unwrap_or(0);
                     let sound_id = descriptor.bonus_type.as_deref().unwrap_or("Normal");
 
+                    // 获取实体 ID 以判断类型
+                    let entity_id = q_level_entities
+                        .get(entity)
+                        .map(|le| le.entity_id.as_str())
+                        .unwrap_or("");
+
+                    // 石头收藏书效果：岩石价值 ×3
+                    if player.has_rock_collectors_book {
+                        if matches!(entity_id, "MiniRock" | "NormalRock" | "BigRock") {
+                            bonus *= 3;
+                        }
+                    }
+
+                    // 宝石抛光剂效果：钻石价值 ×1.5
+                    if player.has_gem_polish {
+                        if entity_id == "Diamond" {
+                            bonus = (bonus as f32 * 1.5) as i32;
+                        } else if entity_id == "MoleWithDiamond" {
+                            // MoleWithDiamond 特殊处理：只对钻石部分加成
+                            // bonus = (bonus - mole_bonus) * 1.5 + mole_bonus
+                            // 暂时简化处理：整体 ×1.5
+                            bonus = (bonus as f32 * 1.5) as i32;
+                        }
+                    }
+
+                    // 幸运草效果：翻倍 extra_effect_chances
+                    let mut chances = descriptor.extra_effect_chances.unwrap_or(0.0);
+                    if player.has_lucky_clover {
+                        chances *= 2.0;
+                    }
+
                     // 处理 extra_effect_chances 特殊效果 (对齐 Lua)
-                    if let Some(chances) = descriptor.extra_effect_chances {
+                    if chances > 0.0 {
                         let rand_val = rand::random::<f32>();
                         if rand_val < chances {
                             // 20% 概率增加炸药，80% 概率增加玩家力量

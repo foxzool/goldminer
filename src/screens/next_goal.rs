@@ -3,6 +3,7 @@
 use crate::audio::{AudioAssets, music};
 use crate::config::ImageAssets;
 use crate::constants::{COLOR_GREEN, COLOR_YELLOW};
+use crate::demo::player::PlayerResource;
 use crate::screens::{Screen, stats::LevelStats};
 use crate::utils::love_to_bevy_coords;
 use bevy::prelude::*;
@@ -22,9 +23,16 @@ fn spawn_next_goal_ui(
     image_assets: Res<ImageAssets>,
     mut stats: ResMut<LevelStats>,
     audio_assets: Res<AudioAssets>,
+    mut player: ResMut<PlayerResource>,
 ) {
     // 更新目标金额
     stats.update_goal();
+
+    // 重置临时道具效果 (炸药为持久道具，不重置)
+    player.has_strength_drink = false;
+    player.has_lucky_clover = false;
+    player.has_rock_collectors_book = false;
+    player.has_gem_polish = false;
 
     let goal_text = if stats.is_first_init {
         stats.is_first_init = false;

@@ -85,8 +85,22 @@ fn panel_area(asset_server: &AssetServer, high_score_log: &Res<HighScoreLog>) ->
     )
 }
 
-fn go_back(input: Res<ButtonInput<KeyCode>>, mut next_menu: ResMut<NextState<Menu>>) {
-    if input.just_pressed(KeyCode::Enter) || input.just_pressed(KeyCode::NumpadEnter) {
+fn go_back(
+    input: Res<ButtonInput<KeyCode>>,
+    gamepads: Query<&Gamepad>,
+    mut next_menu: ResMut<NextState<Menu>>,
+) {
+    let mut pressed = input.get_just_pressed().next().is_some();
+    if !pressed {
+        for gamepad in &gamepads {
+            if gamepad.get_just_pressed().next().is_some() {
+                pressed = true;
+                break;
+            }
+        }
+    }
+
+    if pressed {
         next_menu.set(Menu::Main);
     }
 }

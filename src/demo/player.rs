@@ -16,14 +16,35 @@ pub(super) fn plugin(app: &mut App) {
 
     app.add_systems(OnEnter(Screen::Gameplay), spawn_player);
 
-    // 动画更新系统
+    // 动画及状态更新系统
     app.add_systems(
         Update,
         (
             update_animation_timer.in_set(AppSystems::TickTimers),
             update_animation_atlas.in_set(AppSystems::Update),
+            update_dynamite_status.in_set(AppSystems::Update),
         ),
     );
+}
+
+/// 更新玩家扔炸药的状态计时器
+fn update_dynamite_status(
+    time: Res<Time>,
+    mut player: ResMut<PlayerResource>,
+    mut q_player_anim: Query<&mut PlayerAnimation>,
+) {
+    if player.is_using_dynamite {
+        player.using_dynamite_timer -= time.delta_secs();
+        if player.using_dynamite_timer <= 0.0 {
+            player.is_using_dynamite = false;
+            player.using_dynamite_timer = 0.39;
+            // 恢复到正常状态 (如果正在回收则是 GrabBack，否则 Idle)
+            // 这里简化处理：如果在扔炸药动作结束，先切回 Idle，hook 系统会根据状态切回 GrabBack
+            for mut anim in &mut q_player_anim {
+                anim.update_state(PlayerAnimationState::Idle);
+            }
+        }
+    }
 }
 
 // ============================================================================
@@ -84,6 +105,8 @@ pub struct PlayerResource {
     pub has_strength_drink: bool,
     /// 是否持有幸运草
     pub has_lucky_clover: bool,
+    /// 是否持有石头收藏书
+    pub has_rock_collectors_book: bool,
     /// 是否持有宝石抛光剂
     pub has_gem_polish: bool,
 
@@ -105,6 +128,7 @@ impl Default for PlayerResource {
             dynamite_count: 0,
             has_strength_drink: false,
             has_lucky_clover: false,
+            has_rock_collectors_book: false,
             has_gem_polish: false,
             is_using_dynamite: false,
             using_dynamite_timer: 0.39,

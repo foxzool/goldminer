@@ -102,13 +102,36 @@ fn menu_arrow(asset_server: &AssetServer) -> impl Bundle {
 
 fn keyboard_input(
     input: Res<ButtonInput<KeyCode>>,
+    gamepads: Query<&Gamepad>,
     current_item: Res<State<MenuSelect>>,
     mut next_item: ResMut<NextState<MenuSelect>>,
     mut next_menu: ResMut<NextState<Menu>>,
     mut next_screen: ResMut<NextState<Screen>>,
     resource_handles: Res<ResourceHandles>,
 ) {
-    if input.just_pressed(KeyCode::ArrowUp) || input.just_pressed(KeyCode::ArrowDown) {
+    let mut up = input.just_pressed(KeyCode::ArrowUp);
+    let mut down = input.just_pressed(KeyCode::ArrowDown);
+    let mut confirm = input.just_pressed(KeyCode::Enter)
+        || input.just_pressed(KeyCode::NumpadEnter)
+        || input.just_pressed(KeyCode::KeyJ)
+        || input.just_pressed(KeyCode::KeyK);
+
+    for gamepad in &gamepads {
+        if gamepad.just_pressed(GamepadButton::DPadUp) {
+            up = true;
+        }
+        if gamepad.just_pressed(GamepadButton::DPadDown) {
+            down = true;
+        }
+        if gamepad.just_pressed(GamepadButton::South)
+            || gamepad.just_pressed(GamepadButton::East)
+            || gamepad.just_pressed(GamepadButton::Start)
+        {
+            confirm = true;
+        }
+    }
+
+    if up || down {
         if current_item.get() == &MenuSelect::StartGame {
             next_item.set(MenuSelect::HighScore)
         } else {
@@ -116,7 +139,7 @@ fn keyboard_input(
         }
     }
 
-    if input.just_pressed(KeyCode::Enter) || input.just_pressed(KeyCode::NumpadEnter) {
+    if confirm {
         if current_item.get() == &MenuSelect::StartGame {
             if resource_handles.is_all_done() {
                 next_screen.set(Screen::NextGoal);

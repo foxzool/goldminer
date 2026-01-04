@@ -30,6 +30,24 @@ pub(super) fn plugin(app: &mut App) {
         game_over::plugin,
         new_high_score::plugin,
     ));
+
+    app.add_systems(Update, handle_global_exit);
+}
+
+fn handle_global_exit(
+    input: Res<ButtonInput<KeyCode>>,
+    gamepads: Query<&Gamepad>,
+    mut exit: MessageWriter<AppExit>,
+) {
+    if input.just_pressed(KeyCode::Escape) {
+        exit.write(AppExit::Success);
+    }
+
+    for gamepad in &gamepads {
+        if gamepad.just_pressed(GamepadButton::Mode) {
+            exit.write(AppExit::Success);
+        }
+    }
 }
 
 /// The game's main screen states.

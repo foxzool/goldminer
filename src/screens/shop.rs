@@ -3,6 +3,7 @@
 use crate::audio::{AudioAssets, sound_effect};
 use crate::config::ImageAssets;
 use crate::constants::{COLOR_GREEN, COLOR_YELLOW};
+use crate::demo::player::PlayerResource;
 use crate::screens::{Screen, stats::LevelStats};
 use crate::utils::love_to_bevy_coords;
 use bevy::prelude::*;
@@ -27,16 +28,6 @@ pub enum PropType {
 }
 
 impl PropType {
-    fn name(&self) -> &'static str {
-        match self {
-            PropType::Dynamite => "Dynamite",
-            PropType::StrengthDrink => "Strength Drink",
-            PropType::LuckyClover => "Lucky Clover",
-            PropType::RockCollectorsBook => "Rock Book",
-            PropType::GemPolish => "Gem Polish",
-        }
-    }
-
     fn description(&self) -> &'static str {
         match self {
             PropType::Dynamite => "Destroy grabbed entity",
@@ -102,9 +93,9 @@ impl Default for ShopState {
 #[derive(Component)]
 struct ShopDialogueText;
 #[derive(Component)]
-struct ShopItemSprite(usize);
+struct ShopItemSprite;
 #[derive(Component)]
-struct ShopItemPrice(usize);
+struct ShopItemPrice;
 #[derive(Component)]
 struct ShopSelector;
 #[derive(Component)]
@@ -214,7 +205,7 @@ fn spawn_shop_ui(
             Sprite::from_image(image_assets.get_image(item.prop_type.image_id()).unwrap()),
             Transform::from_translation(love_to_bevy_coords(x, 160.0).extend(1.0)),
             bevy::sprite::Anchor::CENTER,
-            ShopItemSprite(i),
+            ShopItemSprite,
             DespawnOnExit(Screen::Shop),
         ));
 
@@ -230,7 +221,7 @@ fn spawn_shop_ui(
             TextColor(COLOR_GREEN),
             Transform::from_translation(love_to_bevy_coords(x, 175.0).extend(1.0)),
             bevy::sprite::Anchor::CENTER,
-            ShopItemPrice(i),
+            ShopItemPrice,
             DespawnOnExit(Screen::Shop),
         ));
     }
@@ -287,26 +278,52 @@ fn spawn_shop_ui(
 fn handle_shop_input(
     mut commands: Commands,
     input: Res<ButtonInput<KeyCode>>,
+    gamepads: Query<&Gamepad>,
     audio_assets: Res<AudioAssets>,
     mut stats: ResMut<LevelStats>,
     mut shop_state: ResMut<ShopState>,
+    mut player: ResMut<PlayerResource>,
 ) {
     if shop_state.is_finish_shopping {
         return;
     }
 
+    let mut left = input.just_pressed(KeyCode::ArrowLeft);
+    let mut right = input.just_pressed(KeyCode::ArrowRight);
+    let mut buy = input.just_pressed(KeyCode::Enter)
+        || input.just_pressed(KeyCode::NumpadEnter)
+        || input.just_pressed(KeyCode::KeyJ)
+        || input.just_pressed(KeyCode::KeyK);
+    let mut exit_shop = input.just_pressed(KeyCode::Space);
+
+    for gamepad in &gamepads {
+        if gamepad.just_pressed(GamepadButton::DPadLeft) {
+            left = true;
+        }
+        if gamepad.just_pressed(GamepadButton::DPadRight) {
+            right = true;
+        }
+        if gamepad.just_pressed(GamepadButton::South)
+            || gamepad.just_pressed(GamepadButton::East)
+            || gamepad.just_pressed(GamepadButton::Start)
+        {
+            buy = true;
+        }
+        if gamepad.just_pressed(GamepadButton::Select) {
+            exit_shop = true;
+        }
+    }
+
     // 左右切换选择
-    if input.just_pressed(KeyCode::ArrowLeft) && shop_state.selector_index > 0 {
+    if left && shop_state.selector_index > 0 {
         shop_state.selector_index -= 1;
     }
-    if input.just_pressed(KeyCode::ArrowRight)
-        && shop_state.selector_index < shop_state.items.len().saturating_sub(1)
-    {
+    if right && shop_state.selector_index < shop_state.items.len().saturating_sub(1) {
         shop_state.selector_index += 1;
     }
 
     // 购买
-    if input.just_pressed(KeyCode::Enter) || input.just_pressed(KeyCode::NumpadEnter) {
+    if buy {
         let selector_index = shop_state.selector_index;
         if let Some(item) = shop_state.items.get(selector_index).cloned() {
             if stats.money >= item.price {
@@ -318,7 +335,25 @@ fn handle_shop_input(
                     commands.spawn(sound_effect(audio));
                 }
 
-                // TODO: 应用道具效果到 PlayerResource
+                // 应用道具效果到 PlayerResource
+                match item.prop_type {
+                    PropType::Dynamite => {
+                        // 炸药数量 +1，上限 12
+                        player.dynamite_count = (player.dynamite_count + 1).min(12);
+                    }
+                    PropType::StrengthDrink => {
+                        player.has_strength_drink = true;
+                    }
+                    PropType::LuckyClover => {
+                        player.has_lucky_clover = true;
+                    }
+                    PropType::RockCollectorsBook => {
+                        player.has_rock_collectors_book = true;
+                    }
+                    PropType::GemPolish => {
+                        player.has_gem_polish = true;
+                    }
+                }
 
                 // 移除商品
                 shop_state.items.remove(selector_index);
@@ -337,7 +372,7 @@ fn handle_shop_input(
     }
 
     // 完成购物
-    if input.just_pressed(KeyCode::Space) {
+    if exit_shop {
         shop_state.is_finish_shopping = true;
     }
 }
