@@ -48,6 +48,8 @@ impl Plugin for AppPlugin {
                 }),
         );
 
+        app.insert_resource(UiScale(2.0));
+
         // Add other plugins.
         app.add_plugins((
             asset_tracking::plugin,

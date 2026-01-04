@@ -553,14 +553,14 @@ fn update_bonus_state(
                             Text::new(format!("${}", hook.current_bonus)),
                             TextFont {
                                 font,
-                                font_size: 64.0, // Lua 16pt * 4 = 64
+                                font_size: 32.0,
                                 ..default()
                             },
                             TextColor(COLOR_GREEN),
                             Node {
                                 position_type: PositionType::Absolute,
-                                top: px(72.0),   // Lua y=18 -> 18*4=72
-                                left: px(360.0), // Lua x=90 -> 90*4=360
+                                top: px(36.0),
+                                left: px(180.0),
                                 ..default()
                             },
                         ));

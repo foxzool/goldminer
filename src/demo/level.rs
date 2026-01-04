@@ -53,8 +53,8 @@ fn setup_ui(
         Text::default(),
         Node {
             position_type: PositionType::Absolute,
-            top: px(20),  // Lua y=5 -> 5*4=20
-            left: px(20), // Lua x=5 -> 5*4=20
+            top: px(10),
+            left: px(10),
             ..default()
         },
         children![
@@ -77,8 +77,8 @@ fn setup_ui(
         Text::default(),
         Node {
             position_type: PositionType::Absolute,
-            top: px(60),  // Lua y=15 -> 15*4=60
-            left: px(20),
+            top: px(28),
+            left: px(10),
             ..default()
         },
         children![
@@ -101,8 +101,8 @@ fn setup_ui(
         Text::default(),
         Node {
             position_type: PositionType::Absolute,
-            top: px(60),    // Lua y=15 -> 15*4=60
-            left: px(1040), // Lua x=260 -> 260*4=1040
+            top: px(30),
+            left: px(520),
             ..default()
         },
         children![
@@ -125,8 +125,8 @@ fn setup_ui(
         Text::default(),
         Node {
             position_type: PositionType::Absolute,
-            top: px(100),   // Lua y=25 -> 25*4=100
-            left: px(1020), 
+            top: px(50),
+            left: px(500),
             ..default()
         },
         children![
@@ -154,8 +154,8 @@ fn setup_ui(
         Visibility::Hidden,
         Node {
             position_type: PositionType::Absolute,
-            top: px(20),   // Lua y=5 -> 5*4=20
-            left: px(800), // Lua x=200 -> 200*4=800
+            top: px(10),
+            left: px(400),
             ..default()
         },
     ));
@@ -164,18 +164,18 @@ fn setup_ui(
     // 第一行 (1-6): y=22, x=195,200,205,210,215,220
     // 第二行 (7-12): y=12, x=195,200,205,210,215,220
     let dynamite_positions: [(f32, f32); 12] = [
-        (195.0, 22.0),
-        (200.0, 22.0),
-        (205.0, 22.0),
-        (210.0, 22.0),
-        (215.0, 22.0),
-        (220.0, 22.0),
-        (195.0, 12.0),
-        (200.0, 12.0),
-        (205.0, 12.0),
-        (210.0, 12.0),
-        (215.0, 12.0),
-        (220.0, 12.0),
+        (390.0, 44.0),
+        (400.0, 44.0),
+        (410.0, 44.0),
+        (420.0, 44.0),
+        (430.0, 44.0),
+        (440.0, 44.0),
+        (390.0, 24.0),
+        (400.0, 24.0),
+        (410.0, 24.0),
+        (420.0, 24.0),
+        (430.0, 24.0),
+        (440.0, 24.0),
     ];
 
     if let Some(dynamite_img) = image_assets.get_image("DynamiteUI") {
@@ -189,7 +189,7 @@ fn setup_ui(
                 DespawnOnExit(Screen::Gameplay),
                 DynamiteIcon(i),
                 Sprite::from_image(dynamite_img.clone()),
-                Transform::from_translation(love_to_bevy_coords(*x, *y).extend(5.0)),
+                Transform::from_translation(love_to_bevy_coords(*x / 2.0, *y / 2.0).extend(5.0)),
                 visibility,
             ));
         }
