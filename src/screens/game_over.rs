@@ -2,9 +2,11 @@
 
 use crate::config::ImageAssets;
 use crate::constants::COLOR_YELLOW;
-use crate::screens::{Screen, persistent::PersistentData, stats::LevelStats};
+use crate::demo::player::PlayerResource;
+use crate::screens::{persistent::PersistentData, stats::LevelStats, Screen};
 use crate::utils::love_to_bevy_coords;
 use bevy::prelude::*;
+use bevy::sprite::Anchor;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Screen::GameOver), spawn_game_over_ui);
@@ -12,6 +14,7 @@ pub(super) fn plugin(app: &mut App) {
         Update,
         check_keyboard_input.run_if(in_state(Screen::GameOver)),
     );
+    app.add_systems(OnExit(Screen::GameOver), reset_game_state);
 }
 
 /// 标记本次游戏是否刷新了最高分
@@ -41,7 +44,8 @@ fn spawn_game_over_ui(
     commands.spawn((
         Name::new("Goal Title"),
         Sprite::from_image(image_assets.get_image("Title").unwrap()),
-        Transform::from_translation(love_to_bevy_coords(160.0, 20.0).extend(0.0)),
+        Transform::from_translation(love_to_bevy_coords(54.0, 20.0).extend(0.0)),
+        Anchor::TOP_LEFT,
         DespawnOnExit(Screen::GameOver),
     ));
 
@@ -49,7 +53,8 @@ fn spawn_game_over_ui(
     commands.spawn((
         Name::new("Goal Panel"),
         Sprite::from_image(image_assets.get_image("Panel").unwrap()),
-        Transform::from_translation(love_to_bevy_coords(160.0, 80.0).extend(0.0)),
+        Transform::from_translation(love_to_bevy_coords(27.0, 80.0).extend(0.0)),
+        Anchor::TOP_LEFT,
         DespawnOnExit(Screen::GameOver),
     ));
 
@@ -64,8 +69,8 @@ fn spawn_game_over_ui(
             ..default()
         },
         TextColor(COLOR_YELLOW),
-        Transform::from_translation(love_to_bevy_coords(50.0, 130.0).extend(1.0)),
-        bevy::sprite::Anchor::TOP_LEFT,
+        Transform::from_translation(love_to_bevy_coords(70.0, 100.0).extend(1.0)),
+        Anchor::TOP_LEFT,
         DespawnOnExit(Screen::GameOver),
     ));
 
@@ -79,8 +84,8 @@ fn spawn_game_over_ui(
             ..default()
         },
         TextColor(COLOR_YELLOW),
-        Transform::from_translation(love_to_bevy_coords(160.0, 200.0).extend(1.0)),
-        bevy::sprite::Anchor::CENTER,
+        Transform::from_translation(love_to_bevy_coords(160.0, 170.0).extend(1.0)),
+        Anchor::CENTER,
         DespawnOnExit(Screen::GameOver),
     ));
 }
@@ -114,4 +119,9 @@ fn check_keyboard_input(
             next_screen.set(Screen::Title);
         }
     }
+}
+
+fn reset_game_state(mut stats: ResMut<LevelStats>, mut player: ResMut<PlayerResource>) {
+    *stats = LevelStats::default();
+    *player = PlayerResource::default();
 }

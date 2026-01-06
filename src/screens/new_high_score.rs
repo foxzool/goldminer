@@ -5,6 +5,7 @@ use crate::constants::{COLOR_GREEN, COLOR_YELLOW};
 use crate::screens::{Screen, persistent::PersistentData};
 use crate::utils::love_to_bevy_coords;
 use bevy::prelude::*;
+use bevy::sprite::Anchor;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Screen::NewHighScore), spawn_new_high_score_ui);
@@ -28,23 +29,25 @@ fn spawn_new_high_score_ui(
         DespawnOnExit(Screen::NewHighScore),
     ));
 
-    // 标题 (水平居中, y=20)
+    // 标题
     commands.spawn((
         Name::new("Goal Title"),
         Sprite::from_image(image_assets.get_image("Title").unwrap()),
-        Transform::from_translation(love_to_bevy_coords(160.0, 20.0).extend(0.0)),
+        Transform::from_translation(love_to_bevy_coords(54.0, 20.0).extend(0.0)),
+        Anchor::TOP_LEFT,
         DespawnOnExit(Screen::NewHighScore),
     ));
 
-    // 面板 (水平居中, y=80)
+    // 面板
     commands.spawn((
         Name::new("Goal Panel"),
         Sprite::from_image(image_assets.get_image("Panel").unwrap()),
-        Transform::from_translation(love_to_bevy_coords(160.0, 80.0).extend(0.0)),
+        Transform::from_translation(love_to_bevy_coords(27.0, 80.0).extend(0.0)),
+        Anchor::TOP_LEFT,
         DespawnOnExit(Screen::NewHighScore),
     ));
 
-    // 文字：New High Score: (x=70, y=100)
+    // 文字：
     let font = asset_server.load("fonts/Kurland.ttf");
     commands.spawn((
         Name::new("NewHighScore Label"),
@@ -56,7 +59,7 @@ fn spawn_new_high_score_ui(
         },
         TextColor(COLOR_YELLOW),
         Transform::from_translation(love_to_bevy_coords(70.0, 100.0).extend(1.0)),
-        bevy::sprite::Anchor::TOP_LEFT,
+        Anchor::TOP_LEFT,
         DespawnOnExit(Screen::NewHighScore),
     ));
 

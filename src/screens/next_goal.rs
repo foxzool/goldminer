@@ -1,10 +1,10 @@
 //! 显示下一关目标界面
 
-use crate::audio::{AudioAssets, music};
+use crate::audio::{music, AudioAssets};
 use crate::config::ImageAssets;
 use crate::constants::{COLOR_GREEN, COLOR_YELLOW};
 use crate::demo::player::PlayerResource;
-use crate::screens::{Screen, stats::LevelStats};
+use crate::screens::{stats::LevelStats, Screen};
 use crate::utils::love_to_bevy_coords;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
@@ -25,6 +25,12 @@ fn spawn_next_goal_ui(
     audio_assets: Res<AudioAssets>,
     mut player: ResMut<PlayerResource>,
 ) {
+    // 如果是第一次进入（新游戏），重置所有游戏状态
+    if stats.is_first_init {
+        *stats = LevelStats::default();
+        *player = PlayerResource::default();
+    }
+
     // 更新目标金额
     stats.update_goal();
 
@@ -86,7 +92,7 @@ fn spawn_next_goal_ui(
         },
         TextColor(COLOR_YELLOW),
         Transform::from_translation(love_to_bevy_coords(70.0, 100.0).extend(1.0)),
-        bevy::sprite::Anchor::TOP_LEFT,
+        Anchor::TOP_LEFT,
         DespawnOnExit(Screen::NextGoal),
     ));
 
@@ -100,8 +106,8 @@ fn spawn_next_goal_ui(
             ..default()
         },
         TextColor(COLOR_GREEN),
-        Transform::from_translation(love_to_bevy_coords(160.0, 140.0).extend(1.0)),
-        bevy::sprite::Anchor::CENTER,
+        Transform::from_translation(love_to_bevy_coords(95.0, 140.0).extend(1.0)),
+        Anchor::CENTER,
         DespawnOnExit(Screen::NextGoal),
     ));
 

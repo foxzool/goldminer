@@ -69,7 +69,7 @@ fn spawn_made_goal_ui(
             ..default()
         },
         TextColor(COLOR_YELLOW),
-        Transform::from_translation(love_to_bevy_coords(90.0, 110.0).extend(1.0)),
+        Transform::from_translation(love_to_bevy_coords(90.0, 60.0).extend(1.0)),
         bevy::sprite::Anchor::TOP_LEFT,
         DespawnOnExit(Screen::MadeGoal),
     ));
