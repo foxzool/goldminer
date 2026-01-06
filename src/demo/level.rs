@@ -320,7 +320,7 @@ pub fn spawn_level(
         levels.get(level_handle.0.id()),
         entities.get(entity_handle.0.id()),
     ) {
-        if let Some(config) = level.levels.get("LDEBUG") {
+        if let Some(config) = level.levels.get("L1_1") {
             // level_config.
             commands
                 .spawn((
