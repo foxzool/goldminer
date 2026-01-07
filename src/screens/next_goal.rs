@@ -1,10 +1,10 @@
 //! 显示下一关目标界面
 
-use crate::audio::{music, AudioAssets};
+use crate::audio::{AudioAssets, music};
 use crate::config::ImageAssets;
 use crate::constants::{COLOR_GREEN, COLOR_YELLOW};
 use crate::demo::player::PlayerResource;
-use crate::screens::{stats::LevelStats, Screen};
+use crate::screens::{Screen, stats::LevelStats};
 use crate::utils::love_to_bevy_coords;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;

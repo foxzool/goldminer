@@ -355,8 +355,7 @@ fn update_hook(
                 }
             }
         } else if hook.is_backing {
-            // 切换玩家动画到 GrabBack 状态（如非炸药状态）
-            if !player.is_using_dynamite {
+            if !player.is_using_dynamite && hook.grabed_entity.is_some() {
                 for mut player_anim in &mut q_player_anim {
                     player_anim.update_state(PlayerAnimationState::GrabBack);
                 }

@@ -1,0 +1,4 @@
+{
+  "high_score": 1036,
+  "high_level": 2
+}

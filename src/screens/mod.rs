@@ -19,6 +19,8 @@ pub(super) fn plugin(app: &mut App) {
     app.init_resource::<stats::LevelStats>();
     app.init_resource::<persistent::PersistentData>();
 
+    app.add_systems(Startup, load_persistent_data);
+
     app.add_plugins((
         gameplay::plugin,
         loading::plugin,
@@ -32,6 +34,10 @@ pub(super) fn plugin(app: &mut App) {
     ));
 
     app.add_systems(Update, handle_global_exit);
+}
+
+fn load_persistent_data(mut persistent: ResMut<persistent::PersistentData>) {
+    *persistent = persistent::PersistentData::load();
 }
 
 fn handle_global_exit(

@@ -3,7 +3,7 @@
 use crate::config::ImageAssets;
 use crate::constants::COLOR_YELLOW;
 use crate::demo::player::PlayerResource;
-use crate::screens::{persistent::PersistentData, stats::LevelStats, Screen};
+use crate::screens::{Screen, persistent::PersistentData, stats::LevelStats};
 use crate::utils::love_to_bevy_coords;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
@@ -110,12 +110,11 @@ fn check_keyboard_input(
 
     if pressed {
         if is_new_high_score.0 {
-            // 刷新最高分，保存并跳转到新纪录界面
             persistent.high_score = stats.money;
             persistent.high_level = stats.level;
+            persistent.save();
             next_screen.set(Screen::NewHighScore);
         } else {
-            // 未刷新，返回主菜单
             next_screen.set(Screen::Title);
         }
     }

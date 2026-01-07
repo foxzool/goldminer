@@ -100,7 +100,10 @@ struct ShopItemPrice;
 struct ShopSelector;
 #[derive(Component)]
 struct ShopDescriptionText;
-
+#[derive(Component)]
+struct ShopMoneyText;
+#[derive(Component)]
+struct ShopItemIndex(usize);
 const SHOP_ITEM_PADDING: f32 = 50.0;
 
 fn spawn_shop_ui(
@@ -206,6 +209,7 @@ fn spawn_shop_ui(
             Transform::from_translation(love_to_bevy_coords(x, 160.0).extend(1.0)),
             bevy::sprite::Anchor::CENTER,
             ShopItemSprite,
+            ShopItemIndex(i),
             DespawnOnExit(Screen::Shop),
         ));
 
@@ -222,6 +226,7 @@ fn spawn_shop_ui(
             Transform::from_translation(love_to_bevy_coords(x, 175.0).extend(1.0)),
             bevy::sprite::Anchor::CENTER,
             ShopItemPrice,
+            ShopItemIndex(i),
             DespawnOnExit(Screen::Shop),
         ));
     }
@@ -271,6 +276,7 @@ fn spawn_shop_ui(
         TextColor(COLOR_GREEN),
         Transform::from_translation(love_to_bevy_coords(160.0, 220.0).extend(1.0)),
         bevy::sprite::Anchor::CENTER,
+        ShopMoneyText,
         DespawnOnExit(Screen::Shop),
     ));
 }
@@ -379,11 +385,34 @@ fn handle_shop_input(
 
 fn update_shop_ui(
     time: Res<Time>,
+    stats: Res<LevelStats>,
     mut shop_state: ResMut<ShopState>,
     mut next_screen: ResMut<NextState<Screen>>,
     mut q_selector: Query<&mut Transform, With<ShopSelector>>,
-    mut q_dialogue: Query<&mut Text2d, With<ShopDialogueText>>,
-    mut q_description: Query<&mut Text2d, (With<ShopDescriptionText>, Without<ShopDialogueText>)>,
+    mut q_dialogue: Query<
+        &mut Text2d,
+        (
+            With<ShopDialogueText>,
+            Without<ShopDescriptionText>,
+            Without<ShopMoneyText>,
+        ),
+    >,
+    mut q_description: Query<
+        &mut Text2d,
+        (
+            With<ShopDescriptionText>,
+            Without<ShopDialogueText>,
+            Without<ShopMoneyText>,
+        ),
+    >,
+    mut q_money: Query<
+        &mut Text2d,
+        (
+            With<ShopMoneyText>,
+            Without<ShopDialogueText>,
+            Without<ShopDescriptionText>,
+        ),
+    >,
 ) {
     // 更新选择器位置
     if let Ok(mut transform) = q_selector.single_mut() {
@@ -400,6 +429,10 @@ fn update_shop_ui(
         .unwrap_or_default();
     if let Ok(mut text) = q_description.single_mut() {
         text.0 = desc;
+    }
+
+    if let Ok(mut text) = q_money.single_mut() {
+        text.0 = format!("Your Money: ${}", stats.money);
     }
 
     // 处理完成购物计时器

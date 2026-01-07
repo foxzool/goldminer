@@ -2570,6 +2570,7 @@ dependencies = [
  "getrandom",
  "rand",
  "serde",
+ "serde_json",
  "tracing",
 ]
 

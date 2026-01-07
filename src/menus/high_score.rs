@@ -1,29 +1,23 @@
-//! The settings menu.
+//! The high score menu.
 //!
-//! Additional settings and accessibility options should go here.
+//! Displays the highest score achieved by the player.
 
 use crate::constants::{COLOR_GREEN, COLOR_YELLOW};
+use crate::screens::persistent::PersistentData;
 use crate::utils::love_to_bevy_coords;
 use crate::{menus::Menu, theme::prelude::*};
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
 
 pub(super) fn plugin(app: &mut App) {
-    app.init_resource::<HighScoreLog>();
     app.add_systems(OnEnter(Menu::HighScore), spawn_high_score_menu);
     app.add_systems(Update, go_back.run_if(in_state(Menu::HighScore)));
-}
-
-#[derive(Default, Resource)]
-pub struct HighScoreLog {
-    pub score: u32,
-    pub level: u32,
 }
 
 fn spawn_high_score_menu(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    high_score_log: Res<HighScoreLog>,
+    persistent: Res<PersistentData>,
 ) {
     commands.spawn((
         widget::ui_root("High Score Menu"),
@@ -32,7 +26,7 @@ fn spawn_high_score_menu(
         Sprite::from_image(asset_server.load("images/bg_goal.png")),
         children![
             title_area(&asset_server),
-            panel_area(&asset_server, &high_score_log),
+            panel_area(&asset_server, &persistent),
         ],
     ));
 }
@@ -46,7 +40,7 @@ fn title_area(asset_server: &AssetServer) -> impl Bundle {
     )
 }
 
-fn panel_area(asset_server: &AssetServer, high_score_log: &Res<HighScoreLog>) -> impl Bundle {
+fn panel_area(asset_server: &AssetServer, persistent: &Res<PersistentData>) -> impl Bundle {
     let font = asset_server.load("fonts/Kurland.ttf");
     let style = TextFont {
         font: font.clone(),
@@ -63,19 +57,18 @@ fn panel_area(asset_server: &AssetServer, high_score_log: &Res<HighScoreLog>) ->
                 Text2d::new("High Score:\n\n"),
                 style.clone(),
                 Transform::from_xyz(47.0, -10.0, 0.0),
-                // Transform::from_translation(love_to_bevy_coords(70.0, 100.0).extend(1.0)),
                 Anchor::TOP_LEFT,
                 TextColor(COLOR_YELLOW),
             ),
             (
-                Text2d::new(format!("${}", high_score_log.score)),
+                Text2d::new(format!("${}", persistent.high_score)),
                 style.clone(),
                 Transform::from_xyz(47.0, -60.0, 0.0),
                 Anchor::TOP_LEFT,
                 TextColor(COLOR_GREEN),
             ),
             (
-                Text2d::new(format!("at Level{}", high_score_log.level)),
+                Text2d::new(format!("at Level {}", persistent.high_level)),
                 style,
                 Transform::from_xyz(47.0, -80.0, 0.0),
                 Anchor::TOP_LEFT,
