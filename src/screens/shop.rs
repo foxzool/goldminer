@@ -1,10 +1,10 @@
 //! 商店界面：购买道具
 
-use crate::audio::{AudioAssets, sound_effect};
+use crate::audio::{sound_effect, AudioAssets};
 use crate::config::ImageAssets;
 use crate::constants::{COLOR_GREEN, COLOR_YELLOW};
 use crate::demo::player::PlayerResource;
-use crate::screens::{Screen, stats::LevelStats};
+use crate::screens::{stats::LevelStats, Screen};
 use crate::utils::love_to_bevy_coords;
 use bevy::prelude::*;
 use rand::Rng;
@@ -102,8 +102,6 @@ struct ShopSelector;
 struct ShopDescriptionText;
 #[derive(Component)]
 struct ShopMoneyText;
-#[derive(Component)]
-struct ShopItemIndex(usize);
 const SHOP_ITEM_PADDING: f32 = 50.0;
 
 fn spawn_shop_ui(
@@ -209,7 +207,6 @@ fn spawn_shop_ui(
             Transform::from_translation(love_to_bevy_coords(x, 160.0).extend(1.0)),
             bevy::sprite::Anchor::CENTER,
             ShopItemSprite,
-            ShopItemIndex(i),
             DespawnOnExit(Screen::Shop),
         ));
 
@@ -226,7 +223,6 @@ fn spawn_shop_ui(
             Transform::from_translation(love_to_bevy_coords(x, 175.0).extend(1.0)),
             bevy::sprite::Anchor::CENTER,
             ShopItemPrice,
-            ShopItemIndex(i),
             DespawnOnExit(Screen::Shop),
         ));
     }
@@ -331,8 +327,8 @@ fn handle_shop_input(
     // 购买
     if buy {
         let selector_index = shop_state.selector_index;
-        if let Some(item) = shop_state.items.get(selector_index).cloned() {
-            if stats.money >= item.price {
+        if let Some(item) = shop_state.items.get(selector_index).cloned()
+            && stats.money >= item.price {
                 stats.money -= item.price;
                 shop_state.player_bought = true;
 
@@ -374,7 +370,6 @@ fn handle_shop_input(
                     shop_state.is_finish_shopping = true;
                 }
             }
-        }
     }
 
     // 完成购物

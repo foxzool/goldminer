@@ -294,11 +294,10 @@ fn update_hook(
 
                 // 获取实体的碰撞半径，默认为 HOOK_COLLISION_RADIUS
                 let mut entity_radius = HOOK_COLLISION_RADIUS;
-                if let Ok(descriptor) = q_descriptors.get(entity) {
-                    if let Some(radius) = descriptor.collision_radius {
+                if let Ok(descriptor) = q_descriptors.get(entity)
+                    && let Some(radius) = descriptor.collision_radius {
                         entity_radius = radius;
                     }
-                }
 
                 // 碰撞判定：当两圆心距离小于半径之和时发生碰撞 (对齐 Lua)
                 if collision_pos.distance(entity_pos) < (HOOK_COLLISION_RADIUS + entity_radius) {
@@ -363,8 +362,8 @@ fn update_hook(
 
             // 回缩逻辑
             let mut speed = HOOK_GRAB_SPEED;
-            if let Some(entity) = hook.grabed_entity {
-                if let Ok(descriptor) = q_descriptors.get(entity) {
+            if let Some(entity) = hook.grabed_entity
+                && let Ok(descriptor) = q_descriptors.get(entity) {
                     let mut mass = descriptor.mass.unwrap_or(1.0);
                     // 力量饮料效果：质量 ÷ 1.5
                     if player.has_strength_drink {
@@ -373,7 +372,6 @@ fn update_hook(
                     let strength = player.strength as f32;
                     speed = HOOK_GRAB_SPEED * strength / mass;
                 }
-            }
 
             hook.length -= time.delta_secs() * speed;
 
@@ -449,8 +447,8 @@ fn update_bonus_state(
 
     for (mut hook, mut sprite) in &mut query {
         // 如果正在抓取物体，同步物体位置和旋转 (对齐 Lua)
-        if let Some(entity) = hook.grabed_entity {
-            if let Ok(mut transform) = q_transforms.get_mut(entity) {
+        if let Some(entity) = hook.grabed_entity
+            && let Ok(mut transform) = q_transforms.get_mut(entity) {
                 let angle_rad = hook.angle.to_radians();
                 let dir = Vec2::new(angle_rad.sin(), -angle_rad.cos());
                 let collision_pos = base_pos + dir * (hook.length + HOOK_COLLISION_OFFSET);
@@ -458,16 +456,15 @@ fn update_bonus_state(
                 transform.translation = collision_pos.extend(1.0);
                 transform.rotation = Quat::from_rotation_z(angle_rad);
             }
-        }
 
         if !hook.is_showing_bonus {
             continue;
         }
 
         // 首帧进入奖励状态: 结算并显示 UI
-        if hook.bonus_timer == BONUS_DISPLAY_DURATION {
-            if let Some(entity) = hook.grabed_entity {
-                if let Ok(descriptor) = q_descriptors.get(entity) {
+        if hook.bonus_timer == BONUS_DISPLAY_DURATION
+            && let Some(entity) = hook.grabed_entity
+                && let Ok(descriptor) = q_descriptors.get(entity) {
                     let mut bonus = descriptor.bonus.unwrap_or(0);
                     let sound_id = descriptor.bonus_type.as_deref().unwrap_or("Normal");
 
@@ -478,11 +475,10 @@ fn update_bonus_state(
                         .unwrap_or("");
 
                     // 石头收藏书效果：岩石价值 ×3
-                    if player.has_rock_collectors_book {
-                        if matches!(entity_id, "MiniRock" | "NormalRock" | "BigRock") {
+                    if player.has_rock_collectors_book
+                        && matches!(entity_id, "MiniRock" | "NormalRock" | "BigRock") {
                             bonus *= 3;
                         }
-                    }
 
                     // 宝石抛光剂效果：钻石价值 ×1.5
                     if player.has_gem_polish {
@@ -568,8 +564,6 @@ fn update_bonus_state(
                     // 销毁被抓取的实体
                     commands.entity(entity).despawn();
                 }
-            }
-        }
 
         hook.bonus_timer -= time.delta_secs();
 

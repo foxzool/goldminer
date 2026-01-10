@@ -319,8 +319,8 @@ pub fn spawn_level(
     if let (Some(level), Some(entities_config)) = (
         levels.get(level_handle.0.id()),
         entities.get(entity_handle.0.id()),
-    ) {
-        if let Some(config) = level.levels.get("L1_1") {
+    )
+        && let Some(config) = level.levels.get("L1_1") {
             // level_config.
             commands
                 .spawn((
@@ -347,7 +347,6 @@ pub fn spawn_level(
                     }
                 });
         }
-    }
 }
 
 pub fn spawn_entity_sprite(

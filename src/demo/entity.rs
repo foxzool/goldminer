@@ -169,18 +169,16 @@ fn patrol_movement_system(
 
         if state.is_moving {
             // 确保动画状态为移动
-            if let Some(anim) = &mut animation {
-                if anim.state != EntityAnimationState::Move {
+            if let Some(anim) = &mut animation
+                && anim.state != EntityAnimationState::Move {
                     anim.state = EntityAnimationState::Move;
                     anim.current_frame = 0;
                     // 立即更新图集索引
-                    if !anim.move_frames.is_empty() {
-                        if let Some(atlas) = &mut sprite.texture_atlas {
+                    if !anim.move_frames.is_empty()
+                        && let Some(atlas) = &mut sprite.texture_atlas {
                             atlas.index = anim.move_frames[0];
                         }
-                    }
                 }
-            }
 
             // 计算移动速度：配置中的速度通常是每帧像素数，需要乘以 60 转换为每秒像素数
             let speed = descriptor.speed.unwrap_or(1.0) * 60.0;
@@ -213,18 +211,16 @@ fn patrol_movement_system(
             sprite.flip_x = state.direction > 0.0;
         } else {
             // 确保动画状态为待机
-            if let Some(anim) = &mut animation {
-                if anim.state != EntityAnimationState::Idle {
+            if let Some(anim) = &mut animation
+                && anim.state != EntityAnimationState::Idle {
                     anim.state = EntityAnimationState::Idle;
                     anim.current_frame = 0;
                     // 立即更新图集索引
-                    if !anim.idle_frames.is_empty() {
-                        if let Some(atlas) = &mut sprite.texture_atlas {
+                    if !anim.idle_frames.is_empty()
+                        && let Some(atlas) = &mut sprite.texture_atlas {
                             atlas.index = anim.idle_frames[0];
                         }
-                    }
                 }
-            }
 
             // 闲置状态，更新计时器
             state.idle_timer.tick(time.delta());
