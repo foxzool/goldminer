@@ -319,34 +319,33 @@ pub fn spawn_level(
     if let (Some(level), Some(entities_config)) = (
         levels.get(level_handle.0.id()),
         entities.get(entity_handle.0.id()),
-    )
-        && let Some(config) = level.levels.get("L1_1") {
-            // level_config.
-            commands
-                .spawn((
-                    Name::new("LevelEntities"),
-                    Transform::default(),
-                    Visibility::default(),
-                    DespawnOnExit(Screen::Gameplay),
-                ))
-                .with_children(|parent| {
-                    for level_entity in config.entities.clone() {
-                        parent.spawn((
-                            Name::new(level_entity.entity_id.clone()),
-                            Transform::from_translation(
-                                love_to_bevy_coords(level_entity.pos.x, level_entity.pos.y)
-                                    .extend(1.0),
-                            ),
-                            entities_config
-                                .entities
-                                .get(&level_entity.entity_id)
-                                .unwrap()
-                                .clone(),
-                            level_entity,
-                        ));
-                    }
-                });
-        }
+    ) && let Some(config) = level.levels.get("L1_1")
+    {
+        // level_config.
+        commands
+            .spawn((
+                Name::new("LevelEntities"),
+                Transform::default(),
+                Visibility::default(),
+                DespawnOnExit(Screen::Gameplay),
+            ))
+            .with_children(|parent| {
+                for level_entity in config.entities.clone() {
+                    parent.spawn((
+                        Name::new(level_entity.entity_id.clone()),
+                        Transform::from_translation(
+                            love_to_bevy_coords(level_entity.pos.x, level_entity.pos.y).extend(1.0),
+                        ),
+                        entities_config
+                            .entities
+                            .get(&level_entity.entity_id)
+                            .unwrap()
+                            .clone(),
+                        level_entity,
+                    ));
+                }
+            });
+    }
 }
 
 pub fn spawn_entity_sprite(

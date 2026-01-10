@@ -1,10 +1,10 @@
 //! 商店界面：购买道具
 
-use crate::audio::{sound_effect, AudioAssets};
+use crate::audio::{AudioAssets, sound_effect};
 use crate::config::ImageAssets;
 use crate::constants::{COLOR_GREEN, COLOR_YELLOW};
 use crate::demo::player::PlayerResource;
-use crate::screens::{stats::LevelStats, Screen};
+use crate::screens::{Screen, stats::LevelStats};
 use crate::utils::love_to_bevy_coords;
 use bevy::prelude::*;
 use rand::Rng;
@@ -328,48 +328,48 @@ fn handle_shop_input(
     if buy {
         let selector_index = shop_state.selector_index;
         if let Some(item) = shop_state.items.get(selector_index).cloned()
-            && stats.money >= item.price {
-                stats.money -= item.price;
-                shop_state.player_bought = true;
+            && stats.money >= item.price
+        {
+            stats.money -= item.price;
+            shop_state.player_bought = true;
 
-                // 播放购买音效
-                if let Some(audio) = audio_assets.get_audio("Money") {
-                    commands.spawn(sound_effect(audio));
+            // 播放购买音效
+            if let Some(audio) = audio_assets.get_audio("Money") {
+                commands.spawn(sound_effect(audio));
+            }
+
+            // 应用道具效果到 PlayerResource
+            match item.prop_type {
+                PropType::Dynamite => {
+                    // 炸药数量 +1，上限 12
+                    player.dynamite_count = (player.dynamite_count + 1).min(12);
                 }
-
-                // 应用道具效果到 PlayerResource
-                match item.prop_type {
-                    PropType::Dynamite => {
-                        // 炸药数量 +1，上限 12
-                        player.dynamite_count = (player.dynamite_count + 1).min(12);
-                    }
-                    PropType::StrengthDrink => {
-                        player.has_strength_drink = true;
-                    }
-                    PropType::LuckyClover => {
-                        player.has_lucky_clover = true;
-                    }
-                    PropType::RockCollectorsBook => {
-                        player.has_rock_collectors_book = true;
-                    }
-                    PropType::GemPolish => {
-                        player.has_gem_polish = true;
-                    }
+                PropType::StrengthDrink => {
+                    player.has_strength_drink = true;
                 }
-
-                // 移除商品
-                shop_state.items.remove(selector_index);
-                if shop_state.selector_index >= shop_state.items.len()
-                    && shop_state.selector_index > 0
-                {
-                    shop_state.selector_index -= 1;
+                PropType::LuckyClover => {
+                    player.has_lucky_clover = true;
                 }
-
-                // 商品售罄则自动完成购物
-                if shop_state.items.is_empty() {
-                    shop_state.is_finish_shopping = true;
+                PropType::RockCollectorsBook => {
+                    player.has_rock_collectors_book = true;
+                }
+                PropType::GemPolish => {
+                    player.has_gem_polish = true;
                 }
             }
+
+            // 移除商品
+            shop_state.items.remove(selector_index);
+            if shop_state.selector_index >= shop_state.items.len() && shop_state.selector_index > 0
+            {
+                shop_state.selector_index -= 1;
+            }
+
+            // 商品售罄则自动完成购物
+            if shop_state.items.is_empty() {
+                shop_state.is_finish_shopping = true;
+            }
+        }
     }
 
     // 完成购物

@@ -295,9 +295,10 @@ fn update_hook(
                 // 获取实体的碰撞半径，默认为 HOOK_COLLISION_RADIUS
                 let mut entity_radius = HOOK_COLLISION_RADIUS;
                 if let Ok(descriptor) = q_descriptors.get(entity)
-                    && let Some(radius) = descriptor.collision_radius {
-                        entity_radius = radius;
-                    }
+                    && let Some(radius) = descriptor.collision_radius
+                {
+                    entity_radius = radius;
+                }
 
                 // 碰撞判定：当两圆心距离小于半径之和时发生碰撞 (对齐 Lua)
                 if collision_pos.distance(entity_pos) < (HOOK_COLLISION_RADIUS + entity_radius) {
@@ -363,15 +364,16 @@ fn update_hook(
             // 回缩逻辑
             let mut speed = HOOK_GRAB_SPEED;
             if let Some(entity) = hook.grabed_entity
-                && let Ok(descriptor) = q_descriptors.get(entity) {
-                    let mut mass = descriptor.mass.unwrap_or(1.0);
-                    // 力量饮料效果：质量 ÷ 1.5
-                    if player.has_strength_drink {
-                        mass /= 1.5;
-                    }
-                    let strength = player.strength as f32;
-                    speed = HOOK_GRAB_SPEED * strength / mass;
+                && let Ok(descriptor) = q_descriptors.get(entity)
+            {
+                let mut mass = descriptor.mass.unwrap_or(1.0);
+                // 力量饮料效果：质量 ÷ 1.5
+                if player.has_strength_drink {
+                    mass /= 1.5;
                 }
+                let strength = player.strength as f32;
+                speed = HOOK_GRAB_SPEED * strength / mass;
+            }
 
             hook.length -= time.delta_secs() * speed;
 
@@ -448,14 +450,15 @@ fn update_bonus_state(
     for (mut hook, mut sprite) in &mut query {
         // 如果正在抓取物体，同步物体位置和旋转 (对齐 Lua)
         if let Some(entity) = hook.grabed_entity
-            && let Ok(mut transform) = q_transforms.get_mut(entity) {
-                let angle_rad = hook.angle.to_radians();
-                let dir = Vec2::new(angle_rad.sin(), -angle_rad.cos());
-                let collision_pos = base_pos + dir * (hook.length + HOOK_COLLISION_OFFSET);
+            && let Ok(mut transform) = q_transforms.get_mut(entity)
+        {
+            let angle_rad = hook.angle.to_radians();
+            let dir = Vec2::new(angle_rad.sin(), -angle_rad.cos());
+            let collision_pos = base_pos + dir * (hook.length + HOOK_COLLISION_OFFSET);
 
-                transform.translation = collision_pos.extend(1.0);
-                transform.rotation = Quat::from_rotation_z(angle_rad);
-            }
+            transform.translation = collision_pos.extend(1.0);
+            transform.rotation = Quat::from_rotation_z(angle_rad);
+        }
 
         if !hook.is_showing_bonus {
             continue;
@@ -464,106 +467,108 @@ fn update_bonus_state(
         // 首帧进入奖励状态: 结算并显示 UI
         if hook.bonus_timer == BONUS_DISPLAY_DURATION
             && let Some(entity) = hook.grabed_entity
-                && let Ok(descriptor) = q_descriptors.get(entity) {
-                    let mut bonus = descriptor.bonus.unwrap_or(0);
-                    let sound_id = descriptor.bonus_type.as_deref().unwrap_or("Normal");
+            && let Ok(descriptor) = q_descriptors.get(entity)
+        {
+            let mut bonus = descriptor.bonus.unwrap_or(0);
+            let sound_id = descriptor.bonus_type.as_deref().unwrap_or("Normal");
 
-                    // 获取实体 ID 以判断类型
-                    let entity_id = q_level_entities
-                        .get(entity)
-                        .map(|le| le.entity_id.as_str())
-                        .unwrap_or("");
+            // 获取实体 ID 以判断类型
+            let entity_id = q_level_entities
+                .get(entity)
+                .map(|le| le.entity_id.as_str())
+                .unwrap_or("");
 
-                    // 石头收藏书效果：岩石价值 ×3
-                    if player.has_rock_collectors_book
-                        && matches!(entity_id, "MiniRock" | "NormalRock" | "BigRock") {
-                            bonus *= 3;
-                        }
+            // 石头收藏书效果：岩石价值 ×3
+            if player.has_rock_collectors_book
+                && matches!(entity_id, "MiniRock" | "NormalRock" | "BigRock")
+            {
+                bonus *= 3;
+            }
 
-                    // 宝石抛光剂效果：钻石价值 ×1.5
-                    if player.has_gem_polish {
-                        if entity_id == "Diamond" {
-                            bonus = (bonus as f32 * 1.5) as i32;
-                        } else if entity_id == "MoleWithDiamond" {
-                            // MoleWithDiamond 特殊处理：只对钻石部分加成
-                            // bonus = (bonus - mole_bonus) * 1.5 + mole_bonus
-                            // 暂时简化处理：整体 ×1.5
-                            bonus = (bonus as f32 * 1.5) as i32;
-                        }
-                    }
-
-                    // 幸运草效果：翻倍 extra_effect_chances
-                    let mut chances = descriptor.extra_effect_chances.unwrap_or(0.0);
-                    if player.has_lucky_clover {
-                        chances *= 2.0;
-                    }
-
-                    // 处理 extra_effect_chances 特殊效果 (对齐 Lua)
-                    if chances > 0.0 {
-                        let rand_val = rand::random::<f32>();
-                        if rand_val < chances {
-                            // 20% 概率增加炸药，80% 概率增加玩家力量
-                            if rand::random::<f32>() < 0.2 {
-                                player.dynamite_count += 1;
-                            } else {
-                                // 力量增加，最大值为 6
-                                player.strength = (player.strength + 1).min(6);
-                                hook.show_strength = true;
-                                // Spawn Strength! 图标 - 位置 (80, 10) → Bevy 换算
-                                if let Some(strength_img) = image_assets.get_image("Strength!") {
-                                    commands.spawn((
-                                        StrengthIcon,
-                                        Sprite::from_image(strength_img),
-                                        Transform::from_translation(
-                                            love_to_bevy_coords(80.0, 10.0).extend(10.0),
-                                        ),
-                                    ));
-                                }
-                            }
-                            if let Some(audio) = audio_assets.get_audio("High") {
-                                commands.spawn(sound_effect(audio));
-                            }
-                        } else {
-                            // 正常奖励
-                            hook.current_bonus = bonus;
-                            stats.money += bonus as u32;
-                            if let Some(audio) = audio_assets.get_audio(sound_id) {
-                                commands.spawn(sound_effect(audio));
-                            }
-                        }
-                    } else {
-                        // 无特殊效果概率，正常奖励
-                        hook.current_bonus = bonus;
-                        stats.money += bonus as u32;
-                        if let Some(audio) = audio_assets.get_audio(sound_id) {
-                            commands.spawn(sound_effect(audio));
-                        }
-                    }
-
-                    // 如果有奖励金额，spawn 显示文本
-                    if hook.current_bonus > 0 {
-                        let font = asset_server.load("fonts/Kurland.ttf");
-                        commands.spawn((
-                            BonusText,
-                            Text::new(format!("${}", hook.current_bonus)),
-                            TextFont {
-                                font,
-                                font_size: 32.0,
-                                ..default()
-                            },
-                            TextColor(COLOR_GREEN),
-                            Node {
-                                position_type: PositionType::Absolute,
-                                top: px(36.0),
-                                left: px(180.0),
-                                ..default()
-                            },
-                        ));
-                    }
-
-                    // 销毁被抓取的实体
-                    commands.entity(entity).despawn();
+            // 宝石抛光剂效果：钻石价值 ×1.5
+            if player.has_gem_polish {
+                if entity_id == "Diamond" {
+                    bonus = (bonus as f32 * 1.5) as i32;
+                } else if entity_id == "MoleWithDiamond" {
+                    // MoleWithDiamond 特殊处理：只对钻石部分加成
+                    // bonus = (bonus - mole_bonus) * 1.5 + mole_bonus
+                    // 暂时简化处理：整体 ×1.5
+                    bonus = (bonus as f32 * 1.5) as i32;
                 }
+            }
+
+            // 幸运草效果：翻倍 extra_effect_chances
+            let mut chances = descriptor.extra_effect_chances.unwrap_or(0.0);
+            if player.has_lucky_clover {
+                chances *= 2.0;
+            }
+
+            // 处理 extra_effect_chances 特殊效果 (对齐 Lua)
+            if chances > 0.0 {
+                let rand_val = rand::random::<f32>();
+                if rand_val < chances {
+                    // 20% 概率增加炸药，80% 概率增加玩家力量
+                    if rand::random::<f32>() < 0.2 {
+                        player.dynamite_count += 1;
+                    } else {
+                        // 力量增加，最大值为 6
+                        player.strength = (player.strength + 1).min(6);
+                        hook.show_strength = true;
+                        // Spawn Strength! 图标 - 位置 (80, 10) → Bevy 换算
+                        if let Some(strength_img) = image_assets.get_image("Strength!") {
+                            commands.spawn((
+                                StrengthIcon,
+                                Sprite::from_image(strength_img),
+                                Transform::from_translation(
+                                    love_to_bevy_coords(80.0, 10.0).extend(10.0),
+                                ),
+                            ));
+                        }
+                    }
+                    if let Some(audio) = audio_assets.get_audio("High") {
+                        commands.spawn(sound_effect(audio));
+                    }
+                } else {
+                    // 正常奖励
+                    hook.current_bonus = bonus;
+                    stats.money += bonus as u32;
+                    if let Some(audio) = audio_assets.get_audio(sound_id) {
+                        commands.spawn(sound_effect(audio));
+                    }
+                }
+            } else {
+                // 无特殊效果概率，正常奖励
+                hook.current_bonus = bonus;
+                stats.money += bonus as u32;
+                if let Some(audio) = audio_assets.get_audio(sound_id) {
+                    commands.spawn(sound_effect(audio));
+                }
+            }
+
+            // 如果有奖励金额，spawn 显示文本
+            if hook.current_bonus > 0 {
+                let font = asset_server.load("fonts/Kurland.ttf");
+                commands.spawn((
+                    BonusText,
+                    Text::new(format!("${}", hook.current_bonus)),
+                    TextFont {
+                        font,
+                        font_size: 32.0,
+                        ..default()
+                    },
+                    TextColor(COLOR_GREEN),
+                    Node {
+                        position_type: PositionType::Absolute,
+                        top: px(36.0),
+                        left: px(180.0),
+                        ..default()
+                    },
+                ));
+            }
+
+            // 销毁被抓取的实体
+            commands.entity(entity).despawn();
+        }
 
         hook.bonus_timer -= time.delta_secs();
 
