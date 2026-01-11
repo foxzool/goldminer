@@ -56,6 +56,6 @@ impl LevelStats {
         };
         // 随机变体 1-3
         let variant = rand::random::<u32>() % 3 + 1;
-        self.real_level_str = format!("L{}_{}", real_level, variant);
+        self.real_level_str = format!("L{real_level}_{variant}");
     }
 }

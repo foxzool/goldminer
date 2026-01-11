@@ -202,7 +202,7 @@ fn spawn_shop_ui(
         let x = 30.0 + i as f32 * SHOP_ITEM_PADDING;
         // 商品图片
         commands.spawn((
-            Name::new(format!("Shop Item {}", i)),
+            Name::new(format!("Shop Item {i}")),
             Sprite::from_image(image_assets.get_image(item.prop_type.image_id()).unwrap()),
             Transform::from_translation(love_to_bevy_coords(x, 160.0).extend(1.0)),
             bevy::sprite::Anchor::CENTER,
@@ -212,7 +212,7 @@ fn spawn_shop_ui(
 
         // 价格 (商品下方)
         commands.spawn((
-            Name::new(format!("Shop Price {}", i)),
+            Name::new(format!("Shop Price {i}")),
             Text2d::new(format!("${}", item.price)),
             TextFont {
                 font: font.clone(),

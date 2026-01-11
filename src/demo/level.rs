@@ -288,7 +288,7 @@ fn bg_top(image_assets: &Res<ImageAssets>) -> impl Bundle {
 
 fn bg_level(image_assets: &Res<ImageAssets>, bg_type: &str) -> impl Bundle {
     (
-        Name::new(format!("{} Background", bg_type)),
+        Name::new(format!("{bg_type} Background")),
         Transform::from_translation(love_to_bevy_coords(0.0, 40.0).extend(-1.0)),
         Anchor::TOP_LEFT,
         Sprite::from_image(image_assets.get_image(bg_type).unwrap()),
