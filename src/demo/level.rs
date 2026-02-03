@@ -45,119 +45,95 @@ fn setup_ui(
     let game_font = asset_server.load("fonts/visitor1.ttf");
     let game_style = TextFont {
         font: game_font.clone(),
-        font_size: 20.0,
+        font_size: 10.0,
         ..default()
     };
-    commands.spawn((
-        DespawnOnExit(Screen::Gameplay),
-        Text::default(),
-        Node {
-            position_type: PositionType::Absolute,
-            top: px(10),
-            left: px(10),
-            ..default()
-        },
-        children![
-            (
-                TextSpan::new("Money"),
-                game_style.clone(),
-                TextColor(COLOR_DEEP_ORANGE)
-            ),
-            (
+    // Money HUD
+    commands
+        .spawn((
+            DespawnOnExit(Screen::Gameplay),
+            Text2d::new("Money"),
+            game_style.clone(),
+            TextColor(COLOR_DEEP_ORANGE),
+            Transform::from_translation(love_to_bevy_coords(10.0, 10.0).extend(10.0)),
+            Anchor::TOP_LEFT,
+        ))
+        .with_children(|parent| {
+            parent.spawn((
                 TextSpan::new(format!(" ${}", stats.money)),
                 game_style.clone(),
                 TextColor(COLOR_GREEN),
                 MoneyText,
-            ),
-        ],
-    ));
+            ));
+        });
 
-    commands.spawn((
-        DespawnOnExit(Screen::Gameplay),
-        Text::default(),
-        Node {
-            position_type: PositionType::Absolute,
-            top: px(28),
-            left: px(10),
-            ..default()
-        },
-        children![
-            (
-                TextSpan::new(" Goal"),
-                game_style.clone(),
-                TextColor(COLOR_DEEP_ORANGE)
-            ),
-            (
+    // Goal HUD
+    commands
+        .spawn((
+            DespawnOnExit(Screen::Gameplay),
+            Text2d::new(" Goal"),
+            game_style.clone(),
+            TextColor(COLOR_DEEP_ORANGE),
+            Transform::from_translation(love_to_bevy_coords(10.0, 28.0).extend(10.0)),
+            Anchor::TOP_LEFT,
+        ))
+        .with_children(|parent| {
+            parent.spawn((
                 TextSpan::new(format!(" ${}", stats.goal)),
                 game_style.clone(),
                 TextColor(COLOR_GREEN),
                 GoalText,
-            ),
-        ],
-    ));
+            ));
+        });
 
-    commands.spawn((
-        DespawnOnExit(Screen::Gameplay),
-        Text::default(),
-        Node {
-            position_type: PositionType::Absolute,
-            top: px(30),
-            left: px(520),
-            ..default()
-        },
-        children![
-            (
-                TextSpan::new("Time: "),
-                game_style.clone(),
-                TextColor(COLOR_DEEP_ORANGE)
-            ),
-            (
+    // Time HUD
+    commands
+        .spawn((
+            DespawnOnExit(Screen::Gameplay),
+            Text2d::new("Time: "),
+            game_style.clone(),
+            TextColor(COLOR_DEEP_ORANGE),
+            Transform::from_translation(love_to_bevy_coords(260.0, 10.0).extend(10.0)),
+            Anchor::TOP_LEFT,
+        ))
+        .with_children(|parent| {
+            parent.spawn((
                 TextSpan::new(format!("{:.0}", stats.timer)),
                 game_style.clone(),
                 TextColor(COLOR_ORANGE),
                 TimerText,
-            ),
-        ],
-    ));
+            ));
+        });
 
-    commands.spawn((
-        DespawnOnExit(Screen::Gameplay),
-        Text::default(),
-        Node {
-            position_type: PositionType::Absolute,
-            top: px(50),
-            left: px(500),
-            ..default()
-        },
-        children![
-            (
-                TextSpan::new("Level: "),
-                game_style.clone(),
-                TextColor(COLOR_DEEP_ORANGE)
-            ),
-            (
+    // Level HUD
+    commands
+        .spawn((
+            DespawnOnExit(Screen::Gameplay),
+            Text2d::new("Level: "),
+            game_style.clone(),
+            TextColor(COLOR_DEEP_ORANGE),
+            Transform::from_translation(love_to_bevy_coords(260.0, 25.0).extend(10.0)),
+            Anchor::TOP_LEFT,
+        ))
+        .with_children(|parent| {
+            parent.spawn((
                 TextSpan::new(format!("{}", stats.level)),
                 game_style.clone(),
                 TextColor(COLOR_ORANGE),
                 LevelDisplay,
-            ),
-        ],
-    ));
+            ));
+        });
 
     // 达成目标提示 "Press Select to Skip"
     commands.spawn((
         DespawnOnExit(Screen::Gameplay),
         ReachGoalTip,
-        Text::new("Press Select to Skip"),
+        Text2d::new("Press Select to Skip"),
         game_style.clone(),
         TextColor(COLOR_ORANGE),
         Visibility::Hidden,
-        Node {
-            position_type: PositionType::Absolute,
-            top: px(10),
-            left: px(400),
-            ..default()
-        },
+        Transform::from_translation(love_to_bevy_coords(160.0, 10.0).extend(15.0)),
+        Anchor::CENTER,
     ));
 
     // 炸药图标容器 - Lua 位置配置:
