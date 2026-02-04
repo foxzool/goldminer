@@ -514,16 +514,24 @@ fn update_bonus_state(
                         // 力量增加，最大值为 6
                         player.strength = (player.strength + 1).min(6);
                         hook.show_strength = true;
-                        // Spawn Strength! 图标 - 位置 (80, 10) → Bevy 换算
-                        if let Some(strength_img) = image_assets.get_image("Strength!") {
-                            commands.spawn((
-                                StrengthIcon,
-                                Sprite::from_image(strength_img),
-                                Transform::from_translation(
-                                    love_to_bevy_coords(80.0, 10.0).extend(10.0),
-                                ),
-                            ));
-                        }
+                        // Spawn Strength! 文字 - 位置 (80, 10) → Bevy 换算
+                        commands.spawn((
+                            StrengthIcon,
+                            Text2d::new("Strength!"),
+                            TextFont {
+                                font: asset_server.load("fonts/Kurland.ttf"),
+                                #[cfg(target_arch = "wasm32")]
+                                font_size: 6.0,
+                                #[cfg(not(target_arch = "wasm32"))]
+                                font_size: 24.0,
+                                ..default()
+                            },
+                            TextColor(COLOR_GREEN),
+                            Transform::from_translation(
+                                love_to_bevy_coords(80.0, 10.0).extend(10.0),
+                            ),
+                            Anchor::TOP_LEFT,
+                        ));
                     }
                     if let Some(audio) = audio_assets.get_audio("High") {
                         commands.spawn(sound_effect(audio));
@@ -547,22 +555,20 @@ fn update_bonus_state(
 
             // 如果有奖励金额，spawn 显示文本
             if hook.current_bonus > 0 {
-                let font = asset_server.load("fonts/Kurland.ttf");
                 commands.spawn((
                     BonusText,
-                    Text::new(format!("${}", hook.current_bonus)),
+                    Text2d::new(format!("${}", hook.current_bonus)),
                     TextFont {
-                        font,
+                        font: asset_server.load("fonts/Kurland.ttf"),
+                        #[cfg(target_arch = "wasm32")]
+                        font_size: 8.0,
+                        #[cfg(not(target_arch = "wasm32"))]
                         font_size: 32.0,
                         ..default()
                     },
                     TextColor(COLOR_GREEN),
-                    Node {
-                        position_type: PositionType::Absolute,
-                        top: px(36.0),
-                        left: px(180.0),
-                        ..default()
-                    },
+                    Transform::from_translation(love_to_bevy_coords(90.0, 18.0).extend(10.0)),
+                    Anchor::TOP_LEFT,
                 ));
             }
 
