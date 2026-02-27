@@ -1,11 +1,12 @@
 //! 显示下一关目标界面
 
-use crate::audio::{AudioAssets, music};
+use crate::audio::{AudioAssets, Music, music_once};
 use crate::config::ImageAssets;
 use crate::constants::{COLOR_GREEN, COLOR_YELLOW};
 use crate::demo::player::PlayerResource;
 use crate::screens::{Screen, stats::LevelStats};
 use crate::utils::love_to_bevy_coords;
+use bevy::audio::AudioSink;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
 
@@ -47,10 +48,10 @@ fn spawn_next_goal_ui(
         "Your Next Goal is"
     };
 
-    // 播放音乐
+    // 播放音乐（只播放一次，不循环）
     commands.spawn((
         Name::new("Goal Music"),
-        music(audio_assets.get_audio("Goal").unwrap()),
+        music_once(audio_assets.get_audio("Goal").unwrap()),
         DespawnOnExit(Screen::NextGoal),
     ));
 
@@ -111,19 +112,29 @@ fn spawn_next_goal_ui(
         DespawnOnExit(Screen::NextGoal),
     ));
 
-    // 转换计时器 (3秒)
+    // 转换计时器（备用，用于处理音乐加载失败的情况）
     commands.spawn((
-        NextGoalTimer(Timer::from_seconds(3.0, TimerMode::Once)),
+        NextGoalTimer(Timer::from_seconds(5.0, TimerMode::Once)),
         DespawnOnExit(Screen::NextGoal),
     ));
 }
 
 fn check_transition(
     time: Res<Time>,
-    mut query: Query<&mut NextGoalTimer>,
+    mut timer_query: Query<&mut NextGoalTimer>,
+    music_query: Query<&AudioSink, With<Music>>,
     mut next_screen: ResMut<NextState<Screen>>,
 ) {
-    for mut timer in &mut query {
+    // 检查音乐是否播放完成
+    let music_finished = music_query.iter().all(|sink| sink.empty());
+
+    if music_finished {
+        next_screen.set(Screen::Gameplay);
+        return;
+    }
+
+    // 备用：如果音乐加载失败或超时（5秒），也切换到游戏
+    for mut timer in &mut timer_query {
         if timer.0.tick(time.delta()).just_finished() {
             next_screen.set(Screen::Gameplay);
         }

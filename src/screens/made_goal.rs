@@ -1,10 +1,11 @@
 //! 达成目标过渡界面
 
-use crate::audio::{AudioAssets, music};
+use crate::audio::{AudioAssets, Music, music_once};
 use crate::config::ImageAssets;
 use crate::constants::COLOR_YELLOW;
 use crate::screens::{Screen, stats::LevelStats};
 use crate::utils::love_to_bevy_coords;
+use bevy::audio::AudioSink;
 use bevy::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
@@ -13,7 +14,10 @@ pub(super) fn plugin(app: &mut App) {
 }
 
 #[derive(Component)]
-struct MadeGoalTimer(Timer);
+struct MadeGoalTimer {
+    timer: Timer,
+    music_finished: bool,
+}
 
 fn spawn_made_goal_ui(
     mut commands: Commands,
@@ -27,10 +31,10 @@ fn spawn_made_goal_ui(
     stats.calculate_real_level();
     stats.reset_timer();
 
-    // 播放音乐
+    // 播放音乐（只播放一次，不循环）
     commands.spawn((
         Name::new("Made Goal Music"),
-        music(audio_assets.get_audio("MadeGoal").unwrap()),
+        music_once(audio_assets.get_audio("MadeGoal").unwrap()),
         DespawnOnExit(Screen::MadeGoal),
     ));
 
@@ -74,9 +78,12 @@ fn spawn_made_goal_ui(
         DespawnOnExit(Screen::MadeGoal),
     ));
 
-    // 转换计时器 (2秒)
+    // 延迟计时器（音乐播放完成后开始计时）
     commands.spawn((
-        MadeGoalTimer(Timer::from_seconds(2.0, TimerMode::Once)),
+        MadeGoalTimer {
+            timer: Timer::from_seconds(0.5, TimerMode::Once),
+            music_finished: false,
+        },
         DespawnOnExit(Screen::MadeGoal),
     ));
 }
@@ -84,11 +91,23 @@ fn spawn_made_goal_ui(
 fn check_transition(
     time: Res<Time>,
     mut query: Query<&mut MadeGoalTimer>,
+    music_query: Query<&AudioSink, With<Music>>,
     mut next_screen: ResMut<NextState<Screen>>,
 ) {
     for mut timer in &mut query {
-        if timer.0.tick(time.delta()).just_finished() {
+        // 等待音乐播放完成
+        if !timer.music_finished {
+            timer.music_finished = music_query.iter().all(|sink| sink.empty());
+            // 如果音乐还没完成，继续等待
+            if !timer.music_finished {
+                continue;
+            }
+        }
+
+        // 音乐播放完成后，开始延迟计时
+        if timer.timer.tick(time.delta()).just_finished() {
             next_screen.set(Screen::Shop);
+            return;
         }
     }
 }

@@ -14,8 +14,15 @@ pub(super) fn plugin(app: &mut App) {
 pub struct Music;
 
 /// A music audio instance.
+#[allow(dead_code)]
 pub fn music(handle: Handle<AudioSource>) -> impl Bundle {
     (AudioPlayer(handle), PlaybackSettings::LOOP, Music)
+}
+
+/// A music audio instance that plays once (non-looping).
+/// Use this for transition music that should play to completion.
+pub fn music_once(handle: Handle<AudioSource>) -> impl Bundle {
+    (AudioPlayer(handle), PlaybackSettings::ONCE, Music)
 }
 
 /// An organizational marker component that should be added to a spawned [`AudioPlayer`] if it's in the

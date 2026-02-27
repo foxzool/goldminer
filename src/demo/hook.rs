@@ -434,7 +434,7 @@ fn update_bonus_state(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     audio_assets: Res<AudioAssets>,
-    image_assets: Res<ImageAssets>,
+    _image_assets: Res<ImageAssets>,
     mut stats: ResMut<crate::screens::stats::LevelStats>,
     mut query: Query<(&mut Hook, &mut Sprite)>,
     q_descriptors: Query<&EntityDescriptor>,
