@@ -276,8 +276,9 @@ jobs:
         run: |
           for target in ${{ matrix.targets }}; do
             cargo build --locked --release --target="${target}" --features='${{ matrix.features }}'
-            mv target/"${target}"/release/'${{ env.cargo_build_binary_name }}${{ matrix.binary_ext }}' tmp/binary/"${target}"'${{ matrix.binary_ext }}'
+            mv target/"${target}"/release/${{ env.cargo_build_binary_name }}${{ matrix.binary_ext }}' tmp/binary/"${target}"'${{ matrix.binary_ext }}'
           done
+          
           if [ '${{ matrix.platform }}' = 'macos' ]; then
             lipo tmp/binary/*'${{ matrix.binary_ext }}' -create -output '${{ env.app }}/${{ env.app_binary_name }}${{ matrix.binary_ext }}'
           else
