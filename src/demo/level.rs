@@ -18,7 +18,7 @@ pub(super) fn plugin(app: &mut App) {
 
     app.add_systems(
         Update,
-        (spawn_entity_sprite, update_ui).run_if(in_state(Screen::Gameplay)),
+        (animate_money_view, spawn_entity_sprite, update_ui).run_if(in_state(Screen::Gameplay)),
     );
 }
 
@@ -60,7 +60,7 @@ fn setup_ui(
         ))
         .with_children(|parent| {
             parent.spawn((
-                TextSpan::new(format!(" ${}", stats.money)),
+                TextSpan::new(format!(" ${}", stats.money_view)),
                 game_style.clone(),
                 TextColor(COLOR_GREEN),
                 MoneyText,
@@ -132,7 +132,7 @@ fn setup_ui(
         game_style.clone(),
         TextColor(COLOR_ORANGE),
         Visibility::Hidden,
-        Transform::from_translation(love_to_bevy_coords(160.0, 10.0).extend(15.0)),
+        Transform::from_translation(love_to_bevy_coords(200.0, 5.0).extend(15.0)),
         Anchor::CENTER,
     ));
 
@@ -172,6 +172,22 @@ fn setup_ui(
     }
 }
 
+fn animate_money_view(time: Res<Time>, mut stats: ResMut<crate::screens::stats::LevelStats>) {
+    const ANIMATION_SPEED: f32 = 150.0;
+    let delta = time.delta().as_secs_f32();
+    let diff = stats.money as f32 - stats.money_view as f32;
+    if diff.abs() < 0.5 {
+        stats.money_view = stats.money;
+    } else {
+        let change = diff.signum() * ANIMATION_SPEED * delta;
+        if change.abs() > diff.abs() {
+            stats.money_view = stats.money;
+        } else {
+            stats.money_view = (stats.money_view as f32 + change) as u32;
+        }
+    }
+}
+
 fn update_ui(
     stats: Res<crate::screens::stats::LevelStats>,
     player: Res<PlayerResource>,
@@ -182,7 +198,7 @@ fn update_ui(
     mut q_dynamite: Query<(&DynamiteIcon, &mut Visibility), Without<ReachGoalTip>>,
 ) {
     for mut span in &mut q_money {
-        let new_text = format!(" ${}", stats.money);
+        let new_text = format!(" ${}", stats.money_view);
         if span.0 != new_text {
             span.0 = new_text;
         }

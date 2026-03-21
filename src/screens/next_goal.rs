@@ -1,12 +1,11 @@
 //! 显示下一关目标界面
 
-use crate::audio::{AudioAssets, Music, music_once};
+use crate::audio::{AudioAssets, TransitionMusicStatus, play_transition_music};
 use crate::config::ImageAssets;
 use crate::constants::{COLOR_GREEN, COLOR_YELLOW};
 use crate::demo::player::PlayerResource;
 use crate::screens::{Screen, stats::LevelStats};
 use crate::utils::love_to_bevy_coords;
-use bevy::audio::AudioSink;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
 
@@ -24,6 +23,7 @@ fn spawn_next_goal_ui(
     image_assets: Res<ImageAssets>,
     mut stats: ResMut<LevelStats>,
     audio_assets: Res<AudioAssets>,
+    mut transition_music: ResMut<TransitionMusicStatus>,
     mut player: ResMut<PlayerResource>,
 ) {
     // 如果是第一次进入（新游戏），重置所有游戏状态
@@ -48,12 +48,13 @@ fn spawn_next_goal_ui(
         "Your Next Goal is"
     };
 
-    // 播放音乐（只播放一次，不循环）
-    commands.spawn((
-        Name::new("Goal Music"),
-        music_once(audio_assets.get_audio("Goal").unwrap()),
+    play_transition_music(
+        &mut commands,
+        &mut transition_music,
+        "Goal Music",
+        audio_assets.get_audio("Goal").unwrap(),
         DespawnOnExit(Screen::NextGoal),
-    ));
+    );
 
     // 背景
     commands.spawn((
@@ -122,13 +123,10 @@ fn spawn_next_goal_ui(
 fn check_transition(
     time: Res<Time>,
     mut timer_query: Query<&mut NextGoalTimer>,
-    music_query: Query<&AudioSink, With<Music>>,
+    transition_music: Res<TransitionMusicStatus>,
     mut next_screen: ResMut<NextState<Screen>>,
 ) {
-    // 检查音乐是否播放完成
-    let music_finished = music_query.iter().all(|sink| sink.empty());
-
-    if music_finished {
+    if transition_music.is_finished() {
         next_screen.set(Screen::Gameplay);
         return;
     }

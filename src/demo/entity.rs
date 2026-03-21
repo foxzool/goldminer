@@ -164,6 +164,22 @@ fn patrol_movement_system(
             }
         }
         if is_grabbed {
+            state.is_moving = false;
+            state.idle_timer.reset();
+
+            if let Some(anim) = &mut animation
+                && anim.state != EntityAnimationState::Move
+            {
+                anim.state = EntityAnimationState::Move;
+                anim.current_frame = 0;
+
+                if !anim.move_frames.is_empty()
+                    && let Some(atlas) = &mut sprite.texture_atlas
+                {
+                    atlas.index = anim.move_frames[0];
+                }
+            }
+
             continue;
         }
 

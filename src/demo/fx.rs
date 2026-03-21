@@ -166,8 +166,12 @@ mod tests {
 
     #[test]
     fn once_animation_advances_then_requests_despawn() {
-        let mut animation =
-            FXAnimation::new(3, 0.1, FXPlayback::Once, FXPlacement::Fixed(Vec2::new(4.0, 8.0)));
+        let mut animation = FXAnimation::new(
+            3,
+            0.1,
+            FXPlayback::Once,
+            FXPlacement::Fixed(Vec2::new(4.0, 8.0)),
+        );
 
         let first = animation.tick(Duration::from_secs_f32(0.1));
         assert_eq!(first.atlas_index, Some(1));
@@ -184,10 +188,17 @@ mod tests {
 
     #[test]
     fn looping_animation_wraps_back_to_first_frame() {
-        let mut animation = FXAnimation::new(3, 0.1, FXPlayback::Loop, FXPlacement::Fixed(Vec2::ZERO));
+        let mut animation =
+            FXAnimation::new(3, 0.1, FXPlayback::Loop, FXPlacement::Fixed(Vec2::ZERO));
 
-        assert_eq!(animation.tick(Duration::from_secs_f32(0.1)).atlas_index, Some(1));
-        assert_eq!(animation.tick(Duration::from_secs_f32(0.1)).atlas_index, Some(2));
+        assert_eq!(
+            animation.tick(Duration::from_secs_f32(0.1)).atlas_index,
+            Some(1)
+        );
+        assert_eq!(
+            animation.tick(Duration::from_secs_f32(0.1)).atlas_index,
+            Some(2)
+        );
 
         let looped = animation.tick(Duration::from_secs_f32(0.1));
         assert_eq!(looped.atlas_index, Some(0));
@@ -226,6 +237,9 @@ mod tests {
         .with_z_layer(9.0);
 
         assert_eq!(animation.follow_target(), None);
-        assert_eq!(animation.translation_for(None), Some(Vec3::new(-6.0, 12.0, 9.0)));
+        assert_eq!(
+            animation.translation_for(None),
+            Some(Vec3::new(-6.0, 12.0, 9.0))
+        );
     }
 }

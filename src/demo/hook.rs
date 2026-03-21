@@ -3,7 +3,8 @@ use crate::asset_tracking::LoadResource;
 use crate::audio::{AudioAssets, sound_effect};
 use crate::config::{EntityDescriptor, EntityType, ImageAssets};
 use crate::constants::COLOR_GREEN;
-use crate::demo::explosive::ExplosiveState;
+use crate::demo::explosive::{ExplosiveState, spawn_standard_explosion_fx};
+use crate::demo::fx::{FXAnimation, FXPlacement, FXPlayback};
 use crate::demo::player::{PlayerAnimation, PlayerAnimationState, PlayerResource};
 use crate::screens::Screen;
 use crate::utils::love_to_bevy_coords;
@@ -31,6 +32,15 @@ const HOOK_GRAB_SPEED: f32 = 100.0; // 抓取速度 (像素/秒)
 const HOOK_COLLISION_RADIUS: f32 = 6.0; // 钩子碰撞半径 (匹配 Lua)
 const HOOK_COLLISION_OFFSET: f32 = 13.0; // 碰撞圆心偏移 (匹配 Lua)
 const BONUS_DISPLAY_DURATION: f32 = 1.0; // 奖励显示时长 (秒)
+const STRENGTH_DISPLAY_DURATION: f32 = 1.0;
+
+fn carried_entity_anchor(entity_type: &EntityType) -> Anchor {
+    if *entity_type == EntityType::MoveAround {
+        Anchor::CENTER
+    } else {
+        Anchor::from(Vec2::new(0.0, 1.0 / 6.0))
+    }
+}
 
 // --- 动画帧索引 ---
 const HOOK_ANIM_IDLE: usize = 0;
@@ -49,6 +59,7 @@ pub struct Hook {
     pub grabed_entity: Option<Entity>,
 
     pub bonus_timer: f32,
+    pub strength_timer: f32,
     pub current_bonus: i32,  // 当前奖励金额
     pub show_strength: bool, // 是否显示力量增强图标
 }
@@ -70,6 +81,7 @@ impl Default for Hook {
             is_showing_bonus: false,
             grabed_entity: None,
             bonus_timer: 0.0,
+            strength_timer: 0.0,
             current_bonus: 0,
             show_strength: false,
         }
@@ -190,25 +202,12 @@ fn handle_hook_input(
 
             // 在钩子位置产生爆炸特效
             let center = transform.translation.truncate();
-            if let Some(fx_image) = image_assets.get_image("BiggerExplosiveFX") {
-                let layout = TextureAtlasLayout::from_grid(UVec2::new(35, 35), 4, 2, None, None);
-                let atlas_layout = texture_atlas_layouts.add(layout);
-
-                commands.spawn((
-                    Name::new("DynamiteExplosionFX"),
-                    crate::demo::explosive::ExplosionFX::new(center),
-                    Sprite::from_atlas_image(
-                        fx_image,
-                        TextureAtlas {
-                            layout: atlas_layout,
-                            index: 0,
-                        },
-                    ),
-                    Transform::from_translation(center.extend(10.0)),
-                    Anchor::CENTER,
-                    DespawnOnExit(Screen::Gameplay),
-                ));
-            }
+            spawn_standard_explosion_fx(
+                &mut commands,
+                &image_assets,
+                texture_atlas_layouts.as_mut(),
+                center,
+            );
 
             // 销毁被抓取的物品
             if let Some(entity) = hook.grabed_entity {
@@ -244,6 +243,9 @@ fn update_hook(
     q_descriptors: Query<&EntityDescriptor>,
     mut q_explosives: Query<&mut ExplosiveState>,
     mut q_player_anim: Query<&mut PlayerAnimation>,
+    q_level_entities: Query<&crate::config::LevelEntity>,
+    image_assets: Res<ImageAssets>,
+    mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
     let rope_color = Color::srgb(66.0 / 255.0, 66.0 / 255.0, 66.0 / 255.0);
     let base_pos = love_to_bevy_coords(158.0, 30.0);
@@ -304,6 +306,41 @@ fn update_hook(
                 if collision_pos.distance(entity_pos) < (HOOK_COLLISION_RADIUS + entity_radius) {
                     hook.grabed_entity = Some(entity);
                     collided = true;
+
+                    // BigGold 闪光特效：被抓取时触发
+                    let entity_id = q_level_entities
+                        .get(entity)
+                        .map(|le| le.entity_id.as_str())
+                        .unwrap_or("");
+                    if entity_id == "BigGold"
+                        && let Some(fx_image) = image_assets.get_image("BigGoldFX")
+                    {
+                        let layout =
+                            TextureAtlasLayout::from_grid(UVec2::new(16, 16), 3, 3, None, None);
+                        let atlas_layout = texture_atlas_layouts.add(layout);
+
+                        commands.spawn((
+                            Name::new("BigGoldSparkle"),
+                            FXAnimation::new(
+                                9,
+                                0.2,
+                                FXPlayback::Loop,
+                                FXPlacement::Follow {
+                                    entity,
+                                    offset: Vec2::ZERO,
+                                },
+                            ),
+                            Sprite::from_atlas_image(
+                                fx_image,
+                                TextureAtlas {
+                                    layout: atlas_layout,
+                                    index: 0,
+                                },
+                            ),
+                            Anchor::CENTER,
+                            DespawnOnExit(Screen::Gameplay),
+                        ));
+                    }
 
                     // 根据实体大小切换动画帧
                     if let Ok(descriptor) = q_descriptors.get(entity) {
@@ -440,7 +477,7 @@ fn update_bonus_state(
     q_descriptors: Query<&EntityDescriptor>,
     q_level_entities: Query<&crate::config::LevelEntity>,
     mut q_player_anim: Query<&mut PlayerAnimation>,
-    mut q_transforms: Query<&mut Transform, Without<Hook>>,
+    mut q_transforms: Query<(&mut Transform, Option<&mut Anchor>), Without<Hook>>,
     mut player: ResMut<PlayerResource>,
     q_bonus_text: Query<Entity, With<BonusText>>,
     q_strength_icon: Query<Entity, With<StrengthIcon>>,
@@ -450,14 +487,21 @@ fn update_bonus_state(
     for (mut hook, mut sprite) in &mut query {
         // 如果正在抓取物体，同步物体位置和旋转 (对齐 Lua)
         if let Some(entity) = hook.grabed_entity
-            && let Ok(mut transform) = q_transforms.get_mut(entity)
+            && let Ok((mut transform, anchor)) = q_transforms.get_mut(entity)
         {
             let angle_rad = hook.angle.to_radians();
             let dir = Vec2::new(angle_rad.sin(), -angle_rad.cos());
             let collision_pos = base_pos + dir * (hook.length + HOOK_COLLISION_OFFSET);
+            let z = transform.translation.z;
 
-            transform.translation = collision_pos.extend(1.0);
+            transform.translation = collision_pos.extend(z);
             transform.rotation = Quat::from_rotation_z(angle_rad);
+
+            if let Ok(descriptor) = q_descriptors.get(entity)
+                && let Some(mut anchor) = anchor
+            {
+                *anchor = carried_entity_anchor(&descriptor.entity_type);
+            }
         }
 
         if !hook.is_showing_bonus {
@@ -514,6 +558,14 @@ fn update_bonus_state(
                         // 力量增加，最大值为 6
                         player.strength = (player.strength + 1).min(6);
                         hook.show_strength = true;
+                        hook.strength_timer = STRENGTH_DISPLAY_DURATION;
+
+                        if !player.is_using_dynamite {
+                            for mut player_anim in &mut q_player_anim {
+                                player_anim.update_state(PlayerAnimationState::Strengthen);
+                            }
+                        }
+
                         // Spawn Strength! 文字 - 位置 (80, 10) → Bevy 换算
                         commands.spawn((
                             StrengthIcon,
@@ -578,13 +630,38 @@ fn update_bonus_state(
 
         hook.bonus_timer -= time.delta_secs();
 
+        if hook.show_strength {
+            if !player.is_using_dynamite {
+                for mut player_anim in &mut q_player_anim {
+                    player_anim.update_state(PlayerAnimationState::Strengthen);
+                }
+            }
+
+            hook.strength_timer -= time.delta_secs();
+            if hook.strength_timer <= 0.0 {
+                hook.strength_timer = 0.0;
+                hook.show_strength = false;
+
+                for entity in &q_strength_icon {
+                    commands.entity(entity).despawn();
+                }
+
+                if !player.is_using_dynamite
+                    && !hook.is_grabing
+                    && !hook.is_backing
+                    && !hook.is_showing_bonus
+                {
+                    for mut player_anim in &mut q_player_anim {
+                        player_anim.update_state(PlayerAnimationState::Idle);
+                    }
+                }
+            }
+        }
+
         // 奖励计时器结束
         if hook.bonus_timer <= 0.0 {
             // 清理显示元素
             for entity in &q_bonus_text {
-                commands.entity(entity).despawn();
-            }
-            for entity in &q_strength_icon {
                 commands.entity(entity).despawn();
             }
 
@@ -593,7 +670,6 @@ fn update_bonus_state(
             hook.is_showing_bonus = false;
             hook.bonus_timer = 0.0;
             hook.current_bonus = 0;
-            hook.show_strength = false;
 
             // 重置动画帧
             if let Some(atlas) = &mut sprite.texture_atlas {
@@ -601,8 +677,10 @@ fn update_bonus_state(
             }
 
             // 切换玩家动画回 Idle 状态
-            for mut player_anim in &mut q_player_anim {
-                player_anim.update_state(PlayerAnimationState::Idle);
+            if !hook.show_strength && !player.is_using_dynamite {
+                for mut player_anim in &mut q_player_anim {
+                    player_anim.update_state(PlayerAnimationState::Idle);
+                }
             }
 
             // 播放重置音效

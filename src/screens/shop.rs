@@ -2,7 +2,9 @@
 
 use crate::audio::{AudioAssets, sound_effect};
 use crate::config::ImageAssets;
-use crate::constants::{COLOR_GREEN, COLOR_YELLOW, SHOPKEEPER_FRAMES, SHOPKEEPER_HEIGHT, SHOPKEEPER_WIDTH};
+use crate::constants::{
+    COLOR_GREEN, COLOR_YELLOW, SHOPKEEPER_FRAMES, SHOPKEEPER_HEIGHT, SHOPKEEPER_WIDTH,
+};
 use crate::demo::player::PlayerResource;
 use crate::screens::{Screen, stats::LevelStats};
 use crate::utils::love_to_bevy_coords;

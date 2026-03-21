@@ -8,28 +8,31 @@
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
 
-use crate::AppSystems;
-use crate::audio::{AudioAssets, sound_effect};
+use crate::audio::{sound_effect, AudioAssets};
 use crate::config::{EntityDescriptor, ImageAssets};
+use crate::demo::fx::{FXAnimation, FXPlacement, FXPlayback};
 use crate::screens::Screen;
+use crate::AppSystems;
 
 /// 爆炸半径 (与 Lua 版 biggerExplosiveFX 对齐)
 const EXPLOSION_RADIUS: f32 = 35.0 / 2.0;
 
-/// 爆炸特效动画帧时长 (秒)
-const EXPLOSION_FRAME_DURATION: f32 = 0.06;
+const BIGGER_EXPLOSION_FRAME_DURATION: f32 = 0.06;
 
-/// 爆炸特效总帧数
-const EXPLOSION_FRAME_COUNT: usize = 8;
+const BIGGER_EXPLOSION_FRAME_COUNT: usize = 8;
+
+const STANDARD_EXPLOSION_FRAME_DURATION: f32 = 0.2;
+
+const STANDARD_EXPLOSION_FRAME_COUNT: usize = 12;
+
+const STANDARD_EXPLOSION_FRAME_SIZE: UVec2 = UVec2::new(16, 16);
+
+const BIGGER_EXPLOSION_FRAME_SIZE: UVec2 = UVec2::new(35, 35);
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         Update,
-        (
-            explosion_trigger_system,
-            explosion_fx_system,
-            explosion_damage_system,
-        )
+        (explosion_trigger_system, explosion_damage_system)
             .chain()
             .in_set(AppSystems::Update)
             .run_if(in_state(Screen::Gameplay)),
@@ -48,21 +51,60 @@ pub struct ExplosiveState {
 /// 爆炸特效组件
 #[derive(Component)]
 pub struct ExplosionFX {
-    /// 动画计时器
-    pub timer: Timer,
-    /// 当前帧索引
-    pub current_frame: usize,
     /// 爆炸中心位置 (用于范围伤害检测)
     pub center: Vec2,
 }
 
 impl ExplosionFX {
     pub fn new(center: Vec2) -> Self {
-        Self {
-            timer: Timer::from_seconds(EXPLOSION_FRAME_DURATION, TimerMode::Repeating),
-            current_frame: 0,
-            center,
-        }
+        Self { center }
+    }
+
+    pub fn bigger_animation(center: Vec2) -> FXAnimation {
+        FXAnimation::new(
+            BIGGER_EXPLOSION_FRAME_COUNT,
+            BIGGER_EXPLOSION_FRAME_DURATION,
+            FXPlayback::Once,
+            FXPlacement::Fixed(center),
+        )
+        .with_z_layer(10.0)
+    }
+}
+
+pub fn standard_explosion_animation(center: Vec2) -> FXAnimation {
+    FXAnimation::new(
+        STANDARD_EXPLOSION_FRAME_COUNT,
+        STANDARD_EXPLOSION_FRAME_DURATION,
+        FXPlayback::Once,
+        FXPlacement::Fixed(center),
+    )
+    .with_z_layer(10.0)
+}
+
+pub fn spawn_standard_explosion_fx(
+    commands: &mut Commands,
+    image_assets: &ImageAssets,
+    texture_atlas_layouts: &mut Assets<TextureAtlasLayout>,
+    center: Vec2,
+) {
+    if let Some(fx_image) = image_assets.get_image("ExplosiveFX") {
+        let layout = TextureAtlasLayout::from_grid(STANDARD_EXPLOSION_FRAME_SIZE, 4, 3, None, None);
+        let atlas_layout = texture_atlas_layouts.add(layout);
+
+        commands.spawn((
+            Name::new("StandardExplosionFX"),
+            standard_explosion_animation(center),
+            Sprite::from_atlas_image(
+                fx_image,
+                TextureAtlas {
+                    layout: atlas_layout,
+                    index: 0,
+                },
+            ),
+            Transform::from_translation(center.extend(10.0)),
+            Anchor::CENTER,
+            DespawnOnExit(Screen::Gameplay),
+        ));
     }
 }
 
@@ -86,12 +128,14 @@ fn explosion_trigger_system(
             // 生成爆炸特效实体
             if let Some(fx_image) = image_assets.get_image("BiggerExplosiveFX") {
                 // bigger_explosive_fx_sheet.png: 4x2 帧，每帧 35x35
-                let layout = TextureAtlasLayout::from_grid(UVec2::new(35, 35), 4, 2, None, None);
+                let layout =
+                    TextureAtlasLayout::from_grid(BIGGER_EXPLOSION_FRAME_SIZE, 4, 2, None, None);
                 let atlas_layout = texture_atlas_layouts.add(layout);
 
                 commands.spawn((
                     Name::new("ExplosionFX"),
                     ExplosionFX::new(center),
+                    ExplosionFX::bigger_animation(center),
                     Sprite::from_atlas_image(
                         fx_image,
                         TextureAtlas {
@@ -107,31 +151,6 @@ fn explosion_trigger_system(
 
             // 标记已触发，防止重复生成特效
             state.damage_dealt = true;
-        }
-    }
-}
-
-/// 爆炸特效动画系统：更新帧索引，动画结束后销毁特效实体
-fn explosion_fx_system(
-    mut commands: Commands,
-    time: Res<Time>,
-    mut q_fx: Query<(Entity, &mut ExplosionFX, &mut Sprite)>,
-) {
-    for (entity, mut fx, mut sprite) in q_fx.iter_mut() {
-        fx.timer.tick(time.delta());
-
-        if fx.timer.just_finished() {
-            fx.current_frame += 1;
-
-            if fx.current_frame >= EXPLOSION_FRAME_COUNT {
-                // 动画结束，销毁特效实体
-                commands.entity(entity).despawn();
-            } else {
-                // 更新图集索引
-                if let Some(atlas) = &mut sprite.texture_atlas {
-                    atlas.index = fx.current_frame;
-                }
-            }
         }
     }
 }

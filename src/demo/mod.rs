@@ -7,6 +7,7 @@ use bevy::prelude::*;
 
 pub mod entity;
 pub mod explosive;
+pub mod fx;
 pub mod hook;
 pub mod level;
 pub mod player;
@@ -17,6 +18,7 @@ pub(super) fn plugin(app: &mut App) {
         player::plugin,
         hook::plugin,
         entity::plugin,
+        fx::plugin,
         explosive::plugin,
     ));
 }

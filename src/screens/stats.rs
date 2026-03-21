@@ -3,6 +3,8 @@ use bevy::prelude::*;
 #[derive(Resource, Debug, Clone)]
 pub struct LevelStats {
     pub money: u32,
+    /// 显示用金币值（动画效果）
+    pub money_view: u32,
     pub goal: u32,
     pub goal_addon: u32,
     pub level: u32,
@@ -16,10 +18,11 @@ impl Default for LevelStats {
     fn default() -> Self {
         Self {
             money: 0,
+            money_view: 0,
             goal: 375,
             goal_addon: 275,
             level: 1,
-            timer: 61.0,
+            timer: 60.0,
             is_first_init: true,
             real_level_str: "L1_1".to_string(),
         }

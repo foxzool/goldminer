@@ -1,0 +1,5 @@
+- 2026-03-21: 保留 `ExplosionFX` 作为爆炸中心标记，仅把帧动画职责下沉到通用 `FXAnimation`，这样 TNT 范围伤害逻辑不变，炸药爆炸也能复用同一套 atlas 动画时序。
+- 2026-03-21: 过场音乐改为由 `src/audio.rs` 统一维护 `TransitionMusicStatus`，屏幕只读取“是否真正播完”这一结果；同时新增去重逻辑，保证连续进入过场时不会遗留多个 `Music` 实体互相干扰。
+- 2026-03-21: 力量奖励触发时立即切 `PlayerAnimationState::Strengthen`，并在炸药动画结束时根据 `hook.show_strength` 决定回 Strengthen 或 Idle，避免两套状态机互相覆盖导致强化动画丢失。
+- 2026-03-21: 巡逻实体被钩子抓住后，在 `src/demo/entity.rs` 直接冻结 `PatrolState` 并切回移动动画首帧，而不是只跳过位移更新；这样回收过程中不会残留巡逻速度或待机帧，视觉更接近 Lua 原版。
+- 2026-03-21: 保留 `ExplosionFX` 组件仅给 TNT 范围伤害使用；抓取炸药改为通过 `spawn_standard_explosion_fx()` 生成无伤害的小爆炸，这样不会把 TNT 范围判定误带到普通炸药销毁路径。

@@ -1,11 +1,10 @@
 //! 达成目标过渡界面
 
-use crate::audio::{AudioAssets, Music, music_once};
+use crate::audio::{AudioAssets, TransitionMusicStatus, play_transition_music};
 use crate::config::ImageAssets;
 use crate::constants::COLOR_YELLOW;
 use crate::screens::{Screen, stats::LevelStats};
 use crate::utils::love_to_bevy_coords;
-use bevy::audio::AudioSink;
 use bevy::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
@@ -25,18 +24,20 @@ fn spawn_made_goal_ui(
     image_assets: Res<ImageAssets>,
     mut stats: ResMut<LevelStats>,
     audio_assets: Res<AudioAssets>,
+    mut transition_music: ResMut<TransitionMusicStatus>,
 ) {
     // 增加等级并计算实际关卡配置
     stats.level += 1;
     stats.calculate_real_level();
     stats.reset_timer();
 
-    // 播放音乐（只播放一次，不循环）
-    commands.spawn((
-        Name::new("Made Goal Music"),
-        music_once(audio_assets.get_audio("MadeGoal").unwrap()),
+    play_transition_music(
+        &mut commands,
+        &mut transition_music,
+        "Made Goal Music",
+        audio_assets.get_audio("MadeGoal").unwrap(),
         DespawnOnExit(Screen::MadeGoal),
-    ));
+    );
 
     // 背景
     commands.spawn((
@@ -91,20 +92,17 @@ fn spawn_made_goal_ui(
 fn check_transition(
     time: Res<Time>,
     mut query: Query<&mut MadeGoalTimer>,
-    music_query: Query<&AudioSink, With<Music>>,
+    transition_music: Res<TransitionMusicStatus>,
     mut next_screen: ResMut<NextState<Screen>>,
 ) {
     for mut timer in &mut query {
-        // 等待音乐播放完成
         if !timer.music_finished {
-            timer.music_finished = music_query.iter().all(|sink| sink.empty());
-            // 如果音乐还没完成，继续等待
+            timer.music_finished = transition_music.is_finished();
             if !timer.music_finished {
                 continue;
             }
         }
 
-        // 音乐播放完成后，开始延迟计时
         if timer.timer.tick(time.delta()).just_finished() {
             next_screen.set(Screen::Shop);
             return;

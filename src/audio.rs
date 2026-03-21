@@ -1,8 +1,14 @@
 use crate::asset_tracking::LoadResource;
+use bevy::audio::AudioSink;
 use bevy::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.load_resource::<AudioAssets>();
+    app.load_resource::<AudioAssets>()
+        .init_resource::<TransitionMusicStatus>()
+        .add_systems(
+            Update,
+            (dedupe_transition_music, sync_transition_music_status).chain(),
+        );
 }
 
 /// An organizational marker component that should be added to a spawned [`AudioPlayer`] if it's in the
@@ -23,6 +29,106 @@ pub fn music(handle: Handle<AudioSource>) -> impl Bundle {
 /// Use this for transition music that should play to completion.
 pub fn music_once(handle: Handle<AudioSource>) -> impl Bundle {
     (AudioPlayer(handle), PlaybackSettings::ONCE, Music)
+}
+
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
+pub struct TransitionMusic;
+
+#[derive(Component, Reflect, Default)]
+#[reflect(Component)]
+pub struct TransitionMusicPlayback {
+    started: bool,
+}
+
+#[derive(Resource, Reflect, Clone, Copy, PartialEq, Eq, Default)]
+#[reflect(Resource)]
+pub enum TransitionMusicStatus {
+    #[default]
+    Idle,
+    WaitingForSink,
+    Playing,
+    Finished,
+}
+
+impl TransitionMusicStatus {
+    pub fn begin(&mut self) {
+        *self = Self::WaitingForSink;
+    }
+
+    pub fn is_finished(&self) -> bool {
+        matches!(self, Self::Finished)
+    }
+}
+
+pub fn transition_music_once(handle: Handle<AudioSource>) -> impl Bundle {
+    (
+        music_once(handle),
+        TransitionMusic,
+        TransitionMusicPlayback::default(),
+    )
+}
+
+pub fn play_transition_music<T: Component>(
+    commands: &mut Commands,
+    status: &mut TransitionMusicStatus,
+    name: &'static str,
+    handle: Handle<AudioSource>,
+    scope: T,
+) {
+    status.begin();
+    commands.spawn((Name::new(name), transition_music_once(handle), scope));
+}
+
+fn dedupe_transition_music(
+    mut commands: Commands,
+    added_query: Query<Entity, Added<TransitionMusic>>,
+    existing_query: Query<Entity, With<TransitionMusic>>,
+) {
+    for newest in &added_query {
+        for entity in &existing_query {
+            if entity != newest {
+                commands.entity(entity).despawn();
+            }
+        }
+    }
+}
+
+fn sync_transition_music_status(
+    mut status: ResMut<TransitionMusicStatus>,
+    mut query: Query<(&mut TransitionMusicPlayback, Option<&AudioSink>), With<TransitionMusic>>,
+) {
+    let mut has_transition_music = false;
+    let mut any_playing = false;
+    let mut any_finished = false;
+
+    for (mut playback, sink) in &mut query {
+        has_transition_music = true;
+
+        if let Some(sink) = sink {
+            if !sink.empty() {
+                playback.started = true;
+                any_playing = true;
+            } else if playback.started {
+                any_finished = true;
+            }
+        }
+    }
+
+    if !has_transition_music {
+        if !matches!(*status, TransitionMusicStatus::WaitingForSink) {
+            *status = TransitionMusicStatus::Idle;
+        }
+        return;
+    }
+
+    *status = if any_playing {
+        TransitionMusicStatus::Playing
+    } else if any_finished {
+        TransitionMusicStatus::Finished
+    } else {
+        TransitionMusicStatus::WaitingForSink
+    };
 }
 
 /// An organizational marker component that should be added to a spawned [`AudioPlayer`] if it's in the

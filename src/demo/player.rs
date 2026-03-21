@@ -7,6 +7,7 @@ use bevy::sprite::Anchor;
 
 use crate::AppSystems;
 use crate::asset_tracking::LoadResource;
+use crate::demo::hook::Hook;
 use crate::screens::Screen;
 use crate::utils::love_to_bevy_coords;
 
@@ -31,6 +32,7 @@ pub(super) fn plugin(app: &mut App) {
 fn update_dynamite_status(
     time: Res<Time>,
     mut player: ResMut<PlayerResource>,
+    q_hook: Query<&Hook>,
     mut q_player_anim: Query<&mut PlayerAnimation>,
 ) {
     if player.is_using_dynamite {
@@ -38,10 +40,14 @@ fn update_dynamite_status(
         if player.using_dynamite_timer <= 0.0 {
             player.is_using_dynamite = false;
             player.using_dynamite_timer = 0.39;
-            // 恢复到正常状态 (如果正在回收则是 GrabBack，否则 Idle)
-            // 这里简化处理：如果在扔炸药动作结束，先切回 Idle，hook 系统会根据状态切回 GrabBack
+            let next_state = if q_hook.iter().any(|hook| hook.show_strength) {
+                PlayerAnimationState::Strengthen
+            } else {
+                PlayerAnimationState::Idle
+            };
+
             for mut anim in &mut q_player_anim {
-                anim.update_state(PlayerAnimationState::Idle);
+                anim.update_state(next_state);
             }
         }
     }

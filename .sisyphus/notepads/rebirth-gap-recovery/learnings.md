@@ -1,0 +1,5 @@
+- 2026-03-21: `src/demo/fx.rs` 统一了承载式与定点式图集特效，调用方继续自行提供 `Sprite::from_atlas_image(...)` 的 atlas layout，动画系统只负责帧推进、跟随和销毁。
+- 2026-03-21: `rebirth/GameStates.lua` 的 `showNextGoal` 与 `showMadeGoal` 都是等流式音乐自然播完后再切状态，Bevy 侧不能直接用 `AudioSink::empty()` 判定，否则在 sink 尚未挂载时会把“未开始”误判成“已结束”。
+- 2026-03-21: 力量奖励需与普通奖励计时解耦：`hook.bonus_timer` 负责结算展示，`hook.strength_timer` 单独驱动 Strengthen 动画与“Strength!”文案，才能对齐 Lua 版 1 秒强化表现。
+- 2026-03-21: 还原抓取挂载姿态时，`BasicMapObject` 与爆炸物应保持 `width / 2, height / 3` 的挂点，而 `MoveAround` 实体在被抓时仍使用中心挂点；Bevy 侧可在钩子同步阶段按 `EntityType` 强制锚点，避免依赖初始渲染状态。
+- 2026-03-21: 抓取中的炸药销毁路径应使用独立的小爆炸图集 `ExplosiveFX`，并固定生成在钩子当前位置；TNT 连锁爆炸继续走 `BiggerExplosiveFX`，避免两类视觉语义混用。
