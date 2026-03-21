@@ -2,7 +2,7 @@
 
 use crate::audio::{AudioAssets, sound_effect};
 use crate::config::ImageAssets;
-use crate::constants::{COLOR_GREEN, COLOR_YELLOW};
+use crate::constants::{COLOR_GREEN, COLOR_YELLOW, SHOPKEEPER_FRAMES, SHOPKEEPER_HEIGHT, SHOPKEEPER_WIDTH};
 use crate::demo::player::PlayerResource;
 use crate::screens::{Screen, stats::LevelStats};
 use crate::utils::love_to_bevy_coords;
@@ -102,12 +102,15 @@ struct ShopSelector;
 struct ShopDescriptionText;
 #[derive(Component)]
 struct ShopMoneyText;
+#[derive(Component)]
+struct ShopkeeperSprite;
 const SHOP_ITEM_PADDING: f32 = 50.0;
 
 fn spawn_shop_ui(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     image_assets: Res<ImageAssets>,
+    mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
     stats: Res<LevelStats>,
 ) {
     // 初始化商店状态
@@ -185,6 +188,30 @@ fn spawn_shop_ui(
         Transform::from_translation(love_to_bevy_coords(30.0, 75.0).extend(1.0)),
         bevy::sprite::Anchor::TOP_LEFT,
         ShopDialogueText,
+        DespawnOnExit(Screen::Shop),
+    ));
+
+    // 店主 (220, 100)
+    let shopkeeper_layout = TextureAtlasLayout::from_grid(
+        UVec2::new(SHOPKEEPER_WIDTH, SHOPKEEPER_HEIGHT),
+        SHOPKEEPER_FRAMES,
+        1,
+        None,
+        None,
+    );
+    let shopkeeper_layout_handle = texture_atlas_layouts.add(shopkeeper_layout);
+    commands.spawn((
+        Name::new("Shopkeeper"),
+        Sprite::from_atlas_image(
+            image_assets.get_image("Shopkeeper").unwrap(),
+            TextureAtlas {
+                layout: shopkeeper_layout_handle,
+                index: 0,
+            },
+        ),
+        Transform::from_translation(love_to_bevy_coords(220.0, 100.0).extend(1.0)),
+        bevy::sprite::Anchor::CENTER,
+        ShopkeeperSprite,
         DespawnOnExit(Screen::Shop),
     ));
 
@@ -408,6 +435,7 @@ fn update_shop_ui(
             Without<ShopDescriptionText>,
         ),
     >,
+    mut q_shopkeeper: Query<&mut Sprite, With<ShopkeeperSprite>>,
 ) {
     // 更新选择器位置
     if let Ok(mut transform) = q_selector.single_mut() {
@@ -437,6 +465,16 @@ fn update_shop_ui(
                 text.0 = "Thank you!\nGood luck!".to_string();
             } else {
                 text.0 = "  :(".to_string();
+            }
+        }
+
+        if let Ok(mut sprite) = q_shopkeeper.single_mut() {
+            if let Some(atlas) = sprite.texture_atlas.as_mut() {
+                if !shop_state.player_bought {
+                    atlas.index = 1; // Sad state
+                } else {
+                    atlas.index = 0; // Idle state
+                }
             }
         }
 
