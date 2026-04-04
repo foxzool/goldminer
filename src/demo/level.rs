@@ -5,6 +5,7 @@ use crate::config::{EntityDescriptor, EntityType, ImageAssets};
 use crate::constants::{COLOR_DEEP_ORANGE, COLOR_GREEN, COLOR_ORANGE};
 use crate::demo::player::PlayerResource;
 use crate::screens::Screen;
+use crate::screens::stats::LevelStats;
 use crate::utils::love_to_bevy_coords;
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
@@ -307,13 +308,24 @@ pub fn spawn_level(
     entity_handle: Res<EntityHandle>,
     levels: Res<Assets<LevelsConfig>>,
     entities: Res<Assets<EntitiesConfig>>,
+    stats: Res<LevelStats>,
 ) {
     if let (Some(level), Some(entities_config)) = (
         levels.get(level_handle.0.id()),
         entities.get(entity_handle.0.id()),
-    ) && let Some(config) = level.levels.get("L1_1")
-    {
-        // level_config.
+    ) {
+        let selected_level = level
+            .levels
+            .get(&stats.real_level_str)
+            .or_else(|| level.levels.get("L1_1"));
+
+        let Some(config) = selected_level else {
+            warn!("No level config found for {}", stats.real_level_str);
+            return;
+        };
+
+        info!("Loading gameplay level {}", stats.real_level_str);
+
         commands
             .spawn((
                 Name::new("LevelEntities"),

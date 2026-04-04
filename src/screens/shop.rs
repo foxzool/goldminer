@@ -77,6 +77,8 @@ struct ShopState {
     is_finish_shopping: bool,
     finish_timer: Timer,
     player_bought: bool,
+    items_dirty: bool,
+    dialogue_text: String,
 }
 
 impl Default for ShopState {
@@ -87,6 +89,8 @@ impl Default for ShopState {
             is_finish_shopping: false,
             finish_timer: Timer::from_seconds(1.5, TimerMode::Once),
             player_bought: false,
+            items_dirty: false,
+            dialogue_text: DEFAULT_DIALOGUE_TEXT.to_string(),
         }
     }
 }
@@ -106,7 +110,11 @@ struct ShopDescriptionText;
 struct ShopMoneyText;
 #[derive(Component)]
 struct ShopkeeperSprite;
+#[derive(Component)]
+struct ShopDynamicItem;
 const SHOP_ITEM_PADDING: f32 = 50.0;
+const DEFAULT_DIALOGUE_TEXT: &str = "Left/Right: select\nEnter: buy\nSpace: exit";
+const NO_MONEY_DIALOGUE_TEXT: &str = "You don't seem to have any money\n:(";
 
 fn spawn_shop_ui(
     mut commands: Commands,
@@ -149,6 +157,8 @@ fn spawn_shop_ui(
         is_finish_shopping: false,
         finish_timer: Timer::from_seconds(1.5, TimerMode::Once),
         player_bought: false,
+        items_dirty: false,
+        dialogue_text: DEFAULT_DIALOGUE_TEXT.to_string(),
     });
 
     // 背景
@@ -180,7 +190,7 @@ fn spawn_shop_ui(
     let font = asset_server.load("fonts/Kurland.ttf");
     commands.spawn((
         Name::new("Shop Dialogue"),
-        Text2d::new("Left/Right: select\nEnter: buy\nSpace: exit"),
+        Text2d::new(DEFAULT_DIALOGUE_TEXT),
         TextFont {
             font: font.clone(),
             font_size: 12.0,
@@ -226,35 +236,7 @@ fn spawn_shop_ui(
         DespawnOnExit(Screen::Shop),
     ));
 
-    // 商品 (从 30, 176 开始)
-    for (i, item) in items.iter().enumerate() {
-        let x = 30.0 + i as f32 * SHOP_ITEM_PADDING;
-        // 商品图片
-        commands.spawn((
-            Name::new(format!("Shop Item {i}")),
-            Sprite::from_image(image_assets.get_image(item.prop_type.image_id()).unwrap()),
-            Transform::from_translation(love_to_bevy_coords(x, 160.0).extend(1.0)),
-            bevy::sprite::Anchor::CENTER,
-            ShopItemSprite,
-            DespawnOnExit(Screen::Shop),
-        ));
-
-        // 价格 (商品下方)
-        commands.spawn((
-            Name::new(format!("Shop Price {i}")),
-            Text2d::new(format!("${}", item.price)),
-            TextFont {
-                font: font.clone(),
-                font_size: 10.0,
-                ..default()
-            },
-            TextColor(COLOR_GREEN),
-            Transform::from_translation(love_to_bevy_coords(x, 175.0).extend(1.0)),
-            bevy::sprite::Anchor::CENTER,
-            ShopItemPrice,
-            DespawnOnExit(Screen::Shop),
-        ));
-    }
+    spawn_shop_items(&mut commands, asset_server.as_ref(), &image_assets, &items);
 
     // 选择器 (y=130)
     if !items.is_empty() {
@@ -306,6 +288,45 @@ fn spawn_shop_ui(
     ));
 }
 
+fn spawn_shop_items(
+    commands: &mut Commands,
+    asset_server: &AssetServer,
+    image_assets: &ImageAssets,
+    items: &[ShopItem],
+) {
+    let font = asset_server.load("fonts/Kurland.ttf");
+
+    for (i, item) in items.iter().enumerate() {
+        let x = 30.0 + i as f32 * SHOP_ITEM_PADDING;
+
+        commands.spawn((
+            Name::new(format!("Shop Item {i}")),
+            Sprite::from_image(image_assets.get_image(item.prop_type.image_id()).unwrap()),
+            Transform::from_translation(love_to_bevy_coords(x, 160.0).extend(1.0)),
+            bevy::sprite::Anchor::CENTER,
+            ShopItemSprite,
+            ShopDynamicItem,
+            DespawnOnExit(Screen::Shop),
+        ));
+
+        commands.spawn((
+            Name::new(format!("Shop Price {i}")),
+            Text2d::new(format!("${}", item.price)),
+            TextFont {
+                font: font.clone(),
+                font_size: 10.0,
+                ..default()
+            },
+            TextColor(COLOR_GREEN),
+            Transform::from_translation(love_to_bevy_coords(x, 175.0).extend(1.0)),
+            bevy::sprite::Anchor::CENTER,
+            ShopItemPrice,
+            ShopDynamicItem,
+            DespawnOnExit(Screen::Shop),
+        ));
+    }
+}
+
 fn handle_shop_input(
     mut commands: Commands,
     input: Res<ButtonInput<KeyCode>>,
@@ -348,9 +369,11 @@ fn handle_shop_input(
     // 左右切换选择
     if left && shop_state.selector_index > 0 {
         shop_state.selector_index -= 1;
+        shop_state.dialogue_text = DEFAULT_DIALOGUE_TEXT.to_string();
     }
     if right && shop_state.selector_index < shop_state.items.len().saturating_sub(1) {
         shop_state.selector_index += 1;
+        shop_state.dialogue_text = DEFAULT_DIALOGUE_TEXT.to_string();
     }
 
     // 购买
@@ -361,6 +384,7 @@ fn handle_shop_input(
         {
             stats.money -= item.price;
             shop_state.player_bought = true;
+            shop_state.dialogue_text = DEFAULT_DIALOGUE_TEXT.to_string();
 
             // 播放购买音效
             if let Some(audio) = audio_assets.get_audio("Money") {
@@ -389,6 +413,7 @@ fn handle_shop_input(
 
             // 移除商品
             shop_state.items.remove(selector_index);
+            shop_state.items_dirty = true;
             if shop_state.selector_index >= shop_state.items.len() && shop_state.selector_index > 0
             {
                 shop_state.selector_index -= 1;
@@ -398,6 +423,8 @@ fn handle_shop_input(
             if shop_state.items.is_empty() {
                 shop_state.is_finish_shopping = true;
             }
+        } else if shop_state.items.get(selector_index).is_some() {
+            shop_state.dialogue_text = NO_MONEY_DIALOGUE_TEXT.to_string();
         }
     }
 
@@ -408,11 +435,15 @@ fn handle_shop_input(
 }
 
 fn update_shop_ui(
+    mut commands: Commands,
     time: Res<Time>,
+    asset_server: Res<AssetServer>,
+    image_assets: Res<ImageAssets>,
     stats: Res<LevelStats>,
     mut shop_state: ResMut<ShopState>,
     mut next_screen: ResMut<NextState<Screen>>,
     mut q_selector: Query<&mut Transform, With<ShopSelector>>,
+    mut q_selector_visibility: Query<&mut Visibility, With<ShopSelector>>,
     mut q_dialogue: Query<
         &mut Text2d,
         (
@@ -438,11 +469,33 @@ fn update_shop_ui(
         ),
     >,
     mut q_shopkeeper: Query<&mut Sprite, With<ShopkeeperSprite>>,
+    q_dynamic_items: Query<Entity, With<ShopDynamicItem>>,
 ) {
+    if shop_state.items_dirty {
+        for entity in &q_dynamic_items {
+            commands.entity(entity).despawn();
+        }
+        spawn_shop_items(
+            &mut commands,
+            asset_server.as_ref(),
+            &image_assets,
+            &shop_state.items,
+        );
+        shop_state.items_dirty = false;
+    }
+
     // 更新选择器位置
     if let Ok(mut transform) = q_selector.single_mut() {
         let x = 30.0 + shop_state.selector_index as f32 * SHOP_ITEM_PADDING;
         transform.translation = love_to_bevy_coords(x, 130.0).extend(2.0);
+    }
+
+    if let Ok(mut visibility) = q_selector_visibility.single_mut() {
+        *visibility = if shop_state.items.is_empty() || shop_state.is_finish_shopping {
+            Visibility::Hidden
+        } else {
+            Visibility::Visible
+        };
     }
 
     // 更新描述文字
@@ -484,5 +537,7 @@ fn update_shop_ui(
         if shop_state.finish_timer.just_finished() {
             next_screen.set(Screen::NextGoal);
         }
+    } else if let Ok(mut text) = q_dialogue.single_mut() {
+        text.0 = shop_state.dialogue_text.clone();
     }
 }

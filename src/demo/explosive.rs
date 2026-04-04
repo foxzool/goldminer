@@ -8,11 +8,11 @@
 use bevy::prelude::*;
 use bevy::sprite::Anchor;
 
-use crate::audio::{sound_effect, AudioAssets};
+use crate::AppSystems;
+use crate::audio::{AudioAssets, sound_effect};
 use crate::config::{EntityDescriptor, ImageAssets};
 use crate::demo::fx::{FXAnimation, FXPlacement, FXPlayback};
 use crate::screens::Screen;
-use crate::AppSystems;
 
 /// 爆炸半径 (与 Lua 版 biggerExplosiveFX 对齐)
 const EXPLOSION_RADIUS: f32 = 35.0 / 2.0;
@@ -32,7 +32,11 @@ const BIGGER_EXPLOSION_FRAME_SIZE: UVec2 = UVec2::new(35, 35);
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         Update,
-        (explosion_trigger_system, explosion_damage_system)
+        (
+            explosion_trigger_system,
+            explosion_damage_system,
+            explosion_cleanup_system,
+        )
             .chain()
             .in_set(AppSystems::Update)
             .run_if(in_state(Screen::Gameplay)),
@@ -46,6 +50,8 @@ pub struct ExplosiveState {
     pub is_exploding: bool,
     /// 是否已触发过范围伤害 (防止重复触发)
     pub damage_dealt: bool,
+    /// 爆炸后的销毁计时器；被钩子抓住时延迟真正清理。
+    pub cleanup_timer: Option<Timer>,
 }
 
 /// 爆炸特效组件
@@ -114,9 +120,18 @@ fn explosion_trigger_system(
     audio_assets: Res<AudioAssets>,
     image_assets: Res<ImageAssets>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
-    mut q_explosives: Query<(Entity, &mut ExplosiveState, &GlobalTransform), With<ExplosiveState>>,
+    mut q_explosives: Query<
+        (
+            Entity,
+            &mut ExplosiveState,
+            &GlobalTransform,
+            &EntityDescriptor,
+            &mut Sprite,
+        ),
+        With<ExplosiveState>,
+    >,
 ) {
-    for (_entity, mut state, transform) in q_explosives.iter_mut() {
+    for (_entity, mut state, transform, descriptor, mut sprite) in q_explosives.iter_mut() {
         if state.is_exploding && !state.damage_dealt {
             let center = transform.translation().truncate();
 
@@ -151,6 +166,16 @@ fn explosion_trigger_system(
 
             // 标记已触发，防止重复生成特效
             state.damage_dealt = true;
+            state.cleanup_timer = Some(Timer::from_seconds(
+                BIGGER_EXPLOSION_FRAME_COUNT as f32 * BIGGER_EXPLOSION_FRAME_DURATION,
+                TimerMode::Once,
+            ));
+
+            if let Some(destroyed_type) = descriptor.destroyed_type.as_deref()
+                && let Some(destroyed_image) = image_assets.get_image(destroyed_type)
+            {
+                sprite.image = destroyed_image;
+            }
         }
     }
 }
@@ -209,6 +234,31 @@ fn explosion_damage_system(
                 state.is_exploding = true;
                 break;
             }
+        }
+    }
+}
+
+fn explosion_cleanup_system(
+    mut commands: Commands,
+    time: Res<Time>,
+    mut q_explosives: Query<(Entity, &mut ExplosiveState)>,
+    q_hooks: Query<&crate::demo::hook::Hook>,
+) {
+    for (entity, mut state) in q_explosives.iter_mut() {
+        let Some(timer) = &mut state.cleanup_timer else {
+            continue;
+        };
+
+        timer.tick(time.delta());
+        if !timer.is_finished() {
+            continue;
+        }
+
+        let is_grabbed = q_hooks
+            .iter()
+            .any(|hook| hook.grabed_entity == Some(entity));
+        if !is_grabbed {
+            commands.entity(entity).despawn();
         }
     }
 }

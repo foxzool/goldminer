@@ -16,6 +16,7 @@ pub(super) fn plugin(app: &mut App) {
     app.init_resource::<PlayerResource>();
 
     app.add_systems(OnEnter(Screen::Gameplay), spawn_player);
+    app.add_systems(OnExit(Screen::Gameplay), reset_level_effects);
 
     // 动画及状态更新系统
     app.add_systems(
@@ -104,7 +105,7 @@ pub struct PlayerResource {
     pub goal_add_on: i32,
 
     /// 玩家的基础力量倍率
-    pub strength: i32,
+    pub strength: f32,
     /// 拥有的炸药数量
     pub dynamite_count: i32,
     /// 是否持有力量药水
@@ -130,7 +131,7 @@ impl Default for PlayerResource {
             money: 375,
             goal: 275,
             goal_add_on: 0,
-            strength: 1,
+            strength: 1.0,
             dynamite_count: 0,
             has_strength_drink: false,
             has_lucky_clover: false,
@@ -140,6 +141,14 @@ impl Default for PlayerResource {
             using_dynamite_timer: 0.39,
         }
     }
+}
+
+fn reset_level_effects(mut player: ResMut<PlayerResource>) {
+    player.strength = 1.0;
+    player.has_strength_drink = false;
+    player.has_lucky_clover = false;
+    player.has_rock_collectors_book = false;
+    player.has_gem_polish = false;
 }
 
 #[derive(Resource, Asset, Clone, Reflect)]

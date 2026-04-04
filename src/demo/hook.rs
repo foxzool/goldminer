@@ -408,8 +408,7 @@ fn update_hook(
                 if player.has_strength_drink {
                     mass /= 1.5;
                 }
-                let strength = player.strength as f32;
-                speed = HOOK_GRAB_SPEED * strength / mass;
+                speed = HOOK_GRAB_SPEED * player.strength / mass;
             }
 
             hook.length -= time.delta_secs() * speed;
@@ -534,10 +533,8 @@ fn update_bonus_state(
                 if entity_id == "Diamond" {
                     bonus = (bonus as f32 * 1.5) as i32;
                 } else if entity_id == "MoleWithDiamond" {
-                    // MoleWithDiamond 特殊处理：只对钻石部分加成
-                    // bonus = (bonus - mole_bonus) * 1.5 + mole_bonus
-                    // 暂时简化处理：整体 ×1.5
-                    bonus = (bonus as f32 * 1.5) as i32;
+                    let mole_bonus = 2;
+                    bonus = (((bonus - mole_bonus) as f32) * 1.5 + mole_bonus as f32) as i32;
                 }
             }
 
@@ -553,10 +550,10 @@ fn update_bonus_state(
                 if rand_val < chances {
                     // 20% 概率增加炸药，80% 概率增加玩家力量
                     if rand::random::<f32>() < 0.2 {
-                        player.dynamite_count += 1;
+                        player.dynamite_count = (player.dynamite_count + 1).min(12);
                     } else {
-                        // 力量增加，最大值为 6
-                        player.strength = (player.strength + 1).min(6);
+                        // Lua: strength = min(6, strength * 1.5 + 1)
+                        player.strength = (player.strength * 1.5 + 1.0).min(6.0);
                         hook.show_strength = true;
                         hook.strength_timer = STRENGTH_DISPLAY_DURATION;
 

@@ -35,12 +35,6 @@ fn spawn_next_goal_ui(
     // 更新目标金额
     stats.update_goal();
 
-    // 重置临时道具效果 (炸药为持久道具，不重置)
-    player.has_strength_drink = false;
-    player.has_lucky_clover = false;
-    player.has_rock_collectors_book = false;
-    player.has_gem_polish = false;
-
     let goal_text = if stats.is_first_init {
         stats.is_first_init = false;
         "Your First Goal is"
