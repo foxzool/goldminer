@@ -2,3 +2,8 @@
 /target
 # This file contains environment-specific configuration like linker settings
 .cargo/config.toml
+
+# Local agent/runtime state
+.omx/
+.sisyphus/boulder.json
+.sisyphus/notepads/
