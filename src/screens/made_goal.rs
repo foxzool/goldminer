@@ -6,6 +6,7 @@ use crate::constants::COLOR_YELLOW;
 use crate::screens::{Screen, stats::LevelStats};
 use crate::utils::love_to_bevy_coords;
 use bevy::prelude::*;
+use bevy::sprite::Anchor;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Screen::MadeGoal), spawn_made_goal_ui);
@@ -52,6 +53,7 @@ fn spawn_made_goal_ui(
         Name::new("Goal Title"),
         Sprite::from_image(image_assets.get_image("Title").unwrap()),
         Transform::from_translation(love_to_bevy_coords(160.0, 20.0).extend(0.0)),
+        Anchor::TOP_CENTER,
         DespawnOnExit(Screen::MadeGoal),
     ));
 
@@ -59,7 +61,8 @@ fn spawn_made_goal_ui(
     commands.spawn((
         Name::new("Goal Panel"),
         Sprite::from_image(image_assets.get_image("Panel").unwrap()),
-        Transform::from_translation(love_to_bevy_coords(160.0, 80.0).extend(0.0)),
+        Transform::from_translation(love_to_bevy_coords(27.0, 80.0).extend(0.0)),
+        Anchor::TOP_LEFT,
         DespawnOnExit(Screen::MadeGoal),
     ));
 
@@ -74,7 +77,7 @@ fn spawn_made_goal_ui(
             ..default()
         },
         TextColor(COLOR_YELLOW),
-        Transform::from_translation(love_to_bevy_coords(90.0, 60.0).extend(1.0)),
+        Transform::from_translation(love_to_bevy_coords(70.0, 100.0).extend(1.0)),
         bevy::sprite::Anchor::TOP_LEFT,
         DespawnOnExit(Screen::MadeGoal),
     ));

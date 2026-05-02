@@ -174,6 +174,7 @@ fn spawn_shop_ui(
         Name::new("Shop Title"),
         Sprite::from_image(image_assets.get_image("Title").unwrap()),
         Transform::from_translation(love_to_bevy_coords(160.0, 5.0).extend(0.0)),
+        bevy::sprite::Anchor::TOP_CENTER,
         DespawnOnExit(Screen::Shop),
     ));
 
@@ -523,13 +524,13 @@ fn update_shop_ui(
             }
         }
 
-        if let Ok(mut sprite) = q_shopkeeper.single_mut() {
-            if let Some(atlas) = sprite.texture_atlas.as_mut() {
-                if !shop_state.player_bought {
-                    atlas.index = 1; // Sad state
-                } else {
-                    atlas.index = 0; // Idle state
-                }
+        if let Ok(mut sprite) = q_shopkeeper.single_mut()
+            && let Some(atlas) = sprite.texture_atlas.as_mut()
+        {
+            if !shop_state.player_bought {
+                atlas.index = 1; // Sad state
+            } else {
+                atlas.index = 0; // Idle state
             }
         }
 

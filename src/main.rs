@@ -16,7 +16,7 @@ mod theme;
 mod utils;
 
 use crate::config::ConfigPlugin;
-use bevy::{asset::AssetMetaCheck, prelude::*};
+use bevy::{asset::AssetMetaCheck, image::ImagePlugin, prelude::*};
 
 fn main() -> AppExit {
     App::new().add_plugins(AppPlugin).run()
@@ -45,10 +45,10 @@ impl Plugin for AppPlugin {
                     }
                     .into(),
                     ..default()
-                }),
+                })
+                // Match the original game's crisp pixel scaling for sprites and bitmap fonts.
+                .set(ImagePlugin::default_nearest()),
         );
-
-        app.insert_resource(UiScale(2.0));
 
         // Add other plugins.
         app.add_plugins((

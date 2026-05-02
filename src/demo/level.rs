@@ -56,7 +56,7 @@ fn setup_ui(
             Text2d::new("Money"),
             game_style.clone(),
             TextColor(COLOR_DEEP_ORANGE),
-            Transform::from_translation(love_to_bevy_coords(10.0, 10.0).extend(10.0)),
+            Transform::from_translation(love_to_bevy_coords(5.0, 5.0).extend(10.0)),
             Anchor::TOP_LEFT,
         ))
         .with_children(|parent| {
@@ -72,10 +72,10 @@ fn setup_ui(
     commands
         .spawn((
             DespawnOnExit(Screen::Gameplay),
-            Text2d::new(" Goal"),
+            Text2d::new("Goal"),
             game_style.clone(),
             TextColor(COLOR_DEEP_ORANGE),
-            Transform::from_translation(love_to_bevy_coords(10.0, 28.0).extend(10.0)),
+            Transform::from_translation(love_to_bevy_coords(11.0, 15.0).extend(10.0)),
             Anchor::TOP_LEFT,
         ))
         .with_children(|parent| {
@@ -94,7 +94,7 @@ fn setup_ui(
             Text2d::new("Time: "),
             game_style.clone(),
             TextColor(COLOR_DEEP_ORANGE),
-            Transform::from_translation(love_to_bevy_coords(260.0, 10.0).extend(10.0)),
+            Transform::from_translation(love_to_bevy_coords(260.0, 15.0).extend(10.0)),
             Anchor::TOP_LEFT,
         ))
         .with_children(|parent| {
@@ -113,7 +113,7 @@ fn setup_ui(
             Text2d::new("Level: "),
             game_style.clone(),
             TextColor(COLOR_DEEP_ORANGE),
-            Transform::from_translation(love_to_bevy_coords(260.0, 25.0).extend(10.0)),
+            Transform::from_translation(love_to_bevy_coords(250.0, 25.0).extend(10.0)),
             Anchor::TOP_LEFT,
         ))
         .with_children(|parent| {
@@ -134,7 +134,7 @@ fn setup_ui(
         TextColor(COLOR_ORANGE),
         Visibility::Hidden,
         Transform::from_translation(love_to_bevy_coords(200.0, 5.0).extend(15.0)),
-        Anchor::CENTER,
+        Anchor::TOP_LEFT,
     ));
 
     // 炸药图标容器 - Lua 位置配置:

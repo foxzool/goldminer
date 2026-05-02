@@ -470,7 +470,7 @@ fn update_bonus_state(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     audio_assets: Res<AudioAssets>,
-    _image_assets: Res<ImageAssets>,
+    image_assets: Res<ImageAssets>,
     mut stats: ResMut<crate::screens::stats::LevelStats>,
     mut query: Query<(&mut Hook, &mut Sprite)>,
     q_descriptors: Query<&EntityDescriptor>,
@@ -564,23 +564,16 @@ fn update_bonus_state(
                         }
 
                         // Spawn Strength! 文字 - 位置 (80, 10) → Bevy 换算
-                        commands.spawn((
-                            StrengthIcon,
-                            Text2d::new("Strength!"),
-                            TextFont {
-                                font: asset_server.load("fonts/Kurland.ttf"),
-                                #[cfg(target_arch = "wasm32")]
-                                font_size: 6.0,
-                                #[cfg(not(target_arch = "wasm32"))]
-                                font_size: 24.0,
-                                ..default()
-                            },
-                            TextColor(COLOR_GREEN),
-                            Transform::from_translation(
-                                love_to_bevy_coords(80.0, 10.0).extend(10.0),
-                            ),
-                            Anchor::TOP_LEFT,
-                        ));
+                        if let Some(strength_image) = image_assets.get_image("Strength!") {
+                            commands.spawn((
+                                StrengthIcon,
+                                Sprite::from_image(strength_image),
+                                Transform::from_translation(
+                                    love_to_bevy_coords(80.0, 10.0).extend(10.0),
+                                ),
+                                Anchor::TOP_LEFT,
+                            ));
+                        }
                     }
                     if let Some(audio) = audio_assets.get_audio("High") {
                         commands.spawn(sound_effect(audio));
