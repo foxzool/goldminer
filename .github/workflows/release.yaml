@@ -266,7 +266,7 @@ jobs:
           cargo binstall --locked --no-confirm --force wasm-bindgen-cli
           cargo binstall --locked --no-confirm --force wasm-opt
           # Use cargo build instead of bevy cli (bevy cli has installation issues)
-          cargo build --locked --release --target wasm32-unknown-unknown --features='${{ matrix.features }}'
+          cargo build --locked --release --target wasm32-unknown-unknown --no-default-features --features='${{ matrix.features }}'
           # Create web bundle manually
           mkdir -p '${{ env.app }}'
           wasm-bindgen target/wasm32-unknown-unknown/release/'${{ env.cargo_build_binary_name }}'.wasm \
@@ -280,7 +280,7 @@ jobs:
         if: ${{ env.is_platform_enabled == 'true' && matrix.platform != 'web' }}
         run: |
           for target in ${{ matrix.targets }}; do
-            cargo build --locked --release --target="${target}" --features="${{ matrix.features }}"
+            cargo build --locked --release --target="${target}" --no-default-features --features="${{ matrix.features }}"
             src="target/${target}/release/${{ env.cargo_build_binary_name }}${{ matrix.binary_ext }}"
             dst="tmp/binary/${target}${{ matrix.binary_ext }}"
             mv "${src}" "${dst}"
