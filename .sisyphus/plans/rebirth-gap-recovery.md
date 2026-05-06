@@ -340,7 +340,7 @@ Max Concurrent: 5
   - Files: `src/demo/hook.rs`, related FX module files
   - Pre-commit: `cargo run`
 
-- [ ] 4. Restore standard explosive FX parity for grabbed entities
+- [x] 4. Restore standard explosive FX parity for grabbed entities
 
   **What to do**:
   - Use the original standard explosion sheet where the original game shows a smaller explosion effect, distinct from the existing bigger dynamite/TNT effect
@@ -716,7 +716,7 @@ Max Concurrent: 5
   - Files: `src/audio.rs`, relevant screen modules
   - Pre-commit: `cargo run`
 
-- [ ] 10. Apply remaining timing and presentation parity polish
+- [x] 10. Apply remaining timing and presentation parity polish
 
   **What to do**:
   - Normalize the known minor parity gaps: gameplay timer default/reset, skip-tip placement, hook reset after dynamite use, and any remaining shop/gameplay end-state presentation mismatches uncovered while implementing tasks 3-9
@@ -786,19 +786,19 @@ Max Concurrent: 5
 
 ## Final Verification Wave
 
-- [ ] F1. **Plan Compliance Audit** — `oracle`
+- [x] F1. **Plan Compliance Audit** — `oracle`
   Verify every listed parity gap has a corresponding implemented behavior, using the original references and evidence files. Confirm no guardrail violations (no architecture rewrite, no extra features).
   Output: `Must Have [N/N] | Must NOT Have [N/N] | Tasks [N/N] | VERDICT`
 
-- [ ] F2. **Code Quality Review** — `unspecified-high`
+- [x] F2. **Code Quality Review** — `unspecified-high`
   Run `cargo fmt --all -- --check`, `cargo clippy --locked --workspace --all-targets --all-features`, `cargo test --locked --workspace --all-targets`, `cargo build --release`. Review touched files for dead branches, duplicate constants, stale comments, or state-leak risks.
   Output: `Fmt [PASS/FAIL] | Clippy [PASS/FAIL] | Tests [PASS/FAIL] | Build [PASS/FAIL] | VERDICT`
 
-- [ ] F3. **Real Gameplay QA Replay** — `unspecified-high`
+- [x] F3. **Real Gameplay QA Replay** — `unspecified-high`
   Launch `cargo run`, replay at least: one BigGold pickup, one moving-entity pickup, one strength reward, one shop buy flow, one shop no-buy flow, and one transition path with fade behavior. Save all evidence to `.sisyphus/evidence/final-qa/`.
   Output: `Scenarios [N/N pass] | Integration [PASS/FAIL] | Edge Cases [PASS/FAIL] | VERDICT`
 
-- [ ] F4. **Scope Fidelity Check** — `deep`
+- [x] F4. **Scope Fidelity Check** — `deep`
   Compare the actual diff to this plan and verify work stayed within original-parity scope. Flag any implementation that added non-original features or unrelated refactors.
   Output: `Tasks [N/N compliant] | Scope Creep [NONE/N issues] | Unaccounted Files [NONE/N] | VERDICT`
 
@@ -827,8 +827,8 @@ cargo run
 ```
 
 ### Final Checklist
-- [ ] All identified visible parity gaps in this plan are implemented or explicitly proven obsolete
-- [ ] BigGold sparkle, standard explosive FX, grabbed-object rotation, money-view animation, strength presentation, shopkeeper state, and transition-audio parity are all observable in-game
-- [ ] Timer/skip-tip/hook-reset minor parity details are aligned
-- [ ] No unrelated features or architecture rewrites were introduced
-- [ ] All verification commands pass
+- [x] All identified visible parity gaps in this plan are implemented or explicitly proven obsolete
+- [x] BigGold sparkle, standard explosive FX, grabbed-object rotation, money-view animation, strength presentation, shopkeeper state, and transition-audio parity are all observable in-game
+- [x] Timer/skip-tip/hook-reset minor parity details are aligned
+- [x] No unrelated features or architecture rewrites were introduced
+- [x] All verification commands pass

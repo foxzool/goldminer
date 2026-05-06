@@ -1,5 +1,7 @@
 use bevy::prelude::*;
 
+const LEVEL_DURATION_SECONDS: f32 = 60.0;
+
 #[derive(Resource, Debug, Clone)]
 pub struct LevelStats {
     pub money: u32,
@@ -22,7 +24,7 @@ impl Default for LevelStats {
             goal: 375,
             goal_addon: 275,
             level: 1,
-            timer: 60.0,
+            timer: LEVEL_DURATION_SECONDS,
             is_first_init: true,
             real_level_str: "L1_1".to_string(),
         }
@@ -46,7 +48,7 @@ impl LevelStats {
     }
 
     pub fn reset_timer(&mut self) {
-        self.timer = 61.0;
+        self.timer = LEVEL_DURATION_SECONDS;
     }
 
     /// 计算实际关卡配置
@@ -60,5 +62,22 @@ impl LevelStats {
         // 随机变体 1-3
         let variant = rand::random::<u32>() % 3 + 1;
         self.real_level_str = format!("L{real_level}_{variant}");
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{LEVEL_DURATION_SECONDS, LevelStats};
+
+    #[test]
+    fn reset_timer_restores_original_sixty_second_level_duration() {
+        let mut stats = LevelStats {
+            timer: 12.5,
+            ..Default::default()
+        };
+
+        stats.reset_timer();
+
+        assert_eq!(stats.timer, LEVEL_DURATION_SECONDS);
     }
 }
