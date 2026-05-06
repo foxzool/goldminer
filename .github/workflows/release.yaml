@@ -142,7 +142,7 @@ jobs:
         run: echo "ref=${GITHUB_REF#refs/*/}" >> "${GITHUB_OUTPUT}"
     outputs:
       # Use the input from workflow dispatch, or fall back to the git ref.
-      version: ${{ inputs.version || steps.ref.outputs.ref }}
+      version: ${{ inputs.version || steps.tag.outputs.ref }}
 
   # Build and package a release for each platform.
   build:
@@ -158,22 +158,26 @@ jobs:
         include:
           - platform: web
             targets: wasm32-unknown-unknown
+            features: ""
             package_ext: .zip
             runner: ubuntu-latest
 
           - platform: linux
             targets: x86_64-unknown-linux-gnu
+            features: ""
             package_ext: .zip
             runner: ubuntu-latest
 
           - platform: windows
             targets: x86_64-pc-windows-msvc
+            features: ""
             binary_ext: .exe
             package_ext: .zip
             runner: windows-latest
 
           - platform: macos
             targets: x86_64-apple-darwin aarch64-apple-darwin
+            features: ""
             app_suffix: .app/Contents/MacOS
             package_ext: .dmg
             runner: macos-latest
@@ -188,6 +192,7 @@ jobs:
     steps:
       - name: Set up environment
         run: |
+          # shellcheck disable=SC2129
           # Default values:
           echo "app_binary_name=${app_binary_name:=${{ env.cargo_build_binary_name }}}" >> "${GITHUB_ENV}"
           echo "app_package_name=${app_package_name:=${app_binary_name}}" >> "${GITHUB_ENV}"
@@ -275,8 +280,10 @@ jobs:
         if: ${{ env.is_platform_enabled == 'true' && matrix.platform != 'web' }}
         run: |
           for target in ${{ matrix.targets }}; do
-            cargo build --locked --release --target="${target}" --features='${{ matrix.features }}'
-            mv target/"${target}"/release/${{ env.cargo_build_binary_name }}${{ matrix.binary_ext }}' tmp/binary/"${target}"'${{ matrix.binary_ext }}'
+            cargo build --locked --release --target="${target}" --features="${{ matrix.features }}"
+            src="target/${target}/release/${{ env.cargo_build_binary_name }}${{ matrix.binary_ext }}"
+            dst="tmp/binary/${target}${{ matrix.binary_ext }}"
+            mv "${src}" "${dst}"
           done
           
           if [ '${{ matrix.platform }}' = 'macos' ]; then
@@ -284,7 +291,6 @@ jobs:
           else
             mv tmp/binary/*'${{ matrix.binary_ext }}' '${{ env.app }}/${{ env.app_binary_name }}${{ matrix.binary_ext }}'
           fi
-        fi
 
       - name: Add assets to app (non-Web)
         if: ${{ env.is_platform_enabled == 'true' && matrix.platform != 'web' }}
