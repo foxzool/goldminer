@@ -263,10 +263,13 @@ jobs:
         env:
           RUSTFLAGS: '--cfg getrandom_backend="wasm_js"'
         run: |
-          cargo binstall --locked --no-confirm --force wasm-bindgen-cli
           cargo binstall --locked --no-confirm --force wasm-opt
           # Use cargo build instead of bevy cli (bevy cli has installation issues)
           cargo build --locked --release --target wasm32-unknown-unknown --no-default-features --features='${{ matrix.features }}'
+          # wasm-bindgen-cli must match the wasm-bindgen crate version embedded in the compiled Wasm.
+          wasm_bindgen_version=$(cargo metadata --locked --format-version=1 \
+            | jq -r '.packages[] | select(.name == "wasm-bindgen") | .version')
+          cargo binstall --locked --no-confirm --force wasm-bindgen-cli@"${wasm_bindgen_version}"
           # Create web bundle manually
           mkdir -p '${{ env.app }}'
           wasm-bindgen target/wasm32-unknown-unknown/release/'${{ env.cargo_build_binary_name }}'.wasm \
